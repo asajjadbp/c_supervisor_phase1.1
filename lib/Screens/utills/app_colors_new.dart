@@ -9,6 +9,7 @@ static  const blue = Color(0xFF3C51A1);
 static  const paleYellow = Color(0xFFFDCC53);
 static  const black = Color(0xFF000000);
 static const paleyellow = Color(0xFFFDCC53);
+static  const green = Color(0xFF01CB05);
 
 static const lightgray_2 = Color.fromARGB(241, 231, 231, 230);
 

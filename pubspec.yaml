@@ -25,6 +25,9 @@ dependencies:
   flutter_svg: ^1.1.6
   http:
   shared_preferences: ^2.2.2
+  image_picker: ^1.0.4
+  geolocator: ^10.1.0
+  geocoding: ^2.1.1
   #injection
 #  get_it: ^7.2.0
   # logging Package
@@ -37,9 +40,9 @@ dependencies:
 #  camera: 0.10.0+3
   # test screen to suitable with all screen size
 
-  location: ^4.4.0
+#  location: ^4.4.0
 
-  geolocator: 9.0.0
+#  geolocator: 9.0.0
 
 #  shimmer: ^2.0.0
   flutter_rating_bar: ^4.0.0
@@ -51,7 +54,7 @@ dependencies:
 #  pin_code_text_field: ^1.8.0
 
   url_launcher:
-  geocoding: ^2.1.0
+#  geocoding: ^2.1.0
   #local modules
 
 #  networking:

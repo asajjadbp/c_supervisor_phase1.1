@@ -1,6 +1,18 @@
-import 'package:c_supervisor/Screens/authentication/login_screen.dart';
-import 'package:flutter/material.dart';
 
+
+import 'dart:io';
+
+import 'package:c_supervisor/Screens/authentication/login_screen.dart';
+import 'package:c_supervisor/Screens/utills/app_colors_new.dart';
+import 'package:c_supervisor/Screens/widgets/toast_message_show.dart';
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
+
+import '../../Model/request_model/start_journey_plan_request.dart';
+import '../../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
+import '../../Network/http_manager.dart';
+import '../my_jp/my_journey_plan_module_new.dart';
 import '../utills/user_session.dart';
 
 showPopUponBackButton(BuildContext context) {
@@ -29,6 +41,58 @@ showPopUponBackButton(BuildContext context) {
       cancelButton,
       continueButton,
     ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+
+showPopUpForImageUpload(BuildContext context,XFile imageFile,Function onTap,JourneyResponseListItem journeyResponseListItem,Position? currentLocation) {
+  bool isLoading = false;
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: const Text("Picked Image"),
+    content: StatefulBuilder(
+      builder: (BuildContext context,StateSetter setState) {
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.3,
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            children: [
+              Expanded(child: isLoading ? const Center(child: CircularProgressIndicator(color: AppColors.primaryColor,),) : Image.file(File(imageFile.path))),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextButton(onPressed: (){
+                    setState(() {
+                      // isGoalsTabActive = true;
+                    });
+
+                    Navigator.of(context).pop();
+                  }, child: const Text("Cancel",style: TextStyle(color: AppColors.primaryColor),)),
+                  TextButton(
+                      onPressed: (){
+                        setState((){
+                          isLoading = true;
+                        });
+                        onTap();
+
+                        // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyResponseListItem,)));
+                      }, child: const Text("Upload",style: TextStyle(color: AppColors.primaryColor),))
+                ],
+              )
+            ],
+          ),
+        );
+      }
+    ),
   );
 
   // show the dialog

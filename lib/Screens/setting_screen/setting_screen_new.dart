@@ -17,7 +17,8 @@ class SettingScreenNew extends StatefulWidget {
 
 class _SettingScreenNewState extends State<SettingScreenNew> {
 
-  late String userName;
+   String userName = "";
+   String userEmail = "";
 
   @override
   void initState() {
@@ -31,6 +32,7 @@ class _SettingScreenNewState extends State<SettingScreenNew> {
 
     setState(() {
       userName = sharedPreferences.getString(UserConstants().userName)!;
+      userEmail = sharedPreferences.getString(UserConstants().userEmail)!;
     });
   }
 
@@ -40,6 +42,15 @@ class _SettingScreenNewState extends State<SettingScreenNew> {
       body: HeaderBackgroundNew(
         childWidgets: [
           HeaderWidgetsNew(pageTitle: userName,isBackButton: true,isDrawerButton: false),
+          Container(
+            margin: const EdgeInsets.only(bottom: 20),
+            child: Text(
+              userEmail,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  color: Colors.white, fontSize: 26, fontWeight: FontWeight.w400),
+            ),
+          ),
           Expanded(
             child: Column(
               children: [
