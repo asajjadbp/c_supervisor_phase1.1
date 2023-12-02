@@ -159,16 +159,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             }
                           },
                         ),
-                        const SizedBox(height: 2.0),
-                        Align(
-                          alignment: AlignmentDirectional.centerEnd,
-                          child: TextButton(
-                            onPressed: () {
-
-                            },
-                            child: const Text('Forget Password ?',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: AppColors.white),),
-                          ),
-                        ),
+                        // const SizedBox(height: 2.0),
+                        // Align(
+                        //   alignment: AlignmentDirectional.centerEnd,
+                        //   child: TextButton(
+                        //     onPressed: () {
+                        //
+                        //     },
+                        //     child: const Text('Forget Password ?',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: AppColors.white),),
+                        //   ),
+                        // ),
                         const SizedBox(height: 12.0),
                         InkWell(
                           onTap: () {
