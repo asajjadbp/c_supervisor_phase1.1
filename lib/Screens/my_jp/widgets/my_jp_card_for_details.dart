@@ -36,7 +36,7 @@ class MyJpCardForDetail extends StatelessWidget {
                 const SizedBox(width: 5,),
                 visitStatus == "PENDING" ? Row(
                   children: [
-                    const Icon(Icons.close,color: AppColors.redColor,size: 20,),
+                    const Icon(Icons.cancel,color: AppColors.redColor,size: 20,),
                     const SizedBox(width: 5,),
                     Text(visitStatus,style: const TextStyle(color: AppColors.redColor),)
                   ],

@@ -66,26 +66,39 @@ showPopUpForImageUpload(BuildContext context,XFile imageFile,Function onTap,Jour
           child: Column(
             children: [
               Expanded(child: isLoading ? const Center(child: CircularProgressIndicator(color: AppColors.primaryColor,),) : Image.file(File(imageFile.path))),
+              SizedBox(height: 10,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  TextButton(onPressed: (){
-                    setState(() {
-                      // isGoalsTabActive = true;
-                    });
+                  Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        border: Border.all(color: AppColors.primaryColor)
+                    ),
+                    child: IconButton(onPressed: (){
+                      setState(() {
+                        // isGoalsTabActive = true;
+                      });
 
-                    Navigator.of(context).pop();
-                  }, child: const Text("Cancel",style: TextStyle(color: AppColors.primaryColor),)),
-                  TextButton(
-                      onPressed: (){
-                        setState((){
-                          isLoading = true;
-                        });
-                        onTap();
+                      Navigator.of(context).pop();
+                    }, icon: const Icon(Icons.close,color: AppColors.redColor,size: 40,)),
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.primaryColor)
+                    ),
+                    child: IconButton(
+                        onPressed: (){
+                          setState((){
+                            isLoading = true;
+                          });
+                          onTap();
 
-                        // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyResponseListItem,)));
-                      }, child: const Text("Upload",style: TextStyle(color: AppColors.primaryColor),))
+                          // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyResponseListItem,)));
+                        }, icon: const Icon(Icons.check,color: AppColors.primaryColor,size: 40,)),
+                  ),
                 ],
               )
             ],

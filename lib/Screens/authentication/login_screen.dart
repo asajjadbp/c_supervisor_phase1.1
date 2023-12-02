@@ -38,15 +38,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-           Image.asset(
-            'assets/backgrounds/splash_bg.png',
-             fit: BoxFit.fill,
-             height: MediaQuery.of(context).size.height,
+           SizedBox(
+             width: size.width,
+             height: size.height,
+             child: Image.asset(
+              'assets/backgrounds/splash_bg.png',
+               fit: BoxFit.fill,
+               height: MediaQuery.of(context).size.height,
           ),
+           ),
           Container(
             margin: EdgeInsets.only(top: MediaQuery.of(context).size.height/5,right: 10,left: 10),
             child: Column(

@@ -100,13 +100,14 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
                       tmrName: journeyList[index].tmrId.toString(),
                       workingDate: journeyList[index].workingDate!,
                       onTap: (){
-                        if(journeyList[index].visitStatus! == "PENDING" ) {
-                          _getCurrentPosition(journeyList[index],index);
-                        } else {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyList[index],))).then((value) {
-                            getJourneyPlanList(false);
-                          });
-                        }
+                        _getCurrentPosition(journeyList[index],index);
+                        // if(journeyList[index].visitStatus! == "PENDING" ) {
+                        //   _getCurrentPosition(journeyList[index],index);
+                        // } else {
+                        //   Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyList[index],))).then((value) {
+                        //     getJourneyPlanList(false);
+                        //   });
+                        // }
                       },
                     );
 
@@ -214,7 +215,7 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
   }
 
   Future<void> pickedImage(JourneyResponseListItem journeyResponseListItem,Position? currentLocation,int index)  async {
-    image = await picker.pickImage(source: ImageSource.gallery);
+    image = await picker.pickImage(source: ImageSource.camera);
     if(image == null) {
 
     } else {
