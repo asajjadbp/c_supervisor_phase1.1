@@ -28,20 +28,18 @@ class LogInResponseModel {
 }
 
 class LoginData {
-  int? id;
+  String? id;
   String? email;
   String? name;
   String? welcomeMsg;
-  String? companyName;
 
-  LoginData({this.id, this.email, this.name, this.welcomeMsg, this.companyName});
+  LoginData({this.id, this.email, this.name, this.welcomeMsg, });
 
   LoginData.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    email = json['email'];
-    name = json['name'];
-    welcomeMsg = json['welcome_msg'];
-    companyName = json['company_name'];
+    id = json['id'].toString();
+    email = json['email'].toString();
+    name = json['name'].toString();
+    welcomeMsg = json['welcome_msg'].toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -50,7 +48,6 @@ class LoginData {
     data['email'] = email;
     data['name'] = name;
     data['welcome_msg'] = welcomeMsg;
-    data['company_name'] = companyName;
     return data;
   }
 }

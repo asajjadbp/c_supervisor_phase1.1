@@ -1,4 +1,5 @@
 import 'package:c_supervisor/Screens/my_jp/widgets/my_journey_plan_module_card_item.dart';
+import 'package:c_supervisor/Screens/utills/location_permission_handle.dart';
 import 'package:c_supervisor/Screens/widgets/toast_message_show.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -10,6 +11,7 @@ import '../../Model/response_model/checklist_responses/check_list_response_list_
 import '../../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
 import '../../Network/http_manager.dart';
 import '../utills/app_colors_new.dart';
+import '../utills/location_calculation.dart';
 import '../utills/user_constants.dart';
 import '../widgets/error_text_and_button.dart';
 import '../widgets/header_background_new.dart';
@@ -19,7 +21,7 @@ import 'my_journey_plan_check_list.dart';
 
 class MyJourneyModuleNew extends StatefulWidget {
   const MyJourneyModuleNew({Key? key,required this.journeyResponseListItem}) : super(key: key);
- final JourneyResponseListItem journeyResponseListItem;
+ final JourneyResponseListItemDetails journeyResponseListItem;
   @override
   State<MyJourneyModuleNew> createState() => _MyJourneyModuleNewState();
 }
@@ -135,17 +137,23 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
   }
 
   Future<void> _getCurrentPosition() async {
-    final hasPermission = await _handleLocationPermission();
+    final hasPermission = await handleLocationPermission();
     if (!hasPermission) return;
     await Geolocator.getCurrentPosition()
-        .then((Position position) {
+        .then((Position position) async {
       setState(() => _currentPosition = position);
 
       print("Current Position");
       print(_currentPosition);
-      String currentPosition = "${_currentPosition!.latitude},${_currentPosition!.longitude}";
+      double distanceInKm = await calculateDistance(widget.journeyResponseListItem.gcode!,_currentPosition);
 
-      endVisit(currentPosition);
+      if(distanceInKm<1.2) {
+        String currentPosition = "${_currentPosition!.latitude},${_currentPosition!.longitude}";
+
+        endVisit(currentPosition);
+      } else {
+        showToastMessage(false, "You are away from Store. please Go to store and end visit.");
+      }
 
     }).catchError((e) {
       debugPrint(e);
@@ -157,7 +165,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
       isLoading = true;
     });
 
-    HTTPManager().endVisit(EndVisitRequestModel(elId: widget.journeyResponseListItem.userId.toString(),workingId: widget.journeyResponseListItem.workingId!.toString(),checkInGps: currentPosition )).then((value) {
+    HTTPManager().endVisit(EndVisitRequestModel(elId: widget.journeyResponseListItem.elId.toString(),workingId: widget.journeyResponseListItem.workingId!.toString(),checkInGps: currentPosition )).then((value) {
 
       setState(() {
         isLoading = false;
@@ -169,39 +177,9 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
       setState(() {
         isLoading = false;
       });
-      print(e);
+      // print(e);
       showToastMessage(false, e.toString());
     });
 
-  }
-
-  Future<bool> _handleLocationPermission() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      showToastMessage(false,'Location services are disabled. Please enable the services');
-      // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      //     content: Text('Location services are disabled. Please enable the services')));
-      return false;
-    }
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        showToastMessage(false,'Location permissions are denied');
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //     const SnackBar(content: Text('Location permissions are denied')));
-        return false;
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      showToastMessage(false,'Location permissions are permanently denied, we cannot request permissions.');
-      // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      //     content: Text('Location permissions are permanently denied, we cannot request permissions.')));
-      return false;
-    }
-    return true;
   }
 }

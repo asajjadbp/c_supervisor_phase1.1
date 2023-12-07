@@ -3,7 +3,7 @@
 class ApplicationURLs {
 
   //Live Base URL
-   static const BASE_URL_APP = "https://stc.zarqsolution.com/CSupervisor/";
+   static const BASE_URL_APP = "https://cstoretest.catalist-me.com/CSupervisor/";
 
   //Authentication
   static const API_LOGIN = "${BASE_URL_APP}loginUser";
@@ -19,6 +19,9 @@ class ApplicationURLs {
 
    //Get Check List
    static const API_UPDATE_CHECK_LIST = "${BASE_URL_APP}updateCheckList";
+
+   //Get Check List
+   static const API_SAVE_CHECK_LIST_PHOTO = "${BASE_URL_APP}saveCheckListPhoto";
 
    //End Visit
    static const API_END_VISIT = "${BASE_URL_APP}endVisit";

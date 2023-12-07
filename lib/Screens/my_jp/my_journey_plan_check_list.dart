@@ -1,3 +1,4 @@
+import 'package:c_supervisor/Model/request_model/upload_check_list_photo_request.dart';
 import 'package:c_supervisor/Network/http_manager.dart';
 import 'package:c_supervisor/Screens/my_jp/widgets/check_list_comment_field.dart';
 import 'package:c_supervisor/Screens/widgets/toast_message_show.dart';
@@ -5,9 +6,14 @@ import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Model/response_model/checklist_responses/check_list_response_list_model.dart';
 import '../utills/app_colors_new.dart';
+import '../utills/image_compressed_functions.dart';
+import '../utills/user_constants.dart';
+import '../widgets/alert_dialogues.dart';
 import '../widgets/large_button_in_footer.dart';
 
 class MyJourneyPlanCheckList extends StatefulWidget {
@@ -22,22 +28,33 @@ class MyJourneyPlanCheckList extends StatefulWidget {
 class _MyJourneyPlanCheckListState extends State<MyJourneyPlanCheckList> {
   TextEditingController commentTextEditingController = TextEditingController();
   bool isLoading = false;
-  
-  List<TextEditingController> controllerList = <TextEditingController>[];
+  XFile? image;
+  XFile? compressedImage;
+  String userName = "";
+  String userId = "";
+  ImagePicker picker = ImagePicker();
 
   @override
   void initState() {
     // TODO: implement initStat
-    
-    for(int i= 0;i<widget.checkListResponseModel.data!.length;i++) {
-      controllerList.add(commentTextEditingController);
-    }
+    getUserData();
     super.initState();
   }
+
+
+  getUserData() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+
+    setState(() {
+      userName = sharedPreferences.getString(UserConstants().userName)!;
+      userId = sharedPreferences.getString(UserConstants().userId)!;
+    });
+
+  }
+
   @override
   void dispose() {
     // TODO: implement dispose
-    controllerList.clear();
 
     super.dispose();
   }
@@ -120,6 +137,15 @@ class _MyJourneyPlanCheckListState extends State<MyJourneyPlanCheckList> {
                                             mainAxisSize: MainAxisSize.min,
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
+                                              InkWell(
+                                                onTap: () {
+                                                  pickedImage(widget.checkListResponseModel.data![index].checklistResultId.toString(),userId,index);
+                                                },
+                                                child: const Align(
+                                                  alignment: Alignment.topRight,
+                                                  child: Icon(Icons.camera,color: AppColors.primaryColor,size: 30,),
+                                                ),
+                                              ),
                                               Container(
                                                 height: 130,
                                                 margin: const EdgeInsets.symmetric(vertical: 10),
@@ -156,6 +182,41 @@ class _MyJourneyPlanCheckListState extends State<MyJourneyPlanCheckList> {
       )
     );
   }
+
+  Future<void> pickedImage(String selectedId, String elId,int index)  async {
+    image = await picker.pickImage(source: ImageSource.camera );
+    if(image == null) {
+
+    } else {
+      print("Image Path");
+      print(image!.path);
+      compressedImage = await compressAndGetFile(image!);
+      showUploadOption(selectedId,elId,index,compressedImage);
+    }
+  }
+
+  showUploadOption(String selectedId, String elId,int index, XFile? image1) {
+    showPopUpForImageUpload(context, image1!, (){
+      // String currentPosition = "${currentLocation!.latitude},${currentLocation.longitude}";
+      // print(currentPosition);
+      if(image1 !=null) {
+        uploadCommentSectionImage(selectedId,elId,index,image1);
+      }
+    });
+  }
+
+  uploadCommentSectionImage(String selectedId, String elId,int index, XFile? image1) {
+    print(selectedId);
+    print(elId);
+    HTTPManager().checkListPostImage(UploadCheckListRequestModel(id: selectedId,elId: elId),image1!).then((value) {
+      showToastMessage(true, "Image uploaded successfully");
+      Navigator.of(context).pop();
+    }).catchError((e) {
+
+      showToastMessage(false, e.toString());
+    });
+  }
+
   updateCheckList() {
     setState(() {
       isLoading = true;

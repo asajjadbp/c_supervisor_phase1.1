@@ -12,6 +12,7 @@ import '../Model/request_model/get_check_list_request.dart';
 import '../Model/request_model/journey_plan_request.dart';
 import '../Model/request_model/login_request.dart';
 import '../Model/request_model/start_journey_plan_request.dart';
+import '../Model/request_model/upload_check_list_photo_request.dart';
 import '../Model/response_model/checklist_responses/check_list_response_list_model.dart';
 import '../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
 import '../Model/response_model/login_responses/login_response_model.dart';
@@ -53,6 +54,19 @@ class HTTPManager {
     print(url);
 
     final response = await _handler.postImage(url, startJourneyPlanRequestModel.toJson(),photoFile);
+    // JourneyPlanResponseModel journeyPlanResponseModel = JourneyPlanResponseModel.fromJson(response);
+
+    return response;
+  }
+
+  //Start Journey Plan
+  Future<dynamic> checkListPostImage(UploadCheckListRequestModel uploadCheckListRequestModel,XFile photoFile) async {
+
+    const url = ApplicationURLs.API_SAVE_CHECK_LIST_PHOTO;
+    // ignore: avoid_print
+    print(url);
+
+    final response = await _handler.postImage(url, uploadCheckListRequestModel.toJson(),photoFile);
     // JourneyPlanResponseModel journeyPlanResponseModel = JourneyPlanResponseModel.fromJson(response);
 
     return response;

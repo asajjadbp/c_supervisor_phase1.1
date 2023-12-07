@@ -88,10 +88,10 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                       },imageUrl: "assets/dashboard/my_journey_plan.png", cardName: "My Jp"),
                   MainDashboardItemCard(onTap:(){
                     showToastMessage(false,"Coming Soon...");
-                  },imageUrl:"assets/dashboard/my_team.png", cardName:"My Team"),
+                  },imageUrl:"assets/dashboard/my_coverage.png", cardName:"My Coverage"),
                   MainDashboardItemCard(onTap:(){
                     showToastMessage(false,"Coming Soon...");
-                  },imageUrl:"assets/dashboard/my_coverage.png", cardName:"My Coverage"),
+                  },imageUrl:"assets/dashboard/my_team.png", cardName:"My Team"),
                   MainDashboardItemCard(onTap:(){
                     showToastMessage(false,"Coming Soon...");
                   },imageUrl:"assets/dashboard/knowledge_share.png",cardName: "Knowledge Share"),

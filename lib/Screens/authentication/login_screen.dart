@@ -211,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
           isLoading = false;
         });
         showToastMessage(true,"Logged in successfully");
-        UserSessionState().setUserSession(true, logInResponseModel.data![0].id!.toString(), logInResponseModel.data![0].name!, logInResponseModel.data![0].email!, logInResponseModel.data![0].companyName!);
+        UserSessionState().setUserSession(true, logInResponseModel.data![0].id!.toString(), logInResponseModel.data![0].name!, logInResponseModel.data![0].email!);
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>const MainDashboardNew()), (route) => false);
 
       }).catchError((e) {

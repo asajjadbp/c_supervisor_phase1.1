@@ -99,7 +99,7 @@ class ResponseHandler {
         if (response.statusCode == 200) print("Uploaded!");
         res = response;
       });
-      if(res['status']!= true) throw FetchDataException(res['msg'].toString());
+      // if(res['status']!= true) throw FetchDataException(res['msg'].toString());
       return res;
     } on SocketException {
       throw FetchDataException('No Internet connection');

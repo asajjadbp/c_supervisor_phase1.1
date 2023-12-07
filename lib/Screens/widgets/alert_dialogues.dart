@@ -53,58 +53,137 @@ showPopUponBackButton(BuildContext context) {
 }
 
 
-showPopUpForImageUpload(BuildContext context,XFile imageFile,Function onTap,JourneyResponseListItem journeyResponseListItem,Position? currentLocation) {
+showPopUpForImageUpload(BuildContext context,XFile imageFile,Function onTap) {
   bool isLoading = false;
   // set up the AlertDialog
   AlertDialog alert = AlertDialog(
     title: const Text("Picked Image"),
     content: StatefulBuilder(
       builder: (BuildContext context,StateSetter setState) {
-        return SizedBox(
-          height: MediaQuery.of(context).size.height * 0.3,
-          width: MediaQuery.of(context).size.width,
-          child: Column(
-            children: [
-              Expanded(child: isLoading ? const Center(child: CircularProgressIndicator(color: AppColors.primaryColor,),) : Image.file(File(imageFile.path))),
-              SizedBox(height: 10,),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.primaryColor)
-                    ),
-                    child: IconButton(onPressed: (){
-                      setState(() {
-                        // isGoalsTabActive = true;
-                      });
+        return WillPopScope(
+          onWillPop: ()async {
+            return false;
+          },
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.3,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              children: [
+                Expanded(child: isLoading ? const Center(child: CircularProgressIndicator(color: AppColors.primaryColor,),) : Image.file(File(imageFile.path))),
+                const SizedBox(height: 10,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      onTap: (){
+                        Navigator.of(context).pop();
+                        setState(() {
+                          // isGoalsTabActive = true;
+                        });
 
-                      Navigator.of(context).pop();
-                    }, icon: const Icon(Icons.close,color: AppColors.redColor,size: 40,)),
-                  ),
-                  Container(
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.primaryColor)
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.primaryColor)
+                        ),
+                        child: const Icon(Icons.close,color: AppColors.redColor,size: 40,),
+                      ),
                     ),
-                    child: IconButton(
-                        onPressed: (){
-                          setState((){
-                            isLoading = true;
-                          });
-                          onTap();
+                    InkWell(
+                      onTap: (){
+                        setState((){
+                          isLoading = true;
+                        });
+                        onTap();
 
-                          // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyResponseListItem,)));
-                        }, icon: const Icon(Icons.check,color: AppColors.primaryColor,size: 40,)),
-                  ),
-                ],
-              )
-            ],
+                        // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyResponseListItem,)));
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.primaryColor)
+                        ),
+                        child: const Icon(Icons.check,color: AppColors.primaryColor,size: 40,),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
         );
       }
+    ),
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+showPopUpForImageUploadForComment(BuildContext context,XFile imageFile,Function onTap,) {
+  bool isLoading = false;
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: const Text("Picked Image"),
+    content: StatefulBuilder(
+        builder: (BuildContext context,StateSetter setState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.3,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              children: [
+                Expanded(child: isLoading ? const Center(child: CircularProgressIndicator(color: AppColors.primaryColor,),) : Image.file(File(imageFile.path))),
+                const SizedBox(height: 10,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      onTap: (){
+                        Navigator.of(context).pop();
+                        setState(() {
+                          // isGoalsTabActive = true;
+                        });
+
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.primaryColor)
+                        ),
+                        child: const Icon(Icons.close,color: AppColors.redColor,size: 40,),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: (){
+                        setState((){
+                          isLoading = true;
+                        });
+                        onTap();
+
+                        // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyResponseListItem,)));
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.primaryColor)
+                        ),
+                        child: const Icon(Icons.check,color: AppColors.primaryColor,size: 40,),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          );
+        }
     ),
   );
 

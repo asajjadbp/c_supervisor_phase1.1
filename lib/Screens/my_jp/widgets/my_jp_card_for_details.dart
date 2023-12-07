@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import '../../utills/app_colors_new.dart';
 
 class MyJpCardForDetail extends StatelessWidget {
-  const MyJpCardForDetail({Key? key,required this.storeName,required this.visitStatus,required this.tmrName,required this.workingDate,required this.onTap,}) : super(key: key);
+  const MyJpCardForDetail({Key? key,required this.storeName,required this.visitStatus,required this.tmrName,required this.workingDate,required this.tmrId,required this.onTap,}) : super(key: key);
 
  final String storeName;
   final String visitStatus;
   final String tmrName;
+  final String tmrId;
   final String workingDate;
   final Function onTap;
 
@@ -34,23 +35,23 @@ class MyJpCardForDetail extends StatelessWidget {
                 const SizedBox(width: 5,),
                 const Text("|",style: TextStyle(color: AppColors.greyColor),),
                 const SizedBox(width: 5,),
-                visitStatus == "PENDING" ? Row(
+                visitStatus == "0" ? const Row(
                   children: [
-                    const Icon(Icons.cancel,color: AppColors.redColor,size: 20,),
-                    const SizedBox(width: 5,),
-                    Text(visitStatus,style: const TextStyle(color: AppColors.redColor),)
+                    Icon(Icons.cancel,color: AppColors.redColor,size: 20,),
+                    SizedBox(width: 5,),
+                    Text("Pending",style: TextStyle(color: AppColors.redColor),)
                   ],
-                ) : visitStatus == "FINISHED" ? Row(
+                ) : visitStatus == "2" ? const Row(
                   children: [
-                    const Icon(Icons.check_circle,color: AppColors.green,size: 20,),
-                    const SizedBox(width: 5,),
-                    Text(visitStatus,style: const TextStyle(color: AppColors.green),)
+                    Icon(Icons.check_circle,color: AppColors.green,size: 20,),
+                    SizedBox(width: 5,),
+                    Text("Finished",style: TextStyle(color: AppColors.green),)
                   ],
-                ) : Row(
+                ) : const Row(
                   children: [
-                    const Icon(Icons.pending,color: AppColors.primaryColor,size: 20,),
-                    const SizedBox(width: 5,),
-                    Text(visitStatus,style: const TextStyle(color: AppColors.primaryColor),)
+                    Icon(Icons.pending,color: AppColors.primaryColor,size: 20,),
+                    SizedBox(width: 5,),
+                    Text("In Progress",style: TextStyle(color: AppColors.primaryColor),)
                   ],
                 )
               ],
@@ -58,7 +59,11 @@ class MyJpCardForDetail extends StatelessWidget {
             const SizedBox(
               height: 5,
             ),
-            Text("TMR: $tmrName",overflow: TextOverflow.ellipsis,style: TextStyle(color: AppColors.blue),),
+            Text("TMR Name: $tmrName",overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.blue),),
+            const SizedBox(
+              height: 5,
+            ),
+            Text("TMR ID: $tmrId",overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.blue),),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -68,7 +73,7 @@ class MyJpCardForDetail extends StatelessWidget {
                   Text(workingDate)
                 ],),
                 Visibility(
-                  visible: visitStatus != "FINISHED",
+                  visible: visitStatus != "2",
                   child: ElevatedButton(
                     onPressed: (){
                       onTap();
