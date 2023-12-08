@@ -85,6 +85,7 @@ class ResponseHandler {
     var head = Map<String, String>();
     head['content-type'] = 'application/x-www-form-urlencoded';
     var res;
+    var jsonData;
     try {
       final request = http.MultipartRequest('POST', Uri.parse(url));
       if (image != null) {
@@ -97,16 +98,21 @@ class ResponseHandler {
       request.fields.addAll(params);
       await request.send().then((response) {
         if (response.statusCode == 200) print("Uploaded!");
-        res = response;
+        res = response.stream;
       });
+      await for(List<int> chunk in res) {
+        final chunkString = utf8.decode(chunk);
+         jsonData = json.decode(chunkString);
+        print('Received JSON data: $jsonData');
+      }
       // if(res['status']!= true) throw FetchDataException(res['msg'].toString());
-      return res;
+      return jsonData;
     } on SocketException {
       throw FetchDataException('No Internet connection');
     }
   }
 
-  Future get(Uri url, bool isHeaderRequired) async {
+  Future get(Uri url) async {
     var head = <String, String>{};
     head['content-type'] = 'application/json; charset=utf-8';
     // ignore: prefer_typing_uninitialized_variables
@@ -116,7 +122,7 @@ class ResponseHandler {
       responseJson = json.decode(response.body.toString());
       // ignore: avoid_print
       print(responseJson);
-      if(responseJson['status']!= 200) throw FetchDataException(responseJson['message'].toString());
+      if(responseJson['status']!= true) throw FetchDataException(responseJson['msg'].toString());
       return responseJson;
     } on TimeoutException {
       throw FetchDataException("Slow internet connection");

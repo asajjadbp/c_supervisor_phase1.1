@@ -7,19 +7,76 @@ import 'dart:io';
 import 'package:c_supervisor/Network/response_handler.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../Model/request_model/check_in_status_request.dart';
 import '../Model/request_model/end_visit_request.dart';
 import '../Model/request_model/get_check_list_request.dart';
+import '../Model/request_model/image_upload_insde_store_request.dart';
 import '../Model/request_model/journey_plan_request.dart';
 import '../Model/request_model/login_request.dart';
 import '../Model/request_model/start_journey_plan_request.dart';
 import '../Model/request_model/upload_check_list_photo_request.dart';
+import '../Model/response_model/check_in_response/check_in_response.dart';
+import '../Model/response_model/check_in_response/check_in_status_response.dart';
 import '../Model/response_model/checklist_responses/check_list_response_list_model.dart';
 import '../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
 import '../Model/response_model/login_responses/login_response_model.dart';
+import '../Model/response_model/my_coverage_response/uploaded_store_images_list_response.dart';
 import 'api_urls.dart';
 
 class HTTPManager {
   final ResponseHandler _handler = ResponseHandler();
+
+  // IPS Location List
+  Future<IpcLocationResponseModel> getIPCLocation() async {
+
+    const url = ApplicationURLs.API_IPC_LOCATIONS;
+    // ignore: avoid_print
+    print(url);
+
+    final response = await _handler.get(Uri.parse(url));
+    IpcLocationResponseModel ipcLocationResponseModel = IpcLocationResponseModel.fromJson(response);
+
+    return ipcLocationResponseModel;
+  }
+
+  //Check In Status
+  Future<dynamic> getCheckInStatus(CheckInRequestModel checkInRequestModel) async {
+
+    const url = ApplicationURLs.API_IPC_CHECK_IN_STATUS;
+    // ignore: avoid_print
+    print(url);
+
+    final response = await _handler.post(Uri.parse(url),checkInRequestModel.toJson());
+    // IpcLocationResponseModel ipcLocationResponseModel = IpcLocationResponseModel.fromJson(response);
+
+    return response;
+  }
+
+  //Check In
+  Future<CheckInSuccessResponseModel> setCheckIn(CheckInStatusUpdateRequestModel checkInStatusUpdateRequestModel,XFile image) async {
+
+    const url = ApplicationURLs.API_IPC_CHECK_IN;
+    // ignore: avoid_print
+    print(url);
+
+    final response = await _handler.postImage(url,checkInStatusUpdateRequestModel .toJson(),image);
+    CheckInSuccessResponseModel checkInSuccessResponseModel = CheckInSuccessResponseModel.fromJson(response);
+
+    return checkInSuccessResponseModel;
+  }
+
+  //Check Out
+  Future<dynamic> setCheckOut(CheckOutStatusUpdateRequestModel checkOutStatusUpdateRequestModel) async {
+
+    const url = ApplicationURLs.API_IPC_CHECK_OUT;
+    // ignore: avoid_print
+    print(url);
+
+    final response = await _handler.post(Uri.parse(url),checkOutStatusUpdateRequestModel.toJson());
+    // IpcLocationResponseModel ipcLocationResponseModel = IpcLocationResponseModel.fromJson(response);
+
+    return response;
+  }
 
   Future<LogInResponseModel> loginUser(LoginRequestModel loginRequestModel) async {
 
@@ -93,6 +150,45 @@ class HTTPManager {
     print(url);
 
     final response = await _handler.postWithJsonRequest(Uri.parse(url), param);
+    // JourneyPlanResponseModel journeyPlanResponseModel = JourneyPlanResponseModel.fromJson(response);
+
+    return response;
+  }
+
+  //My Coverage Plan
+  Future<dynamic> storeImagesUpload(ImageUploadInStoreRequestModel imageUploadInStoreRequestModel,XFile photoFile) async {
+
+    const url = ApplicationURLs.API_PHOTO_UPLOAD_STORE;
+    // ignore: avoid_print
+    print(url);
+
+    final response = await _handler.postImage(url, imageUploadInStoreRequestModel.toJson(),photoFile);
+    // JourneyPlanResponseModel journeyPlanResponseModel = JourneyPlanResponseModel.fromJson(response);
+
+    return response;
+  }
+
+  //My Coverage Plan Store Image List
+  Future<StoreImageResponseModel> storeImagesList(UploadedImagesRequestModel uploadedImagesRequestModel) async {
+
+    const url = ApplicationURLs.API_UPLOADED_PHOTO_STORE;
+    // ignore: avoid_print
+    print(url);
+
+    final response = await _handler.post(Uri.parse(url), uploadedImagesRequestModel.toJson());
+    StoreImageResponseModel storeImageResponseModel = StoreImageResponseModel.fromJson(response);
+
+    return storeImageResponseModel;
+  }
+
+  //Store Image List Item
+  Future<dynamic> storeImagesDelete(DeleteImageRequestModel deleteImageRequestModel) async {
+
+    const url = ApplicationURLs.API_DELETE_PHOTO_STORE;
+    // ignore: avoid_print
+    print(url);
+
+    final response = await _handler.post(Uri.parse(url), deleteImageRequestModel.toJson());
     // JourneyPlanResponseModel journeyPlanResponseModel = JourneyPlanResponseModel.fromJson(response);
 
     return response;

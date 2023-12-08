@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../utills/app_colors_new.dart';
+import '../utills/app_colors_new.dart';
 
-class CheckListCommentTextField extends StatelessWidget {
-  const CheckListCommentTextField({Key? key,required this.initialValue,required this.onChangeValue}) : super(key: key);
- final String initialValue;
- final Function(String value) onChangeValue;
+class PopUpCommentTextField extends StatelessWidget {
+  const PopUpCommentTextField({Key? key,required this.textEditingController,required this.onChangeValue}) : super(key: key);
+  final TextEditingController textEditingController;
+  final Function(String value) onChangeValue;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class CheckListCommentTextField extends StatelessWidget {
       onChanged: (String value) {
         onChangeValue(value);
       },
-      initialValue: initialValue,
+      controller: textEditingController,
       decoration: const InputDecoration(
         enabledBorder:  OutlineInputBorder(
           borderRadius:  BorderRadius.all(Radius.circular(16.0)),

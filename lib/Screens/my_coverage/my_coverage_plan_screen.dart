@@ -1,4 +1,5 @@
-import 'dart:io';
+
+// ignore_for_file: avoid_print
 
 import 'package:c_supervisor/Model/request_model/journey_plan_request.dart';
 import 'package:c_supervisor/Network/http_manager.dart';
@@ -19,20 +20,18 @@ import '../widgets/error_text_and_button.dart';
 import '../widgets/header_background_new.dart';
 import '../widgets/header_widgets_new.dart';
 import '../widgets/toast_message_show.dart';
-import 'my_journey_plan_module_new.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:path_provider/path_provider.dart' as path_provider;
 
-class MyJourneyPlanScreenNew extends StatefulWidget {
-  const MyJourneyPlanScreenNew({Key? key}) : super(key: key);
+import 'my_coverage_photo_gallery_option.dart';
+
+class MyCoveragePlanScreenNew extends StatefulWidget {
+  const MyCoveragePlanScreenNew({Key? key}) : super(key: key);
 
   @override
-  State<MyJourneyPlanScreenNew> createState() => _MyJourneyPlanScreenNewState();
+  State<MyCoveragePlanScreenNew> createState() => _MyCoveragePlanScreenNewState();
 }
 
-class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
+class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
 
   String userName = "";
   String userId = "";
@@ -48,7 +47,7 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
 
   @override
   void initState() {
-    // TODO: implement initState
+
     getUserData();
     super.initState();
   }
@@ -71,7 +70,7 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
 
     HTTPManager().userJourneyPlanList(JourneyPlanRequestModel(elId: userId)).then((value) {
       setState(() {
-        journeyList = value.data!.planned!;
+        journeyList = value.data!.special!;
         isLoading = false;
         isError = false;
       });
@@ -90,7 +89,7 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
     return Scaffold(
       body: HeaderBackgroundNew(
         childWidgets: [
-          const HeaderWidgetsNew(pageTitle: "My JP",isBackButton: true,isDrawerButton: true,),
+          const HeaderWidgetsNew(pageTitle: "My Coverage",isBackButton: true,isDrawerButton: true,),
           Expanded(
             child: isLoading ? const Center(
               child: CircularProgressIndicator(color: AppColors.primaryColor,),
@@ -114,90 +113,12 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
                         if(journeyList[index].visitStatus!.toString() == "0" ) {
                           _getCurrentPosition(journeyList[index],index);
                         } else {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyList[index],))).then((value) {
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyCoveragePhotoGalleryOptions(journeyResponseListItemDetails: journeyList[index],))).then((value) {
                             getJourneyPlanList(false);
                           });
                         }
                       },
                     );
-
-                    //   Card(
-                    //   shape: RoundedRectangleBorder(
-                    //     borderRadius: BorderRadius.circular(15.0),
-                    //   ),
-                    //   semanticContainer: true,
-                    //   clipBehavior: Clip.antiAliasWithSaveLayer,
-                    //   shadowColor: Colors.black12,
-                    //   elevation: 10,
-                    //   child: Container(
-                    //     padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 15),
-                    //     child: Column(
-                    //       mainAxisAlignment: MainAxisAlignment.center,
-                    //       crossAxisAlignment: CrossAxisAlignment.start,
-                    //       mainAxisSize: MainAxisSize.min,
-                    //       children: [
-                    //          Row(
-                    //           children: [
-                    //             Expanded(child: Text(journeyList[index].storeName!,overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.primaryColor),)),
-                    //             const SizedBox(width: 5,),
-                    //             const Text("|",style: TextStyle(color: AppColors.greyColor),),
-                    //             const SizedBox(width: 5,),
-                    //             journeyList[index].visitStatus! == "PENDING" ? Row(
-                    //               children: [
-                    //                   const Icon(Icons.close,color: AppColors.redColor,size: 20,),
-                    //                const SizedBox(width: 5,),
-                    //                 Text(journeyList[index].visitStatus!,style: const TextStyle(color: AppColors.redColor),)
-                    //               ],
-                    //             ) : journeyList[index].visitStatus! == "FINISHED" ? Row(
-                    //               children: [
-                    //                 const Icon(Icons.check_circle,color: AppColors.green,size: 20,),
-                    //                 const SizedBox(width: 5,),
-                    //                 Text(journeyList[index].visitStatus!,style: const TextStyle(color: AppColors.green),)
-                    //               ],
-                    //             ) : Row(
-                    //               children: [
-                    //                 const Icon(Icons.pending,color: AppColors.primaryColor,size: 20,),
-                    //                 const SizedBox(width: 5,),
-                    //                 Text(journeyList[index].visitStatus!,style: const TextStyle(color: AppColors.primaryColor),)
-                    //               ],
-                    //             )
-                    //           ],
-                    //         ),
-                    //         const SizedBox(
-                    //           height: 5,
-                    //         ),
-                    //         Text("TMR: ${journeyList[index].tmrId.toString()}",overflow: TextOverflow.ellipsis,style: TextStyle(color: AppColors.blue),),
-                    //         Row(
-                    //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //           children: [
-                    //              Row(children: [
-                    //                const  Icon(Icons.calendar_month,color: AppColors.primaryColor,size: 20,),
-                    //               const SizedBox(width: 5,),
-                    //               Text(journeyList[index].workingDate!)
-                    //             ],),
-                    //             Visibility(
-                    //               visible: journeyList[index].visitStatus! != "FINISHED",
-                    //               child: ElevatedButton(
-                    //                 onPressed: (){
-                    //                   if(journeyList[index].visitStatus! == "PENDING" ) {
-                    //                     _getCurrentPosition(journeyList[index],index);
-                    //                   } else {
-                    //                     Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyList[index],)));
-                    //                   }
-                    //                 },
-                    //                 style: ElevatedButton.styleFrom(
-                    //                   primary: Colors.purple,
-                    //                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                    //                 ),
-                    //                 child: const Text("Start visit"),
-                    //               ),
-                    //             ),
-                    //           ],
-                    //         )
-                    //       ],
-                    //     ),
-                    //   ),
-                    // );
                   }
                   ),
             )
@@ -267,7 +188,7 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
       //   journeyList[index].visitStatus = "IN PROGRESS";
       // });
       Navigator.of(context).pop();
-      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyResponseListItem,))).then((value) {
+      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyCoveragePhotoGalleryOptions(journeyResponseListItemDetails: journeyResponseListItem,))).then((value) {
         getJourneyPlanList(false);
       });
       setState((){

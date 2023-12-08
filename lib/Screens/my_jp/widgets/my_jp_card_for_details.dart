@@ -79,8 +79,8 @@ class MyJpCardForDetail extends StatelessWidget {
                       onTap();
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.purple,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                      primary: AppColors.primaryColor,
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     ),
                     child: const Text("Start visit"),
                   ),

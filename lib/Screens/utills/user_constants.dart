@@ -6,4 +6,6 @@ class UserConstants {
   late String userName = "userName" ;
   late String userCompanyName = "companyName";
 
+  late String checkInId = "checkInId" ;
+
 }

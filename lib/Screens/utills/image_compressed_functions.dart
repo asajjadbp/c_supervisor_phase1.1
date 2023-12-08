@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
@@ -14,9 +16,15 @@ Future<XFile?> compressAndGetFile(XFile file) async {
       minHeight: 1080,
       quality: 40);
 
+  final bytes = await file.length();
+  final kb = bytes / 1024;
+
+  final bytes1 = await compressedImage!.length();
+  final kb1 = bytes1 / 1024;
+
   print("Files Sizes");
-  print(await file.length());
-  print(await compressedImage!.length());
+  print("Main File: $kb");
+  print("Compressed File: $kb1");
 
   return compressedImage;
 }

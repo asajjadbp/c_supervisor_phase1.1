@@ -104,26 +104,41 @@ class _MyJourneyPlanCheckListState extends State<MyJourneyPlanCheckList> {
                                       ),
                                       const SizedBox(height: 5),
                                       Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          const Text("Rate: ",style: TextStyle(color: AppColors.primaryColor,fontSize: 18),),
-                                          RatingBar.builder(
-                                            updateOnDrag: false,
-                                            ignoreGestures: false,
-                                            initialRating: widget.checkListResponseModel.data![index].score!.toDouble(),
-                                            itemSize: 25,
-                                            direction: Axis.horizontal,
-                                            //allowHalfRating: false,
-                                            itemCount: 5,
-                                            itemPadding: const EdgeInsets.symmetric(horizontal: 1.0),
-                                            itemBuilder: (context, _) => const Icon(
-                                              Icons.star,
-                                              color: AppColors.primaryColor,
-                                            ),
-                                            onRatingUpdate: (rating) {
-                                              setState(() {
-                                                widget.checkListResponseModel.data![index].score = rating.toInt();
-                                              });
+                                          Row(
+                                            children: [
+                                              const Text("Rate: ",style: TextStyle(color: AppColors.primaryColor,fontSize: 18),),
+                                              RatingBar.builder(
+                                                updateOnDrag: false,
+                                                ignoreGestures: false,
+                                                initialRating: widget.checkListResponseModel.data![index].score!.toDouble(),
+                                                itemSize: 25,
+                                                direction: Axis.horizontal,
+                                                //allowHalfRating: false,
+                                                itemCount: 5,
+                                                itemPadding: const EdgeInsets.symmetric(horizontal: 1.0),
+                                                itemBuilder: (context, _) => const Icon(
+                                                  Icons.star,
+                                                  color: AppColors.primaryColor,
+                                                ),
+                                                onRatingUpdate: (rating) {
+                                                  setState(() {
+                                                    widget.checkListResponseModel.data![index].score = rating.toInt();
+                                                  });
+                                                },
+                                              )
+                                            ],
+                                          )
+                                          ,
+                                          InkWell(
+                                            onTap: () {
+                                              pickedImage(widget.checkListResponseModel.data![index].checklistResultId.toString(),userId,index);
                                             },
+                                            child:  Container(
+                                              margin: const EdgeInsets.only(right: 5),
+                                              child: const Icon(Icons.camera_alt,color: AppColors.primaryColor,size: 30,),
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -137,17 +152,8 @@ class _MyJourneyPlanCheckListState extends State<MyJourneyPlanCheckList> {
                                             mainAxisSize: MainAxisSize.min,
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              InkWell(
-                                                onTap: () {
-                                                  pickedImage(widget.checkListResponseModel.data![index].checklistResultId.toString(),userId,index);
-                                                },
-                                                child: const Align(
-                                                  alignment: Alignment.topRight,
-                                                  child: Icon(Icons.camera,color: AppColors.primaryColor,size: 30,),
-                                                ),
-                                              ),
                                               Container(
-                                                height: 130,
+                                                // height: 130,
                                                 margin: const EdgeInsets.symmetric(vertical: 10),
                                                 child: CheckListCommentTextField(initialValue: widget.checkListResponseModel.data![index].comment!,onChangeValue: (value){
                                                   setState(() {
