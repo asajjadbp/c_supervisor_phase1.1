@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Model/request_model/start_journey_plan_request.dart';
 import '../../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
+import '../google_map_screen/google_map_screen.dart';
 import '../utills/app_colors_new.dart';
 import '../utills/image_compressed_functions.dart';
 import '../utills/location_calculation.dart';
@@ -18,6 +19,7 @@ import '../widgets/alert_dialogues.dart';
 import '../widgets/error_text_and_button.dart';
 import '../widgets/header_background_new.dart';
 import '../widgets/header_widgets_new.dart';
+import '../widgets/text_fields/search_text_fields.dart';
 import '../widgets/toast_message_show.dart';
 import 'my_journey_plan_module_new.dart';
 import 'package:image_picker/image_picker.dart';
@@ -38,6 +40,7 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
   String userId = "";
   bool isLoading = true;
   List<JourneyResponseListItemDetails> journeyList = <JourneyResponseListItemDetails>[];
+  List<JourneyResponseListItemDetails> journeySearchList = <JourneyResponseListItemDetails>[];
   bool isError = false;
   String errorText = "";
 
@@ -45,11 +48,15 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
   XFile? image;
   XFile? compressedImage;
   Position? _currentPosition;
+  Position? _currentPositionForList;
+
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     // TODO: implement initState
     getUserData();
+    getUserCurrentLocation();
     super.initState();
   }
 
@@ -62,6 +69,25 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
     });
 
     getJourneyPlanList(true);
+  }
+
+  getUserCurrentLocation() async {
+    final hasPermission = await handleLocationPermission();
+    if (!hasPermission) return;
+    await Geolocator.getCurrentPosition()
+        .then((Position position) async {
+      setState(() => _currentPositionForList = position);
+
+      print("Current Position");
+      print(_currentPositionForList);
+
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  calculateDistanceForList(JourneyResponseListItemDetails journeyResponseListItemDetails) {
+
   }
 
   getJourneyPlanList(bool isLoader) {
@@ -91,6 +117,7 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
       body: HeaderBackgroundNew(
         childWidgets: [
           const HeaderWidgetsNew(pageTitle: "My JP",isBackButton: true,isDrawerButton: true,),
+          SearchTextField(controller: searchController,hintText:'Search With Tmr Name',onChangeField: onSearchTextFieldChanged,),
           Expanded(
             child: isLoading ? const Center(
               child: CircularProgressIndicator(color: AppColors.primaryColor,),
@@ -98,17 +125,25 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
               margin: const EdgeInsets.symmetric(horizontal: 10),
               child: isError ? ErrorTextAndButton(onTap: (){
                 getJourneyPlanList(true);
-              },errorText: errorText) : journeyList.isEmpty ? const Center(child: Text("No plans found"),) : ListView.builder(
+              },errorText: errorText) : journeyList.isEmpty ? const Center(child: Text("No plans found"),) : searchController.text.isNotEmpty ? ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.vertical,
-                  itemCount: journeyList.length,
+                  itemCount: journeySearchList.length,
                   itemBuilder: (context,index) {
                     return MyJpCardForDetail(
-                      storeName: journeyList[index].storeName!,
-                      visitStatus: journeyList[index].visitStatus!.toString(),
-                      tmrName: journeyList[index].tmrId.toString(),
-                      tmrId: journeyList[index].tmrName.toString(),
-                      workingDate: journeyList[index].workingDate!,
+                      storeName: journeySearchList[index].storeName!,
+                      visitStatus: journeySearchList[index].visitStatus!.toString(),
+                      tmrName: journeySearchList[index].tmrName.toString(),
+                      tmrId: journeySearchList[index].tmrId.toString(),
+                      workingDate: journeySearchList[index].workingDate!,
+                      buttonName: journeySearchList[index].visitStatus!.toString() == "0" ? "Start Visit" : "Resume Visit",
+                      onMapTap: () {
+                        // List<String> latLong = journeyList[index].gcode!.split(",");
+                        //
+                        // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> GoogleMapScreen(currentLat: _currentPositionForList!.latitude.toString(),currentLong: _currentPositionForList!.longitude.toString(),storeLat:latLong[0] ,storeLong: latLong[1],))).then((value) {
+                        //   getJourneyPlanList(false);
+                        // });
+                      },
                       onTap: (){
                         // _getCurrentPosition(journeyList[index],index);
                         if(journeyList[index].visitStatus!.toString() == "0" ) {
@@ -120,84 +155,37 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
                         }
                       },
                     );
-
-                    //   Card(
-                    //   shape: RoundedRectangleBorder(
-                    //     borderRadius: BorderRadius.circular(15.0),
-                    //   ),
-                    //   semanticContainer: true,
-                    //   clipBehavior: Clip.antiAliasWithSaveLayer,
-                    //   shadowColor: Colors.black12,
-                    //   elevation: 10,
-                    //   child: Container(
-                    //     padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 15),
-                    //     child: Column(
-                    //       mainAxisAlignment: MainAxisAlignment.center,
-                    //       crossAxisAlignment: CrossAxisAlignment.start,
-                    //       mainAxisSize: MainAxisSize.min,
-                    //       children: [
-                    //          Row(
-                    //           children: [
-                    //             Expanded(child: Text(journeyList[index].storeName!,overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.primaryColor),)),
-                    //             const SizedBox(width: 5,),
-                    //             const Text("|",style: TextStyle(color: AppColors.greyColor),),
-                    //             const SizedBox(width: 5,),
-                    //             journeyList[index].visitStatus! == "PENDING" ? Row(
-                    //               children: [
-                    //                   const Icon(Icons.close,color: AppColors.redColor,size: 20,),
-                    //                const SizedBox(width: 5,),
-                    //                 Text(journeyList[index].visitStatus!,style: const TextStyle(color: AppColors.redColor),)
-                    //               ],
-                    //             ) : journeyList[index].visitStatus! == "FINISHED" ? Row(
-                    //               children: [
-                    //                 const Icon(Icons.check_circle,color: AppColors.green,size: 20,),
-                    //                 const SizedBox(width: 5,),
-                    //                 Text(journeyList[index].visitStatus!,style: const TextStyle(color: AppColors.green),)
-                    //               ],
-                    //             ) : Row(
-                    //               children: [
-                    //                 const Icon(Icons.pending,color: AppColors.primaryColor,size: 20,),
-                    //                 const SizedBox(width: 5,),
-                    //                 Text(journeyList[index].visitStatus!,style: const TextStyle(color: AppColors.primaryColor),)
-                    //               ],
-                    //             )
-                    //           ],
-                    //         ),
-                    //         const SizedBox(
-                    //           height: 5,
-                    //         ),
-                    //         Text("TMR: ${journeyList[index].tmrId.toString()}",overflow: TextOverflow.ellipsis,style: TextStyle(color: AppColors.blue),),
-                    //         Row(
-                    //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //           children: [
-                    //              Row(children: [
-                    //                const  Icon(Icons.calendar_month,color: AppColors.primaryColor,size: 20,),
-                    //               const SizedBox(width: 5,),
-                    //               Text(journeyList[index].workingDate!)
-                    //             ],),
-                    //             Visibility(
-                    //               visible: journeyList[index].visitStatus! != "FINISHED",
-                    //               child: ElevatedButton(
-                    //                 onPressed: (){
-                    //                   if(journeyList[index].visitStatus! == "PENDING" ) {
-                    //                     _getCurrentPosition(journeyList[index],index);
-                    //                   } else {
-                    //                     Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyList[index],)));
-                    //                   }
-                    //                 },
-                    //                 style: ElevatedButton.styleFrom(
-                    //                   primary: Colors.purple,
-                    //                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                    //                 ),
-                    //                 child: const Text("Start visit"),
-                    //               ),
-                    //             ),
-                    //           ],
-                    //         )
-                    //       ],
-                    //     ),
-                    //   ),
-                    // );
+                  }
+              ) : ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  itemCount: journeyList.length,
+                  itemBuilder: (context,index) {
+                    return MyJpCardForDetail(
+                      storeName: journeyList[index].storeName!,
+                      visitStatus: journeyList[index].visitStatus!.toString(),
+                      tmrName: journeyList[index].tmrName.toString(),
+                      tmrId: journeyList[index].tmrId.toString(),
+                      workingDate: journeyList[index].workingDate!,
+                      onMapTap: () {
+                        // List<String> latLong = journeyList[index].gcode!.split(",");
+                        //
+                        // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> GoogleMapScreen(currentLat: _currentPositionForList!.latitude.toString(),currentLong: _currentPositionForList!.longitude.toString(),storeLat:latLong[0] ,storeLong: latLong[1],))).then((value) {
+                        //   getJourneyPlanList(false);
+                        // });
+                      },
+                      buttonName: journeyList[index].visitStatus!.toString() == "0" ? "Start Visit" : "Resume Visit",
+                      onTap: (){
+                        // _getCurrentPosition(journeyList[index],index);
+                        if(journeyList[index].visitStatus!.toString() == "0" ) {
+                          _getCurrentPosition(journeyList[index],index);
+                        } else {
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyList[index],))).then((value) {
+                            getJourneyPlanList(false);
+                          });
+                        }
+                      },
+                    );
                   }
                   ),
             )
@@ -205,6 +193,22 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
         ],
       )
     );
+  }
+
+  onSearchTextFieldChanged(String text) async {
+    journeySearchList.clear();
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+
+    for (JourneyResponseListItemDetails journeyItem in journeyList) {
+      if (journeyItem.tmrName!.toLowerCase().contains(text.toLowerCase())) {
+        journeySearchList.add(journeyItem);
+      }
+    }
+
+    setState(() {});
   }
 
   Future<void> _getCurrentPosition(JourneyResponseListItemDetails journeyResponseListItem,int index) async {

@@ -28,13 +28,13 @@ class IpcLocationResponseModel {
 }
 
 class IpcLocationResponseItem {
-  int? id;
+  String? id;
   String? gps;
 
   IpcLocationResponseItem({this.id, this.gps});
 
   IpcLocationResponseItem.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = json['id'].toString();
     gps = json['gps'];
   }
 

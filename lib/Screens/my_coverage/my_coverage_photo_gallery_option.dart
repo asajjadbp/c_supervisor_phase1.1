@@ -152,7 +152,7 @@ class _MyCoveragePhotoGalleryOptionsState extends State<MyCoveragePhotoGalleryOp
   }
 
   imageUploadInsideAppStore(JourneyResponseListItemDetails journeyResponseListItem,String currentLocation, XFile? image1) {
-    HTTPManager().storeImagesUpload(ImageUploadInStoreRequestModel(elId: journeyResponseListItem.elId!.toString(),workingId: journeyResponseListItem.workingId.toString(),storeId: journeyResponseListItem.storeId.toString(),tmrId: journeyResponseListItem.tmrId.toString(),checkInGps: currentLocation,comment: commentController.text), image1!).then((value) {
+    HTTPManager().storeImagesUpload(ImageUploadInStoreRequestModel(elId: journeyResponseListItem.elId!.toString(),workingId: journeyResponseListItem.workingId.toString(),storeId: journeyResponseListItem.storeId.toString(),checkInGps: currentLocation,comment: commentController.text), image1!).then((value) {
       commentController.clear();
       Navigator.of(context).pop();
       setState(() {

@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
+import '../Screens/utills/vpn_detector_handler.dart';
 import 'app_exceptions.dart';
 
 // ignore: non_constant_identifier_names
@@ -24,6 +25,8 @@ class ResponseHandler {
     // ignore: prefer_typing_uninitialized_variables
     var responseJson;
     try {
+      bool isVpnConnected = await vpnDetector();
+      if(isVpnConnected) throw FetchDataException("Please Disable Your Vpn");
       final response = await http.post(url, body: params, headers: head).timeout(const Duration(seconds: 45));
       responseJson = json.decode(response.body.toString());
       // ignore: avoid_print
@@ -45,6 +48,8 @@ class ResponseHandler {
     var responseJson;
     var params1 = utf8.encode(json.encode(params));
     try {
+      bool isVpnConnected = await vpnDetector();
+      if(isVpnConnected) throw FetchDataException("Please Disable Your Vpn");
       final response = await http.post(url, body: params1, headers: head).timeout(const Duration(seconds: 45));
       responseJson = json.decode(response.body.toString());
       // ignore: avoid_print
@@ -87,6 +92,8 @@ class ResponseHandler {
     var res;
     var jsonData;
     try {
+      bool isVpnConnected = await vpnDetector();
+      if(isVpnConnected) throw FetchDataException("Please Disable Your Vpn");
       final request = http.MultipartRequest('POST', Uri.parse(url));
       if (image != null) {
         final file = await http.MultipartFile.fromPath(
@@ -118,6 +125,8 @@ class ResponseHandler {
     // ignore: prefer_typing_uninitialized_variables
     var responseJson;
     try {
+      bool isVpnConnected = await vpnDetector();
+      if(isVpnConnected) throw FetchDataException("Please Disable Your Vpn");
       final response = await http.get(url, headers: head).timeout(const Duration(seconds: 45));
       responseJson = json.decode(response.body.toString());
       // ignore: avoid_print

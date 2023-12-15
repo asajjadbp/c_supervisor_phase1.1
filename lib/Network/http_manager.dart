@@ -13,10 +13,12 @@ import '../Model/request_model/get_check_list_request.dart';
 import '../Model/request_model/image_upload_insde_store_request.dart';
 import '../Model/request_model/journey_plan_request.dart';
 import '../Model/request_model/login_request.dart';
+import '../Model/request_model/save_user_location_request.dart';
 import '../Model/request_model/start_journey_plan_request.dart';
 import '../Model/request_model/upload_check_list_photo_request.dart';
 import '../Model/response_model/check_in_response/check_in_response.dart';
 import '../Model/response_model/check_in_response/check_in_status_response.dart';
+import '../Model/response_model/check_in_response/check_in_status_response_details.dart';
 import '../Model/response_model/checklist_responses/check_list_response_list_model.dart';
 import '../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
 import '../Model/response_model/login_responses/login_response_model.dart';
@@ -39,30 +41,43 @@ class HTTPManager {
     return ipcLocationResponseModel;
   }
 
+  //Save USer Current Location
+  Future<dynamic> saveUserCurrentLocation(SaveUserLocationRequestModel saveUserLocationRequestModel) async {
+
+    const url = ApplicationURLs.API_SAVE_USER_LOCATION;
+    // ignore: avoid_print
+    print(url);
+
+    final response = await _handler.post(Uri.parse(url),saveUserLocationRequestModel.toJson());
+    // IpcLocationResponseModel ipcLocationResponseModel = IpcLocationResponseModel.fromJson(response);
+
+    return response;
+  }
+
   //Check In Status
-  Future<dynamic> getCheckInStatus(CheckInRequestModel checkInRequestModel) async {
+  Future<CheckInStatusResponseModel> getCheckInStatus(CheckInRequestModel checkInRequestModel) async {
 
     const url = ApplicationURLs.API_IPC_CHECK_IN_STATUS;
     // ignore: avoid_print
     print(url);
 
     final response = await _handler.post(Uri.parse(url),checkInRequestModel.toJson());
-    // IpcLocationResponseModel ipcLocationResponseModel = IpcLocationResponseModel.fromJson(response);
+    CheckInStatusResponseModel checkInStatusResponseModel = CheckInStatusResponseModel.fromJson(response);
 
-    return response;
+    return checkInStatusResponseModel;
   }
 
   //Check In
-  Future<CheckInSuccessResponseModel> setCheckIn(CheckInStatusUpdateRequestModel checkInStatusUpdateRequestModel,XFile image) async {
+  Future<dynamic> setCheckIn(CheckInStatusUpdateRequestModel checkInStatusUpdateRequestModel,XFile image) async {
 
     const url = ApplicationURLs.API_IPC_CHECK_IN;
     // ignore: avoid_print
     print(url);
 
     final response = await _handler.postImage(url,checkInStatusUpdateRequestModel .toJson(),image);
-    CheckInSuccessResponseModel checkInSuccessResponseModel = CheckInSuccessResponseModel.fromJson(response);
+    // CheckInStatusDetailsItem checkInStatusDetailsItem = CheckInStatusDetailsItem.fromJson(response['data'][0]);
 
-    return checkInSuccessResponseModel;
+    return response;
   }
 
   //Check Out
@@ -73,7 +88,7 @@ class HTTPManager {
     print(url);
 
     final response = await _handler.post(Uri.parse(url),checkOutStatusUpdateRequestModel.toJson());
-    // IpcLocationResponseModel ipcLocationResponseModel = IpcLocationResponseModel.fromJson(response);
+    // CheckInStatusDetailsItem checkInStatusDetailsItem = CheckInStatusDetailsItem.fromJson(response['data']);
 
     return response;
   }

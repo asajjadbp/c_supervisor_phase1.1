@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Model/request_model/start_journey_plan_request.dart';
 import '../../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
+import '../google_map_screen/google_map_screen.dart';
 import '../utills/app_colors_new.dart';
 import '../utills/image_compressed_functions.dart';
 import '../utills/location_calculation.dart';
@@ -19,6 +20,7 @@ import '../widgets/alert_dialogues.dart';
 import '../widgets/error_text_and_button.dart';
 import '../widgets/header_background_new.dart';
 import '../widgets/header_widgets_new.dart';
+import '../widgets/text_fields/search_text_fields.dart';
 import '../widgets/toast_message_show.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -37,6 +39,7 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
   String userId = "";
   bool isLoading = true;
   List<JourneyResponseListItemDetails> journeyList = <JourneyResponseListItemDetails>[];
+  List<JourneyResponseListItemDetails> journeySearchList = <JourneyResponseListItemDetails>[];
   bool isError = false;
   String errorText = "";
 
@@ -44,11 +47,15 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
   XFile? image;
   XFile? compressedImage;
   Position? _currentPosition;
+  Position? _currentPositionForList;
+
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
 
     getUserData();
+    getUserCurrentLocation();
     super.initState();
   }
 
@@ -63,6 +70,21 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
     getJourneyPlanList(true);
   }
 
+  getUserCurrentLocation() async {
+    final hasPermission = await handleLocationPermission();
+    if (!hasPermission) return;
+    await Geolocator.getCurrentPosition()
+        .then((Position position) async {
+      setState(() => _currentPositionForList = position);
+
+      print("Current Position");
+      print(_currentPositionForList);
+
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
   getJourneyPlanList(bool isLoader) {
     setState(() {
       isLoading = isLoader;
@@ -70,6 +92,7 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
 
     HTTPManager().userJourneyPlanList(JourneyPlanRequestModel(elId: userId)).then((value) {
       setState(() {
+
         journeyList = value.data!.special!;
         isLoading = false;
         isError = false;
@@ -90,6 +113,7 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
       body: HeaderBackgroundNew(
         childWidgets: [
           const HeaderWidgetsNew(pageTitle: "My Coverage",isBackButton: true,isDrawerButton: true,),
+          SearchTextField(controller: searchController,hintText:'Search With Store Name',onChangeField: onSearchTextFieldChanged,),
           Expanded(
             child: isLoading ? const Center(
               child: CircularProgressIndicator(color: AppColors.primaryColor,),
@@ -97,7 +121,38 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
               margin: const EdgeInsets.symmetric(horizontal: 10),
               child: isError ? ErrorTextAndButton(onTap: (){
                 getJourneyPlanList(true);
-              },errorText: errorText) : journeyList.isEmpty ? const Center(child: Text("No plans found"),) : ListView.builder(
+              },errorText: errorText) : journeyList.isEmpty ? const Center(child: Text("No plans found"),) : searchController.text.isNotEmpty ? ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  itemCount: journeySearchList.length,
+                  itemBuilder: (context,index) {
+                    return MyJpCardForDetail(
+                      storeName: journeySearchList[index].storeName!,
+                      visitStatus: journeySearchList[index].visitStatus!.toString(),
+                      tmrName: journeySearchList[index].tmrName.toString(),
+                      tmrId: journeySearchList[index].tmrId.toString(),
+                      workingDate: journeySearchList[index].workingDate!,
+                      buttonName: journeySearchList[index].visitStatus!.toString() == "0" ? "Start Visit" : "Resume Visit",
+                      onMapTap: () {
+                        // List<String> latLong = journeyList[index].gcode!.split(",");
+                        //
+                        // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> GoogleMapScreen(currentLat: _currentPositionForList!.latitude.toString(),currentLong: _currentPositionForList!.longitude.toString(),storeLat:latLong[0] ,storeLong: latLong[1],))).then((value) {
+                        //   getJourneyPlanList(false);
+                        // });
+                      },
+                      onTap: (){
+                        // _getCurrentPosition(journeyList[index],index);
+                        if(journeySearchList[index].visitStatus!.toString() == "0" ) {
+                          _getCurrentPosition(journeySearchList[index],index);
+                        } else {
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyCoveragePhotoGalleryOptions(journeyResponseListItemDetails: journeySearchList[index],))).then((value) {
+                            getJourneyPlanList(false);
+                          });
+                        }
+                      },
+                    );
+                  }
+              ) : ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.vertical,
                   itemCount: journeyList.length,
@@ -105,9 +160,17 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
                     return MyJpCardForDetail(
                       storeName: journeyList[index].storeName!,
                       visitStatus: journeyList[index].visitStatus!.toString(),
-                      tmrName: journeyList[index].tmrId.toString(),
-                      tmrId: journeyList[index].tmrName.toString(),
+                      tmrName: journeyList[index].tmrName.toString(),
+                      tmrId: journeyList[index].tmrId.toString(),
                       workingDate: journeyList[index].workingDate!,
+                      buttonName: journeyList[index].visitStatus!.toString() == "0" ? "Start Visit" : "Resume Visit",
+                      onMapTap: () {
+                        // List<String> latLong = journeyList[index].gcode!.split(",");
+                        //
+                        // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> GoogleMapScreen(currentLat: _currentPositionForList!.latitude.toString(),currentLong: _currentPositionForList!.longitude.toString(),storeLat:latLong[0] ,storeLong: latLong[1],))).then((value) {
+                        //   getJourneyPlanList(false);
+                        // });
+                      },
                       onTap: (){
                         // _getCurrentPosition(journeyList[index],index);
                         if(journeyList[index].visitStatus!.toString() == "0" ) {
@@ -126,6 +189,22 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
         ],
       )
     );
+  }
+
+  onSearchTextFieldChanged(String text) async {
+    journeySearchList.clear();
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+
+    for (JourneyResponseListItemDetails journeyItem in journeyList) {
+      if (journeyItem.storeName!.toLowerCase().contains(text.toLowerCase())) {
+        journeySearchList.add(journeyItem);
+      }
+    }
+
+    setState(() {});
   }
 
   Future<void> _getCurrentPosition(JourneyResponseListItemDetails journeyResponseListItem,int index) async {

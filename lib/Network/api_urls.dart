@@ -11,14 +11,17 @@ class ApplicationURLs {
    //IPS Location
    static const API_IPC_LOCATIONS = "${BASE_URL_APP}checkInIPCLocations";
 
+   //Save Location After 20 min
+   static const API_SAVE_USER_LOCATION = "${BASE_URL_APP}saveLocation";
+
    //Check In Status
-   static const API_IPC_CHECK_IN_STATUS = "${BASE_URL_APP}checkInIPCStatus";
+   static const API_IPC_CHECK_IN_STATUS = "${BASE_URL_APP}checkInStatus";
 
    //Check In
-   static const API_IPC_CHECK_IN = "${BASE_URL_APP}checkInIPC";
+   static const API_IPC_CHECK_IN = "${BASE_URL_APP}checkIn";
 
    //Check Out
-   static const API_IPC_CHECK_OUT = "${BASE_URL_APP}checkIOutIPC";
+   static const API_IPC_CHECK_OUT = "${BASE_URL_APP}checkOut";
 
   //Authentication
   static const API_LOGIN = "${BASE_URL_APP}loginUser";

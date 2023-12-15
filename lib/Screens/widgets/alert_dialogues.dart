@@ -151,7 +151,7 @@ showPopUpForImageUploadForComment(BuildContext context,XFile imageFile,Function 
                         scrollDirection: Axis.vertical,
                             child: Column(
                     children: [
-                      Container(
+                      SizedBox(
                           height: MediaQuery.of(context).size.height * 0.2,
                           width: MediaQuery.of(context).size.width,
                           child: Image.file(File(imageFile.path))),

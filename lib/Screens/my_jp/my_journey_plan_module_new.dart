@@ -2,17 +2,23 @@ import 'package:c_supervisor/Screens/my_jp/widgets/my_journey_plan_module_card_i
 import 'package:c_supervisor/Screens/utills/location_permission_handle.dart';
 import 'package:c_supervisor/Screens/widgets/toast_message_show.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Model/request_model/end_visit_request.dart';
 import '../../Model/request_model/get_check_list_request.dart';
+import '../../Model/request_model/image_upload_insde_store_request.dart';
 import '../../Model/response_model/checklist_responses/check_list_response_list_model.dart';
 import '../../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
 import '../../Network/http_manager.dart';
+import '../my_coverage/my_coverage_gallery.dart';
 import '../utills/app_colors_new.dart';
+import '../utills/image_compressed_functions.dart';
 import '../utills/location_calculation.dart';
 import '../utills/user_constants.dart';
+import '../widgets/alert_dialogues.dart';
 import '../widgets/error_text_and_button.dart';
 import '../widgets/header_background_new.dart';
 import '../widgets/header_widgets_new.dart';
@@ -37,6 +43,12 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
   late CheckListResponseModel checkListResponseModel;
   Position? _currentPosition;
   int checkListPendingCount = 0;
+
+  ImagePicker picker = ImagePicker();
+  XFile? image;
+  XFile? compressedImage;
+
+  TextEditingController commentController = TextEditingController();
 
   @override
   void initState() {
@@ -108,7 +120,23 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
                 //   cardName: 'Photos',
                 //   cardImage: 'assets/icons/images.png',
                 // ),
+                MyJourneyPlanModuleCardItem(
+                  onTap: () {
+                    _getCurrentPosition1(true);
+                  },
+                  pendingCheckListCount: 0,
+                  cardName: 'Camera',
+                  cardImage: 'assets/icons/camera.png',
+                ),
 
+                MyJourneyPlanModuleCardItem(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MyCoverageGallery(journeyResponseListItemDetails: widget.journeyResponseListItem,)));
+                  },
+                  pendingCheckListCount: 0,
+                  cardName: "Gallery",
+                  cardImage:  "assets/icons/gallery.png",
+                ),
                 MyJourneyPlanModuleCardItem(
                   onTap: () {
                     if(checkListResponseModel.data!.isNotEmpty) {
@@ -127,6 +155,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
                   cardImage:  "assets/icons/check_list.png",
                 ),
 
+
               ],
             ),
           ),
@@ -134,6 +163,69 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
         ],
       ),
     );
+  }
+
+  Future<void> _getCurrentPosition1(bool takeImage) async {
+    final hasPermission = await handleLocationPermission();
+    if (!hasPermission) return;
+    await Geolocator.getCurrentPosition()
+        .then((Position position) async {
+      setState(() => _currentPosition = position);
+
+      print("Current Position");
+      print(_currentPosition);
+      double distanceInKm = await calculateDistance(widget.journeyResponseListItem.gcode!,_currentPosition);
+
+      if(distanceInKm<1.2) {
+        String currentPosition = "${_currentPosition!.latitude},${_currentPosition!.longitude}";
+        if(takeImage) {
+          pickedImage(widget.journeyResponseListItem, currentPosition);
+        } else {
+          endVisit(currentPosition);
+        }
+
+      } else {
+        showToastMessage(false, "You are away from Store. please Go to store and end visit.");
+      }
+
+    }).catchError((e) {
+      debugPrint(e);
+    });
+  }
+
+  Future<void> pickedImage(JourneyResponseListItemDetails journeyResponseListItem,String currentLocation)  async {
+    image = await picker.pickImage(source: ImageSource.camera );
+    if(image == null) {
+
+    } else {
+      print("Image Path");
+      print(image!.path);
+      compressedImage = await compressAndGetFile(image!);
+      showUploadOption(journeyResponseListItem, currentLocation,compressedImage);
+    }
+  }
+
+  showUploadOption(JourneyResponseListItemDetails journeyResponseListItem,String currentLocation, XFile? image1) {
+    showPopUpForImageUploadForComment(context, image1!, (){
+      // String currentPosition = "${currentLocation!.latitude},${currentLocation.longitude}";
+      print(currentLocation);
+      if(image1 !=null && currentLocation != "") {
+        imageUploadInsideAppStore(journeyResponseListItem, currentLocation,image1);
+      }
+    },commentController);
+  }
+
+  imageUploadInsideAppStore(JourneyResponseListItemDetails journeyResponseListItem,String currentLocation, XFile? image1) {
+    HTTPManager().storeImagesUpload(ImageUploadInStoreRequestModel(elId: journeyResponseListItem.elId!.toString(),workingId: journeyResponseListItem.workingId.toString(),storeId: journeyResponseListItem.storeId.toString(),checkInGps: currentLocation,comment: commentController.text), image1!).then((value) {
+      commentController.clear();
+      Navigator.of(context).pop();
+      setState(() {
+
+      });
+      showToastMessage(true, "Image Uploaded successfully");
+    }).catchError((e) {
+      showToastMessage(false, e.toString());
+    });
   }
 
   Future<void> _getCurrentPosition() async {

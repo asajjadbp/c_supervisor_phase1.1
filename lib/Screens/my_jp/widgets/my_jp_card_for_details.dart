@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import '../../utills/app_colors_new.dart';
 
 class MyJpCardForDetail extends StatelessWidget {
-  const MyJpCardForDetail({Key? key,required this.storeName,required this.visitStatus,required this.tmrName,required this.workingDate,required this.tmrId,required this.onTap,}) : super(key: key);
+  const MyJpCardForDetail({Key? key,required this.storeName,required this.visitStatus,required this.tmrName,required this.workingDate,required this.tmrId,required this.buttonName,required this.onTap,required this.onMapTap}) : super(key: key);
 
  final String storeName;
   final String visitStatus;
   final String tmrName;
   final String tmrId;
   final String workingDate;
+  final String buttonName;
   final Function onTap;
+  final Function onMapTap;
 
   @override
   Widget build(BuildContext context) {
@@ -67,11 +69,16 @@ class MyJpCardForDetail extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(children: [
-                  const  Icon(Icons.calendar_month,color: AppColors.primaryColor,size: 20,),
-                  const SizedBox(width: 5,),
-                  Text(workingDate)
-                ],),
+                GestureDetector(
+                  onTap: () {
+                    onMapTap();
+                  },
+                  child: Row(children: [
+                    const  Icon(Icons.calendar_month,color: AppColors.primaryColor,size: 20,),
+                    const SizedBox(width: 5,),
+                    Text(workingDate,overflow: TextOverflow.ellipsis)
+                  ],),
+                ),
                 Visibility(
                   visible: visitStatus != "2",
                   child: ElevatedButton(
@@ -82,7 +89,7 @@ class MyJpCardForDetail extends StatelessWidget {
                       primary: AppColors.primaryColor,
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     ),
-                    child: const Text("Start visit"),
+                    child: Text(buttonName),
                   ),
                 ),
               ],

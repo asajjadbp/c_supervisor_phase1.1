@@ -29,8 +29,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     // TODO: implement initState
     setState(() {
-      emailController.text = "ihpjkhanihpmecom";
-      passwordController.text = "khankhan1";
+      emailController.text = "102347";
+      passwordController.text = "123456";
     });
 
     super.initState();
@@ -211,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
           isLoading = false;
         });
         showToastMessage(true,"Logged in successfully");
-        UserSessionState().setUserSession(true, logInResponseModel.data![0].id!.toString(), logInResponseModel.data![0].name!, logInResponseModel.data![0].email!);
+        UserSessionState().setUserSession(true, logInResponseModel.data![0].id!.toString(), logInResponseModel.data![0].fullName!, logInResponseModel.data![0].email!);
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>const MainDashboardNew()), (route) => false);
 
       }).catchError((e) {

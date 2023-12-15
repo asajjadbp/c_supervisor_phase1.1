@@ -31,6 +31,9 @@ dependencies:
   geolocator: ^10.1.0
   geocoding: ^2.1.1
   cached_network_image: ^3.3.0
+  vpn_connection_detector: ^1.0.5
+  google_maps_flutter: ^2.5.0
+
   #injection
 #  get_it: ^7.2.0
   # logging Package

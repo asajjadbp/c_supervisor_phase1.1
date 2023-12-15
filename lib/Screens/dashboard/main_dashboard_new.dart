@@ -1,5 +1,9 @@
+// ignore_for_file: avoid_print
+
+import 'dart:async';
 import 'dart:io';
 
+import 'package:c_supervisor/Model/request_model/save_user_location_request.dart';
 import 'package:c_supervisor/Network/http_manager.dart';
 import 'package:c_supervisor/Screens/dashboard/widgets/main_dashboard_card_item.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../Model/request_model/check_in_status_request.dart';
 import '../../Model/response_model/check_in_response/check_in_response.dart';
 import '../../Model/response_model/check_in_response/check_in_status_response.dart';
+import '../../Model/response_model/check_in_response/check_in_status_response_details.dart';
 import '../my_coverage/my_coverage_plan_screen.dart';
 import '../my_jp/my_journey_plan_screen.dart';
 import '../utills/app_colors_new.dart';
@@ -18,12 +23,13 @@ import '../utills/image_compressed_functions.dart';
 import '../utills/location_calculation.dart';
 import '../utills/location_permission_handle.dart';
 import '../utills/user_constants.dart';
+import '../utills/vpn_detector_handler.dart';
 import '../widgets/alert_dialogues.dart';
 import '../widgets/error_text_and_button.dart';
 import '../widgets/header_background_new.dart';
 import '../widgets/header_widgets_new.dart';
-import '../widgets/large_button_in_footer.dart';
 import '../widgets/toast_message_show.dart';
+import 'package:intl/intl.dart';
 
 class MainDashboardNew extends StatefulWidget {
   const MainDashboardNew({Key? key}) : super(key: key);
@@ -49,8 +55,15 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
   String errorText1 = "";
 
   bool isCheckedIn = false;
+  String? checkInId;
+  String? checkInTime;
+  String? checkOutTime;
+
+  Timer? timer;
+  bool? isVpnConnected;
 
   List<CheckInStatusItem> checkListItem = <CheckInStatusItem>[];
+  List<CheckInStatusDetailsItem> checkListItemStatus = <CheckInStatusDetailsItem>[];
 
   TextEditingController commentController = TextEditingController();
 
@@ -60,7 +73,15 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
   void initState() {
     getUserData();
     getIpcLocations();
+    checkVpnDetector();
     super.initState();
+  }
+
+  checkVpnDetector() async {
+    bool isVpnConnected = await vpnDetector();
+
+    print("VPN Status");
+    print(isVpnConnected);
   }
 
   getUserData() async {
@@ -71,6 +92,15 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
       userId = sharedPreferences.getString(UserConstants().userId)!;
     });
     getCheckInStatus();
+    Timer.periodic(const Duration(minutes: 20), (Timer t) => _getCurrentPosition(false));
+  }
+
+  saveUserCurrentLocation(String currentPosition) {
+    HTTPManager().saveUserCurrentLocation(SaveUserLocationRequestModel(elId:userId,latLong: currentPosition)).then((value) {
+      print(value);
+    }).catchError((e) {
+      print(e.toString());
+    });
   }
 
   getIpcLocations() {
@@ -102,7 +132,21 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
 
     HTTPManager().getCheckInStatus(CheckInRequestModel(elId:userId)).then((value) {
       setState(() {
-        isCheckedIn = value['data'][0]['checked_in'];
+        checkListItemStatus = value.data!;
+
+        print(checkListItemStatus[0].checkoutStatus!);
+
+        if(checkListItemStatus[0].checkoutStatus!) {
+          isCheckedIn = false;
+        } else {
+          isCheckedIn = true;
+        }
+        checkInId = checkListItemStatus[0].id.toString();
+        checkInTime = checkListItemStatus[0].checkinTime;
+        checkOutTime = checkListItemStatus[0].checkoutTime;
+
+
+
         isLoading1 = false;
         isError = false;
       });
@@ -110,10 +154,17 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
       setState(() {
         print(e.toString());
         isLoading1 = false;
-        isError = true;
+        // isError = true;
         errorText1 = e.toString();
       });
     });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -166,10 +217,22 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                 children:  [
                       MainDashboardItemCard(
                           onTap: (){
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const MyJourneyPlanScreenNew()));
+                            if(isCheckedIn) {
+                              showToastMessage(false,"Please check out first and try again");
+                            } else {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (
+                                      context) => const MyJourneyPlanScreenNew()));
+                            }
                           },imageUrl: "assets/dashboard/my_journey_plan.png", cardName: "My Jp"),
                       MainDashboardItemCard(onTap:(){
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const MyCoveragePlanScreenNew()));
+                        if(isCheckedIn) {
+                          showToastMessage(false,"Please check out first and try again");
+                        } else {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (
+                                  context) => const MyCoveragePlanScreenNew()));
+                        }
                         // showToastMessage(false,"Coming Soon...");
                       },imageUrl:"assets/dashboard/my_coverage.png", cardName:"My Coverage"),
                       // MainDashboardItemCard(onTap:(){
@@ -184,14 +247,75 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                 ],
               ),
                       if(isLoading2)
-                        const Center(child: CircularProgressIndicator(),)
+                        const Center(child: CircularProgressIndicator(color: AppColors.primaryColor,),)
                     ],
                   ),
             ),
-            if(!isLoading || !isLoading1)
-            LargeButtonInFooter(buttonTitle:isCheckedIn ? "Check Out" : "Check In", onTap: (){
-              _getCurrentPosition();
-            },)
+
+              isLoading || isLoading1 ? Container() : Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(isCheckedIn ? DateFormat.jm().format(DateTime.parse(checkInTime!)) : ""),
+                      InkWell(
+                        onTap: () {
+                          if(!isCheckedIn) {
+                            _getCurrentPosition(true);
+                          } else {
+                            showToastMessage(false, "You need to Check out first");
+                          }
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          margin: const EdgeInsets.symmetric(horizontal: 5,vertical: 10),
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          width: MediaQuery.of(context).size.width,
+                          decoration:  BoxDecoration(
+                            border: Border.all(color: AppColors.primaryColor),
+                              color: !isCheckedIn ? AppColors.primaryColor : AppColors.white,
+                              borderRadius: const BorderRadius.only(topRight: Radius.circular(10),topLeft: Radius.circular(10))
+                          ),
+                          child:  Text("Check In",style: TextStyle(fontSize:20,color: !isCheckedIn ? AppColors.white : AppColors.greyColor),),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(!isCheckedIn ? DateFormat.jm().format(DateTime.parse(checkOutTime!)) : ""),
+                      InkWell(
+                        onTap: () {
+                          if(isCheckedIn) {
+                            _getCurrentPosition(true);
+                          } else {
+                            showToastMessage(false, "You need to Check In first");
+                          }
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 5,vertical: 10),
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                              border: Border.all(color: AppColors.primaryColor),
+                              color: isCheckedIn ? AppColors.primaryColor : AppColors.white,
+                              borderRadius: const BorderRadius.only(topRight: Radius.circular(10),topLeft: Radius.circular(10))
+                          ),
+                          child:   Text("Check Out",style: TextStyle(fontSize:20,color:isCheckedIn ? AppColors.white : AppColors.greyColor),),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            )
 
           ],
         )
@@ -199,7 +323,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
     );
   }
 
-  Future<void> _getCurrentPosition() async {
+  Future<void> _getCurrentPosition(bool isAllow) async {
     final hasPermission = await handleLocationPermission();
     if (!hasPermission) return;
     await Geolocator.getCurrentPosition()
@@ -214,17 +338,22 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
       double distanceInKm2 = await calculateDistance(ipcLocation[1].gps!,_currentPosition);
       double distanceInKm3 = await calculateDistance(ipcLocation[2].gps!,_currentPosition);
 
-      if(distanceInKm1<1.2 || distanceInKm2<1.2 || distanceInKm3<1.2) {
-        if(isCheckedIn) {
-          String currentPosition = "${_currentPosition!.latitude},${_currentPosition!.longitude}";
+      String currentPosition = "${_currentPosition!.latitude},${_currentPosition!.longitude}";
+
+      // if(distanceInKm1<1.2 || distanceInKm2<1.2 || distanceInKm3<1.2) {
+         if(isAllow) {
+        if (isCheckedIn) {
           checkOutUser(currentPosition);
         } else {
           pickedImage();
+          // }
         }
-
       } else {
-        showToastMessage(false, "You are away from Store. please Go to store and start visit.");
-      }
+           saveUserCurrentLocation(currentPosition);
+         }
+      //   else {
+      //   showToastMessage(false, "You are away from Store. please Go to store and start visit.");
+      // }
       // pickedImage(journeyResponseListItem,_currentPosition,index);
 
       print("Loaction distance");
@@ -269,10 +398,13 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
       print(value);
       SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       setState(() {
-        checkListItem = value.data!;
+
+        checkInTime = value['data'][0]['checkin_time'];
+        checkInId = value['data'][0]['id'].toString();
         isCheckedIn = true;
-        sharedPreferences.setString(UserConstants().checkInId, checkListItem[0].id.toString());
+        sharedPreferences.setString(UserConstants().checkInId, checkInId!);
         commentController.clear();
+
         isLoading2 = false;
       });
       showToastMessage(true, "Checked In Successfully");
@@ -297,15 +429,18 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
 
     print(id1);
 
-    HTTPManager().setCheckOut(CheckOutStatusUpdateRequestModel(id:id1,elId: userId,checkOutGps:currentPosition )).then((value) {
+    HTTPManager().setCheckOut(CheckOutStatusUpdateRequestModel(id:checkInId,elId: userId,checkOutGps:currentPosition)).then((value) {
 
       setState(() {
         isCheckedIn = false;
+        checkOutTime = value['data']['checkout_time'];
+
+        // checkListItemStatus[0] = checkInStatusDetailsItem;
         // sharedPreferences.setString(UserConstants().checkInId, checkListItem[0].id.toString());
         isLoading2 = false;
       });
       showToastMessage(true, "Checked Out Successfully");
-      Navigator.of(context).pop();
+      // Navigator.of(context).pop();
     }).catchError((e) {
       setState(() {
         print(e.toString());
