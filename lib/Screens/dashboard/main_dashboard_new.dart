@@ -56,8 +56,8 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
 
   bool isCheckedIn = false;
   String? checkInId;
-  String? checkInTime;
-  String? checkOutTime;
+  String checkInTime = "";
+  String checkOutTime = "";
 
   Timer? timer;
   bool? isVpnConnected;
@@ -136,16 +136,21 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
 
         print(checkListItemStatus[0].checkoutStatus!);
 
-        if(checkListItemStatus[0].checkoutStatus!) {
-          isCheckedIn = false;
+        if(checkListItemStatus.isNotEmpty) {
+          if (checkListItemStatus[0].checkoutStatus!) {
+            isCheckedIn = false;
+          } else {
+            isCheckedIn = true;
+          }
+          checkInId = checkListItemStatus[0].id.toString();
+          checkInTime = checkListItemStatus[0].checkinTime!;
+          checkOutTime = checkListItemStatus[0].checkoutTime!;
         } else {
-          isCheckedIn = true;
+          checkInId = "";
+          checkInTime = "";
+          checkOutTime = "";
+          isCheckedIn = false;
         }
-        checkInId = checkListItemStatus[0].id.toString();
-        checkInTime = checkListItemStatus[0].checkinTime;
-        checkOutTime = checkListItemStatus[0].checkoutTime;
-
-
 
         isLoading1 = false;
         isError = false;
@@ -259,7 +264,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(isCheckedIn ? DateFormat.jm().format(DateTime.parse(checkInTime!)) : ""),
+                      Text(isCheckedIn ? checkInTime != "" ? DateFormat.jm().format(DateTime.parse(checkInTime!)) : "" : ""),
                       InkWell(
                         onTap: () {
                           if(!isCheckedIn) {
@@ -289,7 +294,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(!isCheckedIn ? DateFormat.jm().format(DateTime.parse(checkOutTime!)) : ""),
+                      Text(!isCheckedIn ? checkOutTime != "" ? DateFormat.jm().format(DateTime.parse(checkOutTime!)) : "" : ""),
                       InkWell(
                         onTap: () {
                           if(isCheckedIn) {
