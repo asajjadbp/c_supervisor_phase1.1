@@ -8,14 +8,14 @@ class EndVisitRequestModel {
   EndVisitRequestModel.fromJson(Map<String, String> json) {
     elId = json['el_id'];
     workingId = json['working_id'];
-    checkInGps = json['check_in_gps'];
+    checkInGps = json['check_out_gps'];
   }
 
   Map<String, String> toJson() {
     final Map<String, String> data = <String, String>{};
     data['el_id'] = elId!;
     data['working_id'] = workingId!;
-    data['check_in_gps'] = checkInGps!;
+    data['check_out_gps'] = checkInGps!;
 
     return data;
   }

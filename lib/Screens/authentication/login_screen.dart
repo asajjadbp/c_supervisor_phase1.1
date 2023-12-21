@@ -1,5 +1,4 @@
 import 'package:c_supervisor/Network/http_manager.dart';
-import 'package:c_supervisor/Screens/utills/app_colors_new.dart';
 import 'package:c_supervisor/Screens/utills/user_session.dart';
 import 'package:flutter/material.dart';
 
@@ -7,7 +6,6 @@ import '../../Model/request_model/login_request.dart';
 import '../../Model/response_model/login_responses/login_response_model.dart';
 import '../dashboard/main_dashboard_new.dart';
 import '../widgets/toast_message_show.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -29,8 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     // TODO: implement initState
     setState(() {
-      emailController.text = "102347";
-      passwordController.text = "123456";
+      emailController.text = "102114";
+      passwordController.text = "BP102114";
     });
 
     super.initState();
@@ -211,7 +209,8 @@ class _LoginScreenState extends State<LoginScreen> {
           isLoading = false;
         });
         showToastMessage(true,"Logged in successfully");
-        UserSessionState().setUserSession(true, logInResponseModel.data![0].id!.toString(), logInResponseModel.data![0].fullName!, logInResponseModel.data![0].email!);
+        print(logInResponseModel.data![0].geoFence);
+        UserSessionState().setUserSession(true,logInResponseModel.data![0].geoFence!, logInResponseModel.data![0].id!.toString(), logInResponseModel.data![0].fullName!, logInResponseModel.data![0].email!);
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>const MainDashboardNew()), (route) => false);
 
       }).catchError((e) {

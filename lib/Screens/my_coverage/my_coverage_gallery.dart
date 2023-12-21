@@ -166,7 +166,7 @@ class _MyCoverageGalleryState extends State<MyCoverageGallery> {
                                       );
                                     },
                                     child: Container(
-                                      padding: EdgeInsets.all(5),
+                                      padding: const EdgeInsets.all(5),
                                       decoration: BoxDecoration(
                                         color: AppColors.white,
                                         borderRadius: BorderRadius.circular(50)

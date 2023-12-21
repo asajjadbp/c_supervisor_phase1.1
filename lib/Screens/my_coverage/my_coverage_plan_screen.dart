@@ -3,14 +3,13 @@
 
 import 'package:c_supervisor/Model/request_model/journey_plan_request.dart';
 import 'package:c_supervisor/Network/http_manager.dart';
-import 'package:c_supervisor/Screens/my_jp/widgets/my_jp_card_for_details.dart';
+import 'package:c_supervisor/Screens/my_coverage/widgets/my_coverage_card_for_details.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Model/request_model/start_journey_plan_request.dart';
 import '../../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
-import '../google_map_screen/google_map_screen.dart';
 import '../utills/app_colors_new.dart';
 import '../utills/image_compressed_functions.dart';
 import '../utills/location_calculation.dart';
@@ -37,6 +36,7 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
 
   String userName = "";
   String userId = "";
+  int? geoFence;
   bool isLoading = true;
   List<JourneyResponseListItemDetails> journeyList = <JourneyResponseListItemDetails>[];
   List<JourneyResponseListItemDetails> journeySearchList = <JourneyResponseListItemDetails>[];
@@ -65,6 +65,7 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
     setState(() {
       userName = sharedPreferences.getString(UserConstants().userName)!;
       userId = sharedPreferences.getString(UserConstants().userId)!;
+      geoFence = sharedPreferences.getInt(UserConstants().userGeoFence)!;
     });
 
     getJourneyPlanList(true);
@@ -126,13 +127,13 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
                   scrollDirection: Axis.vertical,
                   itemCount: journeySearchList.length,
                   itemBuilder: (context,index) {
-                    return MyJpCardForDetail(
+                    return MyCoverageCardForDetail(
                       storeName: journeySearchList[index].storeName!,
                       visitStatus: journeySearchList[index].visitStatus!.toString(),
                       tmrName: journeySearchList[index].tmrName.toString(),
                       tmrId: journeySearchList[index].tmrId.toString(),
                       workingDate: journeySearchList[index].workingDate!,
-                      buttonName: journeySearchList[index].visitStatus!.toString() == "0" ? "Start Visit" : "Resume Visit",
+                      buttonName: journeySearchList[index].visitStatus!.toString() == "0" ? "Start" : "Resume Visit",
                       onMapTap: () {
                         // List<String> latLong = journeyList[index].gcode!.split(",");
                         //
@@ -157,13 +158,13 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
                   scrollDirection: Axis.vertical,
                   itemCount: journeyList.length,
                   itemBuilder: (context,index) {
-                    return MyJpCardForDetail(
+                    return MyCoverageCardForDetail(
                       storeName: journeyList[index].storeName!,
                       visitStatus: journeyList[index].visitStatus!.toString(),
                       tmrName: journeyList[index].tmrName.toString(),
                       tmrId: journeyList[index].tmrId.toString(),
                       workingDate: journeyList[index].workingDate!,
-                      buttonName: journeyList[index].visitStatus!.toString() == "0" ? "Start Visit" : "Resume Visit",
+                      buttonName: journeyList[index].visitStatus!.toString() == "0" ? "Start" : "Resume Visit",
                       onMapTap: () {
                         // List<String> latLong = journeyList[index].gcode!.split(",");
                         //
@@ -213,12 +214,13 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
     await Geolocator.getCurrentPosition()
         .then((Position position) async {
       setState(() => _currentPosition = position);
-      
+
       print("Current Position");
       print(_currentPosition);
 
-     double distanceInKm = await calculateDistance(journeyResponseListItem.gcode!,_currentPosition);
-
+      double distanceInKm = await calculateDistance(
+          journeyResponseListItem.gcode!, _currentPosition);
+      print(distanceInKm);
      if(distanceInKm<1.2) {
        pickedImage(journeyResponseListItem,_currentPosition,index);
      } else {
@@ -247,13 +249,13 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
   }
 
   showUploadOption(JourneyResponseListItemDetails journeyResponseListItem,Position? currentLocation,int index, XFile? image1) {
-    showPopUpForImageUpload(context, image1!, (){
+    showPopUpForImageUpload(context,journeyResponseListItem, image1!, (){
       String currentPosition = "${currentLocation!.latitude},${currentLocation.longitude}";
       print(currentPosition);
       if(image1 !=null && currentLocation.longitude != null) {
         startVisitCall(journeyResponseListItem, currentLocation,index);
       }
-    });
+    },currentLocation,"MyCoverage");
   }
 
   startVisitCall(JourneyResponseListItemDetails journeyResponseListItem,Position? currentLocation,int index) {

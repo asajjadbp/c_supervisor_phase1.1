@@ -31,6 +31,6 @@ static const lightGrey = Color(0xffafafaf);
 static const darkGrey = Color(0xff767777);
 static const yellow = Color(0XFFFDCC53);
 
-static const light_grey_btn = Color(0xffa8a8a8);
+static const lightgreytn = Color(0xffa8a8a8);
 
 }

@@ -34,6 +34,8 @@ class _MyCoveragePhotoGalleryOptionsState extends State<MyCoveragePhotoGalleryOp
 
   String userName = "";
   String userId = "";
+  int? geoFence;
+
   bool isLoading = true;
 
   ImagePicker picker = ImagePicker();
@@ -55,6 +57,7 @@ class _MyCoveragePhotoGalleryOptionsState extends State<MyCoveragePhotoGalleryOp
     setState(() {
       userName = sharedPreferences.getString(UserConstants().userName)!;
       userId = sharedPreferences.getString(UserConstants().userId)!;
+      geoFence = sharedPreferences.getInt(UserConstants().userGeoFence)!;
     });
 
     // getJourneyPlanList(true);
@@ -110,8 +113,10 @@ class _MyCoveragePhotoGalleryOptionsState extends State<MyCoveragePhotoGalleryOp
 
       print("Current Position");
       print(_currentPosition);
-      double distanceInKm = await calculateDistance(widget.journeyResponseListItemDetails.gcode!,_currentPosition);
 
+      double distanceInKm = await calculateDistance(
+            widget.journeyResponseListItemDetails.gcode!, _currentPosition);
+      print(distanceInKm);
       if(distanceInKm<1.2) {
         String currentPosition = "${_currentPosition!.latitude},${_currentPosition!.longitude}";
         if(takeImage) {

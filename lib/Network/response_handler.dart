@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, duplicate_ignore
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -87,7 +89,7 @@ class ResponseHandler {
 
   Future postImage(String url, Map<String, String> params,
       XFile image) async {
-    var head = Map<String, String>();
+    var head = <String, String>{};
     head['content-type'] = 'application/x-www-form-urlencoded';
     var res;
     var jsonData;

@@ -2,7 +2,6 @@
 
 // ignore_for_file: avoid_print, duplicate_ignore
 
-import 'dart:io';
 
 import 'package:c_supervisor/Network/response_handler.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,7 +16,6 @@ import '../Model/request_model/save_user_location_request.dart';
 import '../Model/request_model/start_journey_plan_request.dart';
 import '../Model/request_model/upload_check_list_photo_request.dart';
 import '../Model/response_model/check_in_response/check_in_response.dart';
-import '../Model/response_model/check_in_response/check_in_status_response.dart';
 import '../Model/response_model/check_in_response/check_in_status_response_details.dart';
 import '../Model/response_model/checklist_responses/check_list_response_list_model.dart';
 import '../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';

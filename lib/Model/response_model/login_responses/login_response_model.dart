@@ -87,8 +87,9 @@ class LoginData {
   int? name;
   String? welcomeMsg;
   String? fullName;
+  int? geoFence;
 
-  LoginData({this.id, this.email, this.name, this.welcomeMsg, this.fullName});
+  LoginData({this.id, this.email, this.name, this.welcomeMsg, this.fullName,this.geoFence});
 
   LoginData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -96,6 +97,7 @@ class LoginData {
     name = json['name'];
     welcomeMsg = json['welcome_msg'];
     fullName = json['full_name'];
+    geoFence = json['geofenc'];
   }
 
   Map<String, dynamic> toJson() {
@@ -105,6 +107,7 @@ class LoginData {
     data['name'] = name;
     data['welcome_msg'] = welcomeMsg;
     data['full_name'] = fullName;
+    data['geofenc'] = geoFence;
     return data;
   }
 }

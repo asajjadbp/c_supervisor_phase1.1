@@ -6,7 +6,7 @@ class ApplicationURLs {
    static const BASE_URL_APP = "https://cstoretest.catalist-me.com/CSupervisor/";
 
    //Image Base URL
-   static const BASE_URL_IMAGE = "https://images.catalystmea.com/visits/";
+   static const BASE_URL_IMAGE = "https://images.cstoretest.catalist-me.com/capture_photo/";
 
    //IPS Location
    static const API_IPC_LOCATIONS = "${BASE_URL_APP}checkInIPCLocations";

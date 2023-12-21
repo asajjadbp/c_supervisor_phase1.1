@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 
 import 'package:c_supervisor/Screens/dashboard/main_dashboard_new.dart';

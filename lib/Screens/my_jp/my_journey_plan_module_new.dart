@@ -1,8 +1,9 @@
+// ignore_for_file: avoid_print
+
 import 'package:c_supervisor/Screens/my_jp/widgets/my_journey_plan_module_card_item.dart';
 import 'package:c_supervisor/Screens/utills/location_permission_handle.dart';
 import 'package:c_supervisor/Screens/widgets/toast_message_show.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,6 +37,8 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
 
   String userName = "";
   String userId = "";
+  int? geoFence;
+
   bool isLoading = true;
   bool isError = false;
   bool isEndLoading = false;
@@ -63,6 +66,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
     setState(() {
       userName = sharedPreferences.getString(UserConstants().userName)!;
       userId = sharedPreferences.getString(UserConstants().userId)!;
+      geoFence = sharedPreferences.getInt(UserConstants().userGeoFence)!;
     });
 
     getCheckList(true);
@@ -174,8 +178,10 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
 
       print("Current Position");
       print(_currentPosition);
-      double distanceInKm = await calculateDistance(widget.journeyResponseListItem.gcode!,_currentPosition);
 
+      double distanceInKm = await calculateDistance(
+            widget.journeyResponseListItem.gcode!, _currentPosition);
+      print(distanceInKm);
       if(distanceInKm<1.2) {
         String currentPosition = "${_currentPosition!.latitude},${_currentPosition!.longitude}";
         if(takeImage) {
@@ -237,8 +243,10 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
 
       print("Current Position");
       print(_currentPosition);
-      double distanceInKm = await calculateDistance(widget.journeyResponseListItem.gcode!,_currentPosition);
 
+        double distanceInKm = await calculateDistance(
+            widget.journeyResponseListItem.gcode!, _currentPosition);
+      print(distanceInKm);
       if(distanceInKm<1.2) {
         String currentPosition = "${_currentPosition!.latitude},${_currentPosition!.longitude}";
 

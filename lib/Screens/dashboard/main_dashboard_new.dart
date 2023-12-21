@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'dart:async';
 import 'dart:io';
@@ -20,7 +20,6 @@ import '../my_coverage/my_coverage_plan_screen.dart';
 import '../my_jp/my_journey_plan_screen.dart';
 import '../utills/app_colors_new.dart';
 import '../utills/image_compressed_functions.dart';
-import '../utills/location_calculation.dart';
 import '../utills/location_permission_handle.dart';
 import '../utills/user_constants.dart';
 import '../utills/vpn_detector_handler.dart';
@@ -92,7 +91,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
       userId = sharedPreferences.getString(UserConstants().userId)!;
     });
     getCheckInStatus();
-    Timer.periodic(const Duration(minutes: 20), (Timer t) => _getCurrentPosition(false));
+    Timer.periodic(const Duration(minutes: 15), (Timer t) => _getCurrentPosition(false));
   }
 
   saveUserCurrentLocation(String currentPosition) {
@@ -257,70 +256,73 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                   ),
             ),
 
-              isLoading || isLoading1 ? Container() : Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(isCheckedIn ? checkInTime != "" ? DateFormat.jm().format(DateTime.parse(checkInTime!)) : "" : ""),
-                      InkWell(
-                        onTap: () {
-                          if(!isCheckedIn) {
-                            _getCurrentPosition(true);
-                          } else {
-                            showToastMessage(false, "You need to Check out first");
-                          }
-                        },
-                        child: Container(
-                          alignment: Alignment.center,
-                          margin: const EdgeInsets.symmetric(horizontal: 5,vertical: 10),
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          width: MediaQuery.of(context).size.width,
-                          decoration:  BoxDecoration(
-                            border: Border.all(color: AppColors.primaryColor),
-                              color: !isCheckedIn ? AppColors.primaryColor : AppColors.white,
-                              borderRadius: const BorderRadius.only(topRight: Radius.circular(10),topLeft: Radius.circular(10))
-                          ),
-                          child:  Text("Check In",style: TextStyle(fontSize:20,color: !isCheckedIn ? AppColors.white : AppColors.greyColor),),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(!isCheckedIn ? checkOutTime != "" ? DateFormat.jm().format(DateTime.parse(checkOutTime!)) : "" : ""),
-                      InkWell(
-                        onTap: () {
-                          if(isCheckedIn) {
-                            _getCurrentPosition(true);
-                          } else {
-                            showToastMessage(false, "You need to Check In first");
-                          }
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 5,vertical: 10),
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
+              isLoading || isLoading1 ? Container() : IgnorePointer(
+                ignoring: isLoading2,
+                child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(isCheckedIn ? checkInTime != "" ? DateFormat.jm().format(DateTime.parse(checkInTime)) : "" : ""),
+                        InkWell(
+                          onTap: () {
+                            if(!isCheckedIn) {
+                              _getCurrentPosition(true);
+                            } else {
+                              showToastMessage(false, "You need to Check out first");
+                            }
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            margin: const EdgeInsets.symmetric(horizontal: 5,vertical: 10),
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            width: MediaQuery.of(context).size.width,
+                            decoration:  BoxDecoration(
                               border: Border.all(color: AppColors.primaryColor),
-                              color: isCheckedIn ? AppColors.primaryColor : AppColors.white,
-                              borderRadius: const BorderRadius.only(topRight: Radius.circular(10),topLeft: Radius.circular(10))
+                                color: !isCheckedIn ? AppColors.primaryColor : AppColors.white,
+                                borderRadius: const BorderRadius.only(topRight: Radius.circular(10),topLeft: Radius.circular(10))
+                            ),
+                            child:  Text("Check In",style: TextStyle(fontSize:20,color: !isCheckedIn ? AppColors.white : AppColors.greyColor),),
                           ),
-                          child:   Text("Check Out",style: TextStyle(fontSize:20,color:isCheckedIn ? AppColors.white : AppColors.greyColor),),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            )
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(!isCheckedIn ? checkOutTime != "" ? DateFormat.jm().format(DateTime.parse(checkOutTime)) : "" : ""),
+                        InkWell(
+                          onTap: () {
+                            if(isCheckedIn) {
+                              _getCurrentPosition(true);
+                            } else {
+                              showToastMessage(false, "You need to Check In first");
+                            }
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 5,vertical: 10),
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                                border: Border.all(color: AppColors.primaryColor),
+                                color: isCheckedIn ? AppColors.primaryColor : AppColors.white,
+                                borderRadius: const BorderRadius.only(topRight: Radius.circular(10),topLeft: Radius.circular(10))
+                            ),
+                            child:   Text("Check Out",style: TextStyle(fontSize:20,color:isCheckedIn ? AppColors.white : AppColors.greyColor),),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+            ),
+              )
 
           ],
         )
@@ -331,6 +333,10 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
   Future<void> _getCurrentPosition(bool isAllow) async {
     final hasPermission = await handleLocationPermission();
     if (!hasPermission) return;
+    if(isAllow) {
+    setState(() {
+      isLoading2 = true;
+    });}
     await Geolocator.getCurrentPosition()
         .then((Position position) async {
       setState(() => _currentPosition = position);
@@ -339,11 +345,14 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
       print(_currentPosition);
       print(ipcLocation.length);
 
-       double distanceInKm1 = await calculateDistance(ipcLocation[0].gps!,_currentPosition);
-      double distanceInKm2 = await calculateDistance(ipcLocation[1].gps!,_currentPosition);
-      double distanceInKm3 = await calculateDistance(ipcLocation[2].gps!,_currentPosition);
+      //  double distanceInKm1 = await calculateDistance(ipcLocation[0].gps!,_currentPosition);
+      // double distanceInKm2 = await calculateDistance(ipcLocation[1].gps!,_currentPosition);
+      // double distanceInKm3 = await calculateDistance(ipcLocation[2].gps!,_currentPosition);
 
       String currentPosition = "${_currentPosition!.latitude},${_currentPosition!.longitude}";
+      setState(() {
+        isLoading2 = false;
+      });
 
       // if(distanceInKm1<1.2 || distanceInKm2<1.2 || distanceInKm3<1.2) {
          if(isAllow) {
@@ -361,10 +370,10 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
       // }
       // pickedImage(journeyResponseListItem,_currentPosition,index);
 
-      print("Loaction distance");
-      print(distanceInKm1);
-      print(distanceInKm2);
-      print(distanceInKm3);
+      // print("Loaction distance");
+      // print(distanceInKm1);
+      // print(distanceInKm2);
+      // print(distanceInKm3);
 
     }).catchError((e) {
       print(e);
@@ -384,8 +393,8 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
   }
 
   showUploadOption() {
+    String currentPosition = "${_currentPosition!.latitude},${_currentPosition!.longitude}";
     showPopUpForImageUploadForComment(context, compressedImage!, (){
-      String currentPosition = "${_currentPosition!.latitude},${_currentPosition!.longitude}";
       print(currentPosition);
       if(compressedImage !=null && currentPosition != "") {
           checkInUser(currentPosition);

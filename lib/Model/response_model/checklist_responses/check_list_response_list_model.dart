@@ -79,7 +79,7 @@ class CheckListResponseModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['status'] = status;
     data['msg'] = msg;
     if (this.data != null) {
@@ -115,7 +115,7 @@ class CheckListItem {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['check_list'] = checkList;
     data['checklist_result_id'] = checklistResultId;

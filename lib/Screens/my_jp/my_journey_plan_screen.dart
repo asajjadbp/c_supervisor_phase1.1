@@ -1,4 +1,5 @@
-import 'dart:io';
+
+// ignore_for_file: avoid_print
 
 import 'package:c_supervisor/Model/request_model/journey_plan_request.dart';
 import 'package:c_supervisor/Network/http_manager.dart';
@@ -9,7 +10,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Model/request_model/start_journey_plan_request.dart';
 import '../../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
-import '../google_map_screen/google_map_screen.dart';
 import '../utills/app_colors_new.dart';
 import '../utills/image_compressed_functions.dart';
 import '../utills/location_calculation.dart';
@@ -23,9 +23,6 @@ import '../widgets/text_fields/search_text_fields.dart';
 import '../widgets/toast_message_show.dart';
 import 'my_journey_plan_module_new.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:path_provider/path_provider.dart' as path_provider;
 
 class MyJourneyPlanScreenNew extends StatefulWidget {
   const MyJourneyPlanScreenNew({Key? key}) : super(key: key);
@@ -38,6 +35,8 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
 
   String userName = "";
   String userId = "";
+  int? geoFence;
+
   bool isLoading = true;
   List<JourneyResponseListItemDetails> journeyList = <JourneyResponseListItemDetails>[];
   List<JourneyResponseListItemDetails> journeySearchList = <JourneyResponseListItemDetails>[];
@@ -66,6 +65,7 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
     setState(() {
       userName = sharedPreferences.getString(UserConstants().userName)!;
       userId = sharedPreferences.getString(UserConstants().userId)!;
+      geoFence = sharedPreferences.getInt(UserConstants().userGeoFence)!;
     });
 
     getJourneyPlanList(true);
@@ -136,7 +136,7 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
                       tmrName: journeySearchList[index].tmrName.toString(),
                       tmrId: journeySearchList[index].tmrId.toString(),
                       workingDate: journeySearchList[index].workingDate!,
-                      buttonName: journeySearchList[index].visitStatus!.toString() == "0" ? "Start Visit" : "Resume Visit",
+                      buttonName: journeySearchList[index].visitStatus!.toString() == "0" ? "Evaluate" : "Resume Visit",
                       onMapTap: () {
                         // List<String> latLong = journeyList[index].gcode!.split(",");
                         //
@@ -174,7 +174,7 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
                         //   getJourneyPlanList(false);
                         // });
                       },
-                      buttonName: journeyList[index].visitStatus!.toString() == "0" ? "Start Visit" : "Resume Visit",
+                      buttonName: journeyList[index].visitStatus!.toString() == "0" ? "Evaluate" : "Resume Visit",
                       onTap: (){
                         // _getCurrentPosition(journeyList[index],index);
                         if(journeyList[index].visitStatus!.toString() == "0" ) {
@@ -217,13 +217,16 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
     await Geolocator.getCurrentPosition()
         .then((Position position) async {
       setState(() => _currentPosition = position);
-      
+
       print("Current Position");
       print(_currentPosition);
 
-     double distanceInKm = await calculateDistance(journeyResponseListItem.gcode!,_currentPosition);
+        double  distanceInKm = await calculateDistance(
+            journeyResponseListItem.gcode!, _currentPosition);
 
-     if(distanceInKm<1.2) {
+      print(distanceInKm);
+
+      if(distanceInKm<1.2) {
        pickedImage(journeyResponseListItem,_currentPosition,index);
      } else {
        showToastMessage(false, "You are away from Store. please Go to store and start visit.");
@@ -251,13 +254,13 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
   }
 
   showUploadOption(JourneyResponseListItemDetails journeyResponseListItem,Position? currentLocation,int index, XFile? image1) {
-    showPopUpForImageUpload(context, image1!, (){
+    showPopUpForImageUpload(context,journeyResponseListItem, image1!, (){
       String currentPosition = "${currentLocation!.latitude},${currentLocation.longitude}";
       print(currentPosition);
       if(image1 !=null && currentLocation.longitude != null) {
         startVisitCall(journeyResponseListItem, currentLocation,index);
       }
-    });
+    },currentLocation,"MyJp");
   }
 
   startVisitCall(JourneyResponseListItemDetails journeyResponseListItem,Position? currentLocation,int index) {

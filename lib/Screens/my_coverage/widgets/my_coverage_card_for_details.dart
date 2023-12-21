@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../utills/app_colors_new.dart';
 
-class MyJpCardForDetail extends StatelessWidget {
-  const MyJpCardForDetail({Key? key,required this.storeName,required this.visitStatus,required this.tmrName,required this.workingDate,required this.tmrId,required this.buttonName,required this.onTap,required this.onMapTap}) : super(key: key);
+class MyCoverageCardForDetail extends StatelessWidget {
+  const MyCoverageCardForDetail({Key? key,required this.storeName,required this.visitStatus,required this.tmrName,required this.workingDate,required this.tmrId,required this.buttonName,required this.onTap,required this.onMapTap}) : super(key: key);
 
- final String storeName;
+  final String storeName;
   final String visitStatus;
   final String tmrName;
   final String tmrId;
@@ -37,19 +37,16 @@ class MyJpCardForDetail extends StatelessWidget {
                 const SizedBox(width: 5,),
                 const Text("|",style: TextStyle(color: AppColors.greyColor),),
                 const SizedBox(width: 5,),
-                visitStatus == "0" ? const Row(
-                  children: [
-                    Icon(Icons.cancel,color: AppColors.redColor,size: 20,),
-                    SizedBox(width: 5,),
-                    Text("Pending",style: TextStyle(color: AppColors.redColor),)
-                  ],
-                ) : visitStatus == "2" ? const Row(
+                if(visitStatus == "2")
+                const Row(
                   children: [
                     Icon(Icons.check_circle,color: AppColors.green,size: 20,),
                     SizedBox(width: 5,),
                     Text("Finished",style: TextStyle(color: AppColors.green),)
                   ],
-                ) : const Row(
+                ),
+                if(visitStatus == "1")
+                const Row(
                   children: [
                     Icon(Icons.pending,color: AppColors.primaryColor,size: 20,),
                     SizedBox(width: 5,),
@@ -61,24 +58,17 @@ class MyJpCardForDetail extends StatelessWidget {
             const SizedBox(
               height: 5,
             ),
-            Text("TMR Name: $tmrName",overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.blue),),
-            const SizedBox(
-              height: 5,
+            Row(
+              children: [
+                Expanded(
+                    child: Text("TMR Name: $tmrName",maxLines:1,overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.blue),)),
+              ],
             ),
-            Text("TMR ID: $tmrId",overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.blue),),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    onMapTap();
-                  },
-                  child: Row(children: [
-                    const  Icon(Icons.calendar_month,color: AppColors.primaryColor,size: 20,),
-                    const SizedBox(width: 5,),
-                    Text(workingDate,overflow: TextOverflow.ellipsis)
-                  ],),
-                ),
+                Expanded(
+                    child: Text("TMR ID: $tmrId",overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.blue),)),
                 Visibility(
                   visible: visitStatus != "2",
                   child: ElevatedButton(

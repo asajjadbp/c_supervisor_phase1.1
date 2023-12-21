@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:c_supervisor/Model/request_model/upload_check_list_photo_request.dart';
 import 'package:c_supervisor/Network/http_manager.dart';
 import 'package:c_supervisor/Screens/my_jp/widgets/check_list_comment_field.dart';
@@ -202,13 +204,14 @@ class _MyJourneyPlanCheckListState extends State<MyJourneyPlanCheckList> {
   }
 
   showUploadOption(String selectedId, String elId,int index, XFile? image1) {
-    showPopUpForImageUpload(context, image1!, (){
+
+    showPopUpForCheckListImageUpload(context, image1!, (){
       // String currentPosition = "${currentLocation!.latitude},${currentLocation.longitude}";
       // print(currentPosition);
       if(image1 !=null) {
         uploadCommentSectionImage(selectedId,elId,index,image1);
       }
-    });
+    },selectedId,elId);
   }
 
   uploadCommentSectionImage(String selectedId, String elId,int index, XFile? image1) {
