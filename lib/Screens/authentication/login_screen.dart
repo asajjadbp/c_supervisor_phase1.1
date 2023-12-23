@@ -15,11 +15,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   final GlobalKey<FormState> _formKey = GlobalKey();
 
-   final TextEditingController emailController = TextEditingController();
-   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
   bool isPasswordVisible = true;
 
@@ -27,8 +26,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     // TODO: implement initState
     setState(() {
-      emailController.text = "102114";
-      passwordController.text = "BP102114";
+      emailController.text = "";
+      passwordController.text = "";
     });
 
     super.initState();
@@ -41,17 +40,20 @@ class _LoginScreenState extends State<LoginScreen> {
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-           SizedBox(
-             width: size.width,
-             height: size.height,
-             child: Image.asset(
+          SizedBox(
+            width: size.width,
+            height: size.height,
+            child: Image.asset(
               'assets/backgrounds/splash_bg.png',
-               fit: BoxFit.fill,
-               height: MediaQuery.of(context).size.height,
+              fit: BoxFit.fill,
+              height: MediaQuery.of(context).size.height,
+            ),
           ),
-           ),
           Container(
-            margin: EdgeInsets.only(top: MediaQuery.of(context).size.height/5,right: 10,left: 10),
+            margin: EdgeInsets.only(
+                top: MediaQuery.of(context).size.height / 5,
+                right: 10,
+                left: 10),
             child: Column(
               children: [
                 const Text(
@@ -76,35 +78,38 @@ class _LoginScreenState extends State<LoginScreen> {
                         TextFormField(
                           controller: emailController,
                           decoration: const InputDecoration(
-                            prefixIcon:  Icon(
+                            prefixIcon: Icon(
                               Icons.person,
                               color: Colors.white,
                             ),
-                            enabledBorder:  OutlineInputBorder(
-                              borderRadius:  BorderRadius.all(Radius.circular(16.0)),
-                              borderSide:  BorderSide(
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(16.0)),
+                              borderSide: BorderSide(
                                 color: Colors.white,
                               ),
                             ),
-                            focusedBorder:  OutlineInputBorder(
-                                borderRadius:  BorderRadius.all(Radius.circular(16.0)),
-                                borderSide:  BorderSide(
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(16.0)),
+                                borderSide: BorderSide(
                                   color: Colors.white,
                                 )),
                             border: OutlineInputBorder(
-                                borderRadius:  BorderRadius.all(Radius.circular(16.0)),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(16.0)),
                                 borderSide: BorderSide(
-
                                     color: Colors.white, width: 1.0)),
                             labelText: 'Username',
                             labelStyle: TextStyle(color: Colors.white),
                             hintText: 'Username',
                             hintStyle: TextStyle(color: Colors.white),
-                            contentPadding: EdgeInsets.symmetric(vertical: 23),),
+                            contentPadding: EdgeInsets.symmetric(vertical: 23),
+                          ),
                           keyboardType: TextInputType.emailAddress,
                           style: const TextStyle(color: Colors.white),
                           validator: (value) {
-                            if(value!.isEmpty ) {
+                            if (value!.isEmpty) {
                               return "Username required";
                             } else {
                               return null;
@@ -114,43 +119,54 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 10.0),
                         TextFormField(
                           controller: passwordController,
-                          decoration:  InputDecoration(
-                              filled: true,
-                              enabledBorder: const OutlineInputBorder(
-                                borderRadius:  BorderRadius.all(Radius.circular(16.0)),
-                                borderSide:  BorderSide(
-                                  color: Colors.white,
-                                ),
+                          decoration: InputDecoration(
+                            filled: true,
+                            enabledBorder: const OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(16.0)),
+                              borderSide: BorderSide(
+                                color: Colors.white,
                               ),
-                              focusedBorder:const  OutlineInputBorder(
-                                  borderRadius:  BorderRadius.all(Radius.circular(16.0)),
-                                  borderSide:  BorderSide(
-                                    color: Colors.white,
-                                  )),
-                              border:const OutlineInputBorder(
-                                  borderRadius:  BorderRadius.all(Radius.circular(16.0)),
-                                  borderSide: BorderSide(
-                                      color: Colors.white, width: 1.0)),
+                            ),
+                            focusedBorder: const OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(16.0)),
+                                borderSide: BorderSide(
+                                  color: Colors.white,
+                                )),
+                            border: const OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(16.0)),
+                                borderSide: BorderSide(
+                                    color: Colors.white, width: 1.0)),
                             labelText: 'Password',
-                            labelStyle:const TextStyle(color: Colors.white),
+                            labelStyle: const TextStyle(color: Colors.white),
                             prefixIcon: const Icon(
                               Icons.lock_open,
                               color: Colors.white,
                             ),
-
-                            suffixIcon: IconButton(onPressed: (){
-                              setState(() {
-                                isPasswordVisible = !isPasswordVisible;
-                              });
-                            }, icon: Icon(isPasswordVisible ? Icons.visibility : Icons.visibility_off,color: Colors.white,)),
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    isPasswordVisible = !isPasswordVisible;
+                                  });
+                                },
+                                icon: Icon(
+                                  isPasswordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: Colors.white,
+                                )),
                             hintText: 'Password',
-                            hintStyle:const TextStyle(color: Colors.white),
-                            contentPadding: const EdgeInsets.symmetric(vertical: 23),),
+                            hintStyle: const TextStyle(color: Colors.white),
+                            contentPadding:
+                                const EdgeInsets.symmetric(vertical: 23),
+                          ),
                           keyboardType: TextInputType.emailAddress,
                           obscureText: isPasswordVisible,
                           style: const TextStyle(color: Colors.white),
                           validator: (value) {
-                            if(value!.isEmpty ) {
+                            if (value!.isEmpty) {
                               return "Password required";
                             } else {
                               return null;
@@ -175,16 +191,20 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Card(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15.0),
-                        ),
+                            ),
                             color: Colors.white,
                             child: SizedBox(
                               height: 40,
                               width: MediaQuery.of(context).size.width,
-                              child:  Center(
-                                child: isLoading ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(color: Colors.black,)) : const Text("Login"),
+                              child: Center(
+                                child: isLoading
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.black,
+                                        ))
+                                    : const Text("Login"),
                               ),
                             ),
                           ),
@@ -198,23 +218,35 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
   void _validateLoginForm() {
     if (_formKey.currentState?.validate() ?? false) {
       setState(() {
         isLoading = true;
       });
-      HTTPManager().loginUser(LoginRequestModel(userName: emailController.text,password: passwordController.text,)).then((value) async {
+      HTTPManager()
+          .loginUser(LoginRequestModel(
+        userName: emailController.text,
+        password: passwordController.text,
+      ))
+          .then((value) async {
         LogInResponseModel logInResponseModel = value;
         setState(() {
           isLoading = false;
         });
-        showToastMessage(true,"Logged in successfully");
+        showToastMessage(true, "Logged in successfully");
         print(logInResponseModel.data![0].geoFence);
-        UserSessionState().setUserSession(true,logInResponseModel.data![0].geoFence!, logInResponseModel.data![0].id!.toString(), logInResponseModel.data![0].fullName!, logInResponseModel.data![0].email!);
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>const MainDashboardNew()), (route) => false);
-
+        UserSessionState().setUserSession(
+            true,
+            logInResponseModel.data![0].geoFence!,
+            logInResponseModel.data![0].id!.toString(),
+            logInResponseModel.data![0].fullName!,
+            logInResponseModel.data![0].email!);
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const MainDashboardNew()),
+            (route) => false);
       }).catchError((e) {
-        showToastMessage(false,e.toString());
+        showToastMessage(false, e.toString());
         setState(() {
           isLoading = false;
         });
