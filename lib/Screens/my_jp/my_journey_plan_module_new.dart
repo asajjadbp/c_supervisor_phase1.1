@@ -43,6 +43,9 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
   bool isError = false;
   bool isEndLoading = false;
   String errorText = "";
+
+  bool isLoadingLocation = false;
+
   late CheckListResponseModel checkListResponseModel;
   Position? _currentPosition;
   int checkListPendingCount = 0;
@@ -104,72 +107,87 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: HeaderBackgroundNew(
-        childWidgets: [
-          const HeaderWidgetsNew(pageTitle: "Journey Plan Module",isBackButton: true,isDrawerButton: true,),
-          Expanded(
-            child: isLoading ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primaryColor,),
-            ) : isError ? ErrorTextAndButton(onTap: (){
-              getCheckList(true);
-            },errorText: errorText) : GridView(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                childAspectRatio: (163.5 / 135),
-                crossAxisCount: 2,
+      body: IgnorePointer(
+        ignoring: isLoadingLocation,
+        child: HeaderBackgroundNew(
+          childWidgets: [
+            const HeaderWidgetsNew(pageTitle: "Journey Plan Module",isBackButton: true,isDrawerButton: true,),
+            Expanded(
+              child: Stack(
+                children: [
+                  isLoading ? const Center(
+                    child: CircularProgressIndicator(color: AppColors.primaryColor,),
+                  ) : isError ? ErrorTextAndButton(onTap: (){
+                    getCheckList(true);
+                  },errorText: errorText) : GridView(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      childAspectRatio: (163.5 / 135),
+                      crossAxisCount: 2,
+                    ),
+                    children:  [
+                      // MyJourneyPlanModuleCardItem(
+                      //   onTap: () {},
+                      //   cardName: 'Photos',
+                      //   cardImage: 'assets/icons/images.png',
+                      // ),
+                      MyJourneyPlanModuleCardItem(
+                        onTap: () {
+                          _getCurrentPosition1(true);
+                        },
+                        pendingCheckListCount: 0,
+                        cardName: 'Camera',
+                        cardImage: 'assets/icons/camera.png',
+                      ),
+
+                      MyJourneyPlanModuleCardItem(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MyCoverageGallery(journeyResponseListItemDetails: widget.journeyResponseListItem,)));
+                        },
+                        pendingCheckListCount: 0,
+                        cardName: "Gallery",
+                        cardImage:  "assets/icons/gallery.png",
+                      ),
+                      MyJourneyPlanModuleCardItem(
+                        onTap: () {
+                          if(checkListResponseModel.data!.isNotEmpty) {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    MyJourneyPlanCheckList(
+                                      checkListResponseModel: checkListResponseModel,))).then((value) {
+                              getCheckList(false);
+                            });
+                          } else {
+                            showToastMessage(false, "Check list is empty");
+                          }
+                        },
+                        pendingCheckListCount: checkListPendingCount,
+                        cardName: "Check List",
+                        cardImage:  "assets/icons/check_list.png",
+                      ),
+
+
+                    ],
+                  ),
+                  if(isLoadingLocation)
+                    const Center(
+                      child: CircularProgressIndicator(color: AppColors.primaryColor,),
+                    )
+                ],
               ),
-              children:  [
-                // MyJourneyPlanModuleCardItem(
-                //   onTap: () {},
-                //   cardName: 'Photos',
-                //   cardImage: 'assets/icons/images.png',
-                // ),
-                MyJourneyPlanModuleCardItem(
-                  onTap: () {
-                    _getCurrentPosition1(true);
-                  },
-                  pendingCheckListCount: 0,
-                  cardName: 'Camera',
-                  cardImage: 'assets/icons/camera.png',
-                ),
-
-                MyJourneyPlanModuleCardItem(
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MyCoverageGallery(journeyResponseListItemDetails: widget.journeyResponseListItem,)));
-                  },
-                  pendingCheckListCount: 0,
-                  cardName: "Gallery",
-                  cardImage:  "assets/icons/gallery.png",
-                ),
-                MyJourneyPlanModuleCardItem(
-                  onTap: () {
-                    if(checkListResponseModel.data!.isNotEmpty) {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              MyJourneyPlanCheckList(
-                                checkListResponseModel: checkListResponseModel,))).then((value) {
-                        getCheckList(false);
-                      });
-                    } else {
-                      showToastMessage(false, "Check list is empty");
-                    }
-                  },
-                  pendingCheckListCount: checkListPendingCount,
-                  cardName: "Check List",
-                  cardImage:  "assets/icons/check_list.png",
-                ),
-
-
-              ],
             ),
-          ),
-          LargeButtonInFooter(buttonTitle: "Finish Visit", onTap: (){_getCurrentPosition();},)
-        ],
+            LargeButtonInFooter(buttonTitle: "Finish Visit", onTap: (){_getCurrentPosition();},)
+          ],
+        ),
       ),
     );
   }
 
   Future<void> _getCurrentPosition1(bool takeImage) async {
+    setState(() {
+      isLoadingLocation = true;
+    });
+
     final hasPermission = await handleLocationPermission();
     if (!hasPermission) return;
     await Geolocator.getCurrentPosition()
@@ -182,6 +200,11 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
       double distanceInKm = await calculateDistance(
             widget.journeyResponseListItem.gcode!, _currentPosition);
       print(distanceInKm);
+
+      setState(() {
+        isLoadingLocation = false;
+      });
+
       if(distanceInKm<1.2) {
         String currentPosition = "${_currentPosition!.latitude},${_currentPosition!.longitude}";
         if(takeImage) {
@@ -191,10 +214,13 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
         }
 
       } else {
-        showToastMessage(false, "You are away from Store. please Go to store and end visit.");
+        showToastMessage(false, "You are away from Store. please Go to store and end visit.($distanceInKm)km");
       }
 
     }).catchError((e) {
+      setState(() {
+        isLoadingLocation = false;
+      });
       debugPrint(e);
     });
   }
@@ -231,10 +257,16 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
       showToastMessage(true, "Image Uploaded successfully");
     }).catchError((e) {
       showToastMessage(false, e.toString());
+      Navigator.of(context).pop();
     });
   }
 
   Future<void> _getCurrentPosition() async {
+
+    setState(() {
+      isLoadingLocation = true;
+    });
+
     final hasPermission = await handleLocationPermission();
     if (!hasPermission) return;
     await Geolocator.getCurrentPosition()
@@ -252,10 +284,15 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
 
         endVisit(currentPosition);
       } else {
-        showToastMessage(false, "You are away from Store. please Go to store and end visit.");
+        showToastMessage(false, "You are away from Store. please Go to store and end visit.($distanceInKm)km");
       }
-
+      setState(() {
+        isLoadingLocation = false;
+      });
     }).catchError((e) {
+      setState(() {
+        isLoadingLocation = false;
+      });
       debugPrint(e);
     });
   }

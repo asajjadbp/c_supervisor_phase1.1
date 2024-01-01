@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import '../../utills/app_colors_new.dart';
 
 class MyCoverageCardForDetail extends StatelessWidget {
-  const MyCoverageCardForDetail({Key? key,required this.storeName,required this.visitStatus,required this.tmrName,required this.workingDate,required this.tmrId,required this.buttonName,required this.onTap,required this.onMapTap}) : super(key: key);
+  const MyCoverageCardForDetail({Key? key,required this.storeName,required this.isLoadingButton,required this.visitStatus,required this.workingDate,required this.chainName,required this.buttonName,required this.onTap,required this.onMapTap}) : super(key: key);
 
   final String storeName;
   final String visitStatus;
-  final String tmrName;
-  final String tmrId;
+  final String chainName;
   final String workingDate;
   final String buttonName;
   final Function onTap;
   final Function onMapTap;
+  final bool isLoadingButton;
 
   @override
   Widget build(BuildContext context) {
@@ -58,28 +58,31 @@ class MyCoverageCardForDetail extends StatelessWidget {
             const SizedBox(
               height: 5,
             ),
-            Row(
-              children: [
-                Expanded(
-                    child: Text("TMR Name: $tmrName",maxLines:1,overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.blue),)),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     Expanded(
+            //         child: Text("TMR Name: $tmrName",maxLines:1,overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.blue),)),
+            //   ],
+            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                    child: Text("TMR ID: $tmrId",overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.blue),)),
+                    child: Text("Chain Name: $chainName",overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.blue),)),
                 Visibility(
                   visible: visitStatus != "2",
-                  child: ElevatedButton(
-                    onPressed: (){
-                      onTap();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: IgnorePointer(
+                    ignoring: isLoadingButton,
+                    child: ElevatedButton(
+                      onPressed: (){
+                        onTap();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isLoadingButton ? AppColors.lightgreytn : AppColors.primaryColor,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      ),
+                      child: Text(buttonName),
                     ),
-                    child: Text(buttonName),
                   ),
                 ),
               ],

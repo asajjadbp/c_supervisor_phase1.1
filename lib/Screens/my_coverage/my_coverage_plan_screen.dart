@@ -38,6 +38,9 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
   String userId = "";
   int? geoFence;
   bool isLoading = true;
+
+  bool isLoadingLocation = false;
+
   List<JourneyResponseListItemDetails> journeyList = <JourneyResponseListItemDetails>[];
   List<JourneyResponseListItemDetails> journeySearchList = <JourneyResponseListItemDetails>[];
   bool isError = false;
@@ -116,75 +119,83 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
           const HeaderWidgetsNew(pageTitle: "My Coverage",isBackButton: true,isDrawerButton: true,),
           SearchTextField(controller: searchController,hintText:'Search With Store Name',onChangeField: onSearchTextFieldChanged,),
           Expanded(
-            child: isLoading ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primaryColor,),
-            ) : Container(
-              margin: const EdgeInsets.symmetric(horizontal: 10),
-              child: isError ? ErrorTextAndButton(onTap: (){
-                getJourneyPlanList(true);
-              },errorText: errorText) : journeyList.isEmpty ? const Center(child: Text("No plans found"),) : searchController.text.isNotEmpty ? ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  itemCount: journeySearchList.length,
-                  itemBuilder: (context,index) {
-                    return MyCoverageCardForDetail(
-                      storeName: journeySearchList[index].storeName!,
-                      visitStatus: journeySearchList[index].visitStatus!.toString(),
-                      tmrName: journeySearchList[index].tmrName.toString(),
-                      tmrId: journeySearchList[index].tmrId.toString(),
-                      workingDate: journeySearchList[index].workingDate!,
-                      buttonName: journeySearchList[index].visitStatus!.toString() == "0" ? "Start" : "Resume Visit",
-                      onMapTap: () {
-                        // List<String> latLong = journeyList[index].gcode!.split(",");
-                        //
-                        // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> GoogleMapScreen(currentLat: _currentPositionForList!.latitude.toString(),currentLong: _currentPositionForList!.longitude.toString(),storeLat:latLong[0] ,storeLong: latLong[1],))).then((value) {
-                        //   getJourneyPlanList(false);
-                        // });
-                      },
-                      onTap: (){
-                        // _getCurrentPosition(journeyList[index],index);
-                        if(journeySearchList[index].visitStatus!.toString() == "0" ) {
-                          _getCurrentPosition(journeySearchList[index],index);
-                        } else {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyCoveragePhotoGalleryOptions(journeyResponseListItemDetails: journeySearchList[index],))).then((value) {
-                            getJourneyPlanList(false);
-                          });
-                        }
-                      },
-                    );
-                  }
-              ) : ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  itemCount: journeyList.length,
-                  itemBuilder: (context,index) {
-                    return MyCoverageCardForDetail(
-                      storeName: journeyList[index].storeName!,
-                      visitStatus: journeyList[index].visitStatus!.toString(),
-                      tmrName: journeyList[index].tmrName.toString(),
-                      tmrId: journeyList[index].tmrId.toString(),
-                      workingDate: journeyList[index].workingDate!,
-                      buttonName: journeyList[index].visitStatus!.toString() == "0" ? "Start" : "Resume Visit",
-                      onMapTap: () {
-                        // List<String> latLong = journeyList[index].gcode!.split(",");
-                        //
-                        // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> GoogleMapScreen(currentLat: _currentPositionForList!.latitude.toString(),currentLong: _currentPositionForList!.longitude.toString(),storeLat:latLong[0] ,storeLong: latLong[1],))).then((value) {
-                        //   getJourneyPlanList(false);
-                        // });
-                      },
-                      onTap: (){
-                        // _getCurrentPosition(journeyList[index],index);
-                        if(journeyList[index].visitStatus!.toString() == "0" ) {
-                          _getCurrentPosition(journeyList[index],index);
-                        } else {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyCoveragePhotoGalleryOptions(journeyResponseListItemDetails: journeyList[index],))).then((value) {
-                            getJourneyPlanList(false);
-                          });
-                        }
-                      },
-                    );
-                  }
-                  ),
+            child: Stack(
+              children: [
+                isLoading ? const Center(
+                  child: CircularProgressIndicator(color: AppColors.primaryColor,),
+                ) : Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                  child: isError ? ErrorTextAndButton(onTap: (){
+                    getJourneyPlanList(true);
+                  },errorText: errorText) : journeyList.isEmpty ? const Center(child: Text("No plans found"),) : searchController.text.isNotEmpty ? ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      itemCount: journeySearchList.length,
+                      itemBuilder: (context,index) {
+                        return MyCoverageCardForDetail(
+                          storeName: journeySearchList[index].storeName!,
+                          visitStatus: journeySearchList[index].visitStatus!.toString(),
+                          chainName: journeySearchList[index].tmrName.toString(),
+                          workingDate: journeySearchList[index].workingDate!,
+                          buttonName: journeySearchList[index].visitStatus!.toString() == "0" ? "Start" : "Resume Visit",
+                          isLoadingButton: isLoadingLocation,
+                          onMapTap: () {
+                            // List<String> latLong = journeyList[index].gcode!.split(",");
+                            //
+                            // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> GoogleMapScreen(currentLat: _currentPositionForList!.latitude.toString(),currentLong: _currentPositionForList!.longitude.toString(),storeLat:latLong[0] ,storeLong: latLong[1],))).then((value) {
+                            //   getJourneyPlanList(false);
+                            // });
+                          },
+                          onTap: (){
+                            // _getCurrentPosition(journeyList[index],index);
+                            if(journeySearchList[index].visitStatus!.toString() == "0" ) {
+                              _getCurrentPosition(journeySearchList[index],index);
+                            } else {
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyCoveragePhotoGalleryOptions(journeyResponseListItemDetails: journeySearchList[index],))).then((value) {
+                                getJourneyPlanList(false);
+                              });
+                            }
+                          },
+                        );
+                      }
+                  ) : ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      itemCount: journeyList.length,
+                      itemBuilder: (context,index) {
+                        return MyCoverageCardForDetail(
+                          storeName: journeyList[index].storeName!,
+                          visitStatus: journeyList[index].visitStatus!.toString(),
+                          chainName: journeyList[index].chainName.toString(),
+                          workingDate: journeyList[index].workingDate!,
+                          buttonName: journeyList[index].visitStatus!.toString() == "0" ? "Start" : "Resume Visit",
+                          isLoadingButton: isLoadingLocation,
+                          onMapTap: () {
+                            // List<String> latLong = journeyList[index].gcode!.split(",");
+                            //
+                            // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> GoogleMapScreen(currentLat: _currentPositionForList!.latitude.toString(),currentLong: _currentPositionForList!.longitude.toString(),storeLat:latLong[0] ,storeLong: latLong[1],))).then((value) {
+                            //   getJourneyPlanList(false);
+                            // });
+                          },
+                          onTap: (){
+                            // _getCurrentPosition(journeyList[index],index);
+                            if(journeyList[index].visitStatus!.toString() == "0" ) {
+                              _getCurrentPosition(journeyList[index],index);
+                            } else {
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyCoveragePhotoGalleryOptions(journeyResponseListItemDetails: journeyList[index],))).then((value) {
+                                getJourneyPlanList(false);
+                              });
+                            }
+                          },
+                        );
+                      }
+                      ),
+                ),
+                if(isLoadingLocation)
+                  const Center(
+                    child: CircularProgressIndicator(color: AppColors.primaryColor,),
+                  )
+              ],
             )
           )
         ],
@@ -209,6 +220,11 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
   }
 
   Future<void> _getCurrentPosition(JourneyResponseListItemDetails journeyResponseListItem,int index) async {
+
+    setState(() {
+      isLoadingLocation = true;
+    });
+
     final hasPermission = await handleLocationPermission();
     if (!hasPermission) return;
     await Geolocator.getCurrentPosition()
@@ -224,14 +240,19 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
      if(distanceInKm<1.2) {
        pickedImage(journeyResponseListItem,_currentPosition,index);
      } else {
-       showToastMessage(false, "You are away from Store. please Go to store and start visit.");
+       showToastMessage(false, "You are away from Store. please Go to store and end visit.($distanceInKm)km");
      }
       // pickedImage(journeyResponseListItem,_currentPosition,index);
 
       print("Loaction distance");
       print(distanceInKm);
-
+      setState(() {
+        isLoadingLocation = false;
+      });
         }).catchError((e) {
+      setState(() {
+        isLoadingLocation = false;
+      });
       debugPrint(e);
     });
   }

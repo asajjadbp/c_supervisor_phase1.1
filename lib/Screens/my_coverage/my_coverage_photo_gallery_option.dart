@@ -37,6 +37,7 @@ class _MyCoveragePhotoGalleryOptionsState extends State<MyCoveragePhotoGalleryOp
   int? geoFence;
 
   bool isLoading = true;
+  bool isLoadingLocation = false;
 
   ImagePicker picker = ImagePicker();
   XFile? image;
@@ -66,45 +67,59 @@ class _MyCoveragePhotoGalleryOptionsState extends State<MyCoveragePhotoGalleryOp
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: HeaderBackgroundNew(
-        childWidgets: [
-          const HeaderWidgetsNew(pageTitle: "My Coverage",isBackButton: true,isDrawerButton: true,),
-          Expanded(
-            child: GridView(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                childAspectRatio: (163.5 / 135),
-                crossAxisCount: 2,
+      body: IgnorePointer(
+        ignoring: isLoadingLocation,
+        child: HeaderBackgroundNew(
+          childWidgets: [
+            const HeaderWidgetsNew(pageTitle: "My Coverage",isBackButton: true,isDrawerButton: true,),
+            Expanded(
+              child: Stack(
+                children: [
+                  GridView(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      childAspectRatio: (163.5 / 135),
+                      crossAxisCount: 2,
+                    ),
+                    children:  [
+                      MyJourneyPlanModuleCardItem(
+                        onTap: () {
+                          _getCurrentPosition(true);
+                        },
+                        pendingCheckListCount: 0,
+                        cardName: 'Camera',
+                        cardImage: 'assets/icons/camera.png',
+                      ),
+
+                      MyJourneyPlanModuleCardItem(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MyCoverageGallery(journeyResponseListItemDetails: widget.journeyResponseListItemDetails,)));
+                        },
+                        pendingCheckListCount: 0,
+                        cardName: "Gallery",
+                        cardImage:  "assets/icons/gallery.png",
+                      ),
+
+                    ],
+                  ),
+                  if(isLoadingLocation)
+                    const Center(child: CircularProgressIndicator(),)
+                ],
               ),
-              children:  [
-                MyJourneyPlanModuleCardItem(
-                  onTap: () {
-                    _getCurrentPosition(true);
-                  },
-                  pendingCheckListCount: 0,
-                  cardName: 'Camera',
-                  cardImage: 'assets/icons/camera.png',
-                ),
-
-                MyJourneyPlanModuleCardItem(
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MyCoverageGallery(journeyResponseListItemDetails: widget.journeyResponseListItemDetails,)));
-                  },
-                  pendingCheckListCount: 0,
-                  cardName: "Gallery",
-                  cardImage:  "assets/icons/gallery.png",
-                ),
-
-              ],
             ),
-          ),
-          LargeButtonInFooter(buttonTitle: "Finish Visit", onTap: (){_getCurrentPosition(false);},)
-        ],
+            LargeButtonInFooter(buttonTitle: "Finish Visit", onTap: (){_getCurrentPosition(false);},)
+          ],
+        ),
       ),
     );
   }
 
   Future<void> _getCurrentPosition(bool takeImage) async {
+
+    setState(() {
+      isLoadingLocation = true;
+    });
+
     final hasPermission = await handleLocationPermission();
     if (!hasPermission) return;
     await Geolocator.getCurrentPosition()
@@ -116,8 +131,13 @@ class _MyCoveragePhotoGalleryOptionsState extends State<MyCoveragePhotoGalleryOp
 
       double distanceInKm = await calculateDistance(
             widget.journeyResponseListItemDetails.gcode!, _currentPosition);
+
+      setState(() {
+        isLoadingLocation = false;
+      });
+
       print(distanceInKm);
-      if(distanceInKm<1.2) {
+      if(distanceInKm > 1.2) {
         String currentPosition = "${_currentPosition!.latitude},${_currentPosition!.longitude}";
         if(takeImage) {
          pickedImage(widget.journeyResponseListItemDetails, currentPosition);
@@ -126,10 +146,16 @@ class _MyCoveragePhotoGalleryOptionsState extends State<MyCoveragePhotoGalleryOp
         }
 
       } else {
-        showToastMessage(false, "You are away from Store. please Go to store and end visit.");
+        showToastMessage(false, "You are away from Store. please Go to store and end visit.($distanceInKm)km");
       }
 
+      setState(() {
+        isLoadingLocation = false;
+      });
     }).catchError((e) {
+      setState(() {
+        isLoadingLocation = false;
+      });
       debugPrint(e);
     });
   }

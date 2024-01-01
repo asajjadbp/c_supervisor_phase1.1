@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../utills/app_colors_new.dart';
 
 class MyJpCardForDetail extends StatelessWidget {
-  const MyJpCardForDetail({Key? key,required this.storeName,required this.visitStatus,required this.tmrName,required this.workingDate,required this.tmrId,required this.buttonName,required this.onTap,required this.onMapTap}) : super(key: key);
+  const MyJpCardForDetail({Key? key,required this.storeName,required this.isLoadingButton,required this.visitStatus,required this.tmrName,required this.workingDate,required this.tmrId,required this.buttonName,required this.onTap,required this.onMapTap}) : super(key: key);
 
  final String storeName;
   final String visitStatus;
@@ -13,6 +13,7 @@ class MyJpCardForDetail extends StatelessWidget {
   final String buttonName;
   final Function onTap;
   final Function onMapTap;
+  final bool isLoadingButton;
 
   @override
   Widget build(BuildContext context) {
@@ -81,15 +82,18 @@ class MyJpCardForDetail extends StatelessWidget {
                 ),
                 Visibility(
                   visible: visitStatus != "2",
-                  child: ElevatedButton(
-                    onPressed: (){
-                      onTap();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: IgnorePointer(
+                    ignoring: isLoadingButton,
+                    child: ElevatedButton(
+                      onPressed: (){
+                        onTap();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isLoadingButton ? AppColors.lightgreytn : AppColors.primaryColor,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      ),
+                      child: Text(buttonName),
                     ),
-                    child: Text(buttonName),
                   ),
                 ),
               ],

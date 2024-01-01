@@ -246,6 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
             MaterialPageRoute(builder: (context) => const MainDashboardNew()),
             (route) => false);
       }).catchError((e) {
+        print(e);
         showToastMessage(false, e.toString());
         setState(() {
           isLoading = false;

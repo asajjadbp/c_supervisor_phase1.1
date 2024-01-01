@@ -38,6 +38,8 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
   int? geoFence;
 
   bool isLoading = true;
+  bool isLoadingLocation = false;
+
   List<JourneyResponseListItemDetails> journeyList = <JourneyResponseListItemDetails>[];
   List<JourneyResponseListItemDetails> journeySearchList = <JourneyResponseListItemDetails>[];
   bool isError = false;
@@ -114,83 +116,94 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: HeaderBackgroundNew(
-        childWidgets: [
-          const HeaderWidgetsNew(pageTitle: "My JP",isBackButton: true,isDrawerButton: true,),
-          SearchTextField(controller: searchController,hintText:'Search With Tmr Name',onChangeField: onSearchTextFieldChanged,),
-          Expanded(
-            child: isLoading ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primaryColor,),
-            ) : Container(
-              margin: const EdgeInsets.symmetric(horizontal: 10),
-              child: isError ? ErrorTextAndButton(onTap: (){
-                getJourneyPlanList(true);
-              },errorText: errorText) : journeyList.isEmpty ? const Center(child: Text("No plans found"),) : searchController.text.isNotEmpty ? ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  itemCount: journeySearchList.length,
-                  itemBuilder: (context,index) {
-                    return MyJpCardForDetail(
-                      storeName: journeySearchList[index].storeName!,
-                      visitStatus: journeySearchList[index].visitStatus!.toString(),
-                      tmrName: journeySearchList[index].tmrName.toString(),
-                      tmrId: journeySearchList[index].tmrId.toString(),
-                      workingDate: journeySearchList[index].workingDate!,
-                      buttonName: journeySearchList[index].visitStatus!.toString() == "0" ? "Evaluate" : "Resume Visit",
-                      onMapTap: () {
-                        // List<String> latLong = journeyList[index].gcode!.split(",");
-                        //
-                        // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> GoogleMapScreen(currentLat: _currentPositionForList!.latitude.toString(),currentLong: _currentPositionForList!.longitude.toString(),storeLat:latLong[0] ,storeLong: latLong[1],))).then((value) {
-                        //   getJourneyPlanList(false);
-                        // });
-                      },
-                      onTap: (){
-                        // _getCurrentPosition(journeyList[index],index);
-                        if(journeyList[index].visitStatus!.toString() == "0" ) {
-                          _getCurrentPosition(journeyList[index],index);
-                        } else {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyList[index],))).then((value) {
-                            getJourneyPlanList(false);
-                          });
+      body: IgnorePointer(
+        ignoring: isLoadingLocation,
+        child: HeaderBackgroundNew(
+          childWidgets: [
+            const HeaderWidgetsNew(pageTitle: "My JP",isBackButton: true,isDrawerButton: true,),
+            SearchTextField(controller: searchController,hintText:'Search With Tmr Name',onChangeField: onSearchTextFieldChanged,),
+            Expanded(
+              child: Stack(
+                children: [
+                  isLoading ? const Center(
+                    child: CircularProgressIndicator(color: AppColors.primaryColor,),
+                  ) : Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    child: isError ? ErrorTextAndButton(onTap: (){
+                      getJourneyPlanList(true);
+                    },errorText: errorText) : journeyList.isEmpty ? const Center(child: Text("No plans found"),) : searchController.text.isNotEmpty ? ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        itemCount: journeySearchList.length,
+                        itemBuilder: (context,index) {
+                          return MyJpCardForDetail(
+                            storeName: journeySearchList[index].storeName!,
+                            visitStatus: journeySearchList[index].visitStatus!.toString(),
+                            tmrName: journeySearchList[index].tmrName.toString(),
+                            tmrId: journeySearchList[index].tmrId.toString(),
+                            workingDate: journeySearchList[index].workingDate!,
+                            buttonName: journeySearchList[index].visitStatus!.toString() == "0" ? "Evaluate" : "Resume Visit",
+                            onMapTap: () {
+                              // List<String> latLong = journeyList[index].gcode!.split(",");
+                              //
+                              // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> GoogleMapScreen(currentLat: _currentPositionForList!.latitude.toString(),currentLong: _currentPositionForList!.longitude.toString(),storeLat:latLong[0] ,storeLong: latLong[1],))).then((value) {
+                              //   getJourneyPlanList(false);
+                              // });
+                            },
+                            isLoadingButton: isLoadingLocation,
+                            onTap: (){
+                              // _getCurrentPosition(journeyList[index],index);
+                              if(journeyList[index].visitStatus!.toString() == "0" ) {
+                                _getCurrentPosition(journeyList[index],index);
+                              } else {
+                                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyList[index],))).then((value) {
+                                  getJourneyPlanList(false);
+                                });
+                              }
+                            },
+                          );
                         }
-                      },
-                    );
-                  }
-              ) : ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  itemCount: journeyList.length,
-                  itemBuilder: (context,index) {
-                    return MyJpCardForDetail(
-                      storeName: journeyList[index].storeName!,
-                      visitStatus: journeyList[index].visitStatus!.toString(),
-                      tmrName: journeyList[index].tmrName.toString(),
-                      tmrId: journeyList[index].tmrId.toString(),
-                      workingDate: journeyList[index].workingDate!,
-                      onMapTap: () {
-                        // List<String> latLong = journeyList[index].gcode!.split(",");
-                        //
-                        // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> GoogleMapScreen(currentLat: _currentPositionForList!.latitude.toString(),currentLong: _currentPositionForList!.longitude.toString(),storeLat:latLong[0] ,storeLong: latLong[1],))).then((value) {
-                        //   getJourneyPlanList(false);
-                        // });
-                      },
-                      buttonName: journeyList[index].visitStatus!.toString() == "0" ? "Evaluate" : "Resume Visit",
-                      onTap: (){
-                        // _getCurrentPosition(journeyList[index],index);
-                        if(journeyList[index].visitStatus!.toString() == "0" ) {
-                          _getCurrentPosition(journeyList[index],index);
-                        } else {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyList[index],))).then((value) {
-                            getJourneyPlanList(false);
-                          });
+                    ) : ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        itemCount: journeyList.length,
+                        itemBuilder: (context,index) {
+                          return MyJpCardForDetail(
+                            storeName: journeyList[index].storeName!,
+                            visitStatus: journeyList[index].visitStatus!.toString(),
+                            tmrName: journeyList[index].tmrName.toString(),
+                            tmrId: journeyList[index].tmrId.toString(),
+                            workingDate: journeyList[index].workingDate!,
+                            onMapTap: () {
+                              // List<String> latLong = journeyList[index].gcode!.split(",");
+                              //
+                              // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> GoogleMapScreen(currentLat: _currentPositionForList!.latitude.toString(),currentLong: _currentPositionForList!.longitude.toString(),storeLat:latLong[0] ,storeLong: latLong[1],))).then((value) {
+                              //   getJourneyPlanList(false);
+                              // });
+                            },
+                            isLoadingButton: isLoadingLocation,
+                            buttonName: journeyList[index].visitStatus!.toString() == "0" ? "Evaluate" : "Resume Visit",
+                            onTap: (){
+                              // _getCurrentPosition(journeyList[index],index);
+                              if(journeyList[index].visitStatus!.toString() == "0" ) {
+                                _getCurrentPosition(journeyList[index],index);
+                              } else {
+                                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyList[index],))).then((value) {
+                                  getJourneyPlanList(false);
+                                });
+                              }
+                            },
+                          );
                         }
-                      },
-                    );
-                  }
+                        ),
                   ),
+                  if(isLoadingLocation)
+                  const Center(child: CircularProgressIndicator(color: AppColors.primaryColor,),)
+                ],
+              ),
             )
-          )
-        ],
+          ],
+        ),
       )
     );
   }
@@ -212,6 +225,10 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
   }
 
   Future<void> _getCurrentPosition(JourneyResponseListItemDetails journeyResponseListItem,int index) async {
+   setState(() {
+     isLoadingLocation = true;
+   });
+
     final hasPermission = await handleLocationPermission();
     if (!hasPermission) return;
     await Geolocator.getCurrentPosition()
@@ -226,18 +243,24 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
 
       print(distanceInKm);
 
+
       if(distanceInKm<1.2) {
        pickedImage(journeyResponseListItem,_currentPosition,index);
      } else {
-       showToastMessage(false, "You are away from Store. please Go to store and start visit.");
+        showToastMessage(false, "You are away from Store. please Go to store and end visit.($distanceInKm)km");
      }
       // pickedImage(journeyResponseListItem,_currentPosition,index);
 
       print("Loaction distance");
       print(distanceInKm);
-
+      setState(() {
+        isLoadingLocation = false;
+      });
         }).catchError((e) {
       debugPrint(e);
+      setState(() {
+        isLoadingLocation = false;
+      });
     });
   }
 

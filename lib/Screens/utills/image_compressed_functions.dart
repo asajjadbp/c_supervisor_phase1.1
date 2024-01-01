@@ -14,7 +14,7 @@ Future<XFile?> compressAndGetFile(XFile file) async {
       outPath,
       minWidth: 1080,
       minHeight: 1080,
-      quality: 5);
+      quality: 20);
 
   final bytes = await file.length();
   final kb = bytes / 1024;
