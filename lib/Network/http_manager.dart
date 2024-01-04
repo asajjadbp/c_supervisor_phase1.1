@@ -1,7 +1,4 @@
-
-
 // ignore_for_file: avoid_print, duplicate_ignore
-
 
 import 'package:c_supervisor/Network/response_handler.dart';
 import 'package:image_picker/image_picker.dart';
@@ -28,136 +25,151 @@ class HTTPManager {
 
   // IPS Location List
   Future<IpcLocationResponseModel> getIPCLocation() async {
-
     const url = ApplicationURLs.API_IPC_LOCATIONS;
     // ignore: avoid_print
     print(url);
 
     final response = await _handler.get(Uri.parse(url));
-    IpcLocationResponseModel ipcLocationResponseModel = IpcLocationResponseModel.fromJson(response);
+    IpcLocationResponseModel ipcLocationResponseModel =
+        IpcLocationResponseModel.fromJson(response);
 
     return ipcLocationResponseModel;
   }
 
   //Save USer Current Location
-  Future<dynamic> saveUserCurrentLocation(SaveUserLocationRequestModel saveUserLocationRequestModel) async {
-
+  Future<dynamic> saveUserCurrentLocation(
+      SaveUserLocationRequestModel saveUserLocationRequestModel) async {
     const url = ApplicationURLs.API_SAVE_USER_LOCATION;
     // ignore: avoid_print
     print(url);
 
-    final response = await _handler.post(Uri.parse(url),saveUserLocationRequestModel.toJson());
+    final response = await _handler.post(
+        Uri.parse(url), saveUserLocationRequestModel.toJson());
     // IpcLocationResponseModel ipcLocationResponseModel = IpcLocationResponseModel.fromJson(response);
 
     return response;
   }
 
   //Check In Status
-  Future<CheckInStatusResponseModel> getCheckInStatus(CheckInRequestModel checkInRequestModel) async {
-
+  Future<CheckInStatusResponseModel> getCheckInStatus(
+      CheckInRequestModel checkInRequestModel) async {
     const url = ApplicationURLs.API_IPC_CHECK_IN_STATUS;
     // ignore: avoid_print
     print(url);
 
-    final response = await _handler.post(Uri.parse(url),checkInRequestModel.toJson());
-    CheckInStatusResponseModel checkInStatusResponseModel = CheckInStatusResponseModel.fromJson(response);
+    final response =
+        await _handler.post(Uri.parse(url), checkInRequestModel.toJson());
+    CheckInStatusResponseModel checkInStatusResponseModel =
+        CheckInStatusResponseModel.fromJson(response);
 
     return checkInStatusResponseModel;
   }
 
   //Check In
-  Future<dynamic> setCheckIn(CheckInStatusUpdateRequestModel checkInStatusUpdateRequestModel,XFile image) async {
-
+  Future<dynamic> setCheckIn(
+      CheckInStatusUpdateRequestModel checkInStatusUpdateRequestModel,
+      XFile image) async {
     const url = ApplicationURLs.API_IPC_CHECK_IN;
     // ignore: avoid_print
     print(url);
 
-    final response = await _handler.postImage(url,checkInStatusUpdateRequestModel .toJson(),image);
+    final response = await _handler.postImage(
+        url, checkInStatusUpdateRequestModel.toJson(), image);
     // CheckInStatusDetailsItem checkInStatusDetailsItem = CheckInStatusDetailsItem.fromJson(response['data'][0]);
 
     return response;
   }
 
   //Check Out
-  Future<dynamic> setCheckOut(CheckOutStatusUpdateRequestModel checkOutStatusUpdateRequestModel) async {
-
+  Future<dynamic> setCheckOut(
+      CheckOutStatusUpdateRequestModel checkOutStatusUpdateRequestModel) async {
     const url = ApplicationURLs.API_IPC_CHECK_OUT;
     // ignore: avoid_print
     print(url);
 
-    final response = await _handler.post(Uri.parse(url),checkOutStatusUpdateRequestModel.toJson());
+    final response = await _handler.post(
+        Uri.parse(url), checkOutStatusUpdateRequestModel.toJson());
     // CheckInStatusDetailsItem checkInStatusDetailsItem = CheckInStatusDetailsItem.fromJson(response['data']);
 
     return response;
   }
 
-  Future<LogInResponseModel> loginUser(LoginRequestModel loginRequestModel) async {
-
+  Future<LogInResponseModel> loginUser(
+      LoginRequestModel loginRequestModel) async {
     const url = ApplicationURLs.API_LOGIN;
     // ignore: avoid_print
     print(url);
 
-    final response = await _handler.post(Uri.parse(url), loginRequestModel.toJson());
-    LogInResponseModel logInResponseModel = LogInResponseModel.fromJson(response);
+    final response =
+        await _handler.post(Uri.parse(url), loginRequestModel.toJson());
+    LogInResponseModel logInResponseModel =
+        LogInResponseModel.fromJson(response);
 
-     return logInResponseModel;
+    return logInResponseModel;
   }
 
   //Journey Plan List
-  Future<JourneyPlanResponseModel> userJourneyPlanList(JourneyPlanRequestModel journeyPlanRequestModel) async {
-
+  Future<JourneyPlanResponseModel> userJourneyPlanList(
+      JourneyPlanRequestModel journeyPlanRequestModel) async {
     const url = ApplicationURLs.API_JP;
     // ignore: avoid_print
     print(url);
 
-    final response = await _handler.post(Uri.parse(url), journeyPlanRequestModel.toJson());
-    JourneyPlanResponseModel journeyPlanResponseModel = JourneyPlanResponseModel.fromJson(response);
+    final response =
+        await _handler.post(Uri.parse(url), journeyPlanRequestModel.toJson());
+    JourneyPlanResponseModel journeyPlanResponseModel =
+        JourneyPlanResponseModel.fromJson(response);
 
     return journeyPlanResponseModel;
   }
 
   //Start Journey Plan
-  Future<dynamic> startJourneyPlan(StartJourneyPlanRequestModel startJourneyPlanRequestModel,XFile photoFile) async {
-
+  Future<dynamic> startJourneyPlan(
+      StartJourneyPlanRequestModel startJourneyPlanRequestModel,
+      XFile photoFile) async {
     const url = ApplicationURLs.API_START_VISIT;
     // ignore: avoid_print
     print(url);
 
-    final response = await _handler.postImage(url, startJourneyPlanRequestModel.toJson(),photoFile);
+    final response = await _handler.postImage(
+        url, startJourneyPlanRequestModel.toJson(), photoFile);
     // JourneyPlanResponseModel journeyPlanResponseModel = JourneyPlanResponseModel.fromJson(response);
 
     return response;
   }
 
   //Start Journey Plan
-  Future<dynamic> checkListPostImage(UploadCheckListRequestModel uploadCheckListRequestModel,XFile photoFile) async {
-
+  Future<dynamic> checkListPostImage(
+      UploadCheckListRequestModel uploadCheckListRequestModel,
+      XFile photoFile) async {
     const url = ApplicationURLs.API_SAVE_CHECK_LIST_PHOTO;
     // ignore: avoid_print
     print(url);
 
-    final response = await _handler.postImage(url, uploadCheckListRequestModel.toJson(),photoFile);
+    final response = await _handler.postImage(
+        url, uploadCheckListRequestModel.toJson(), photoFile);
     // JourneyPlanResponseModel journeyPlanResponseModel = JourneyPlanResponseModel.fromJson(response);
 
     return response;
   }
 
   //Get Check List
-  Future<CheckListResponseModel> getCheckList(GetCheckListRequest getCheckListRequest) async {
-
+  Future<CheckListResponseModel> getCheckList(
+      GetCheckListRequest getCheckListRequest) async {
     const url = ApplicationURLs.API_CHECK_LIST;
     // ignore: avoid_print
     print(url);
 
-    final response = await _handler.post(Uri.parse(url), getCheckListRequest.toJson());
-    CheckListResponseModel checkListResponseModel = CheckListResponseModel.fromJson(response);
+    final response =
+        await _handler.post(Uri.parse(url), getCheckListRequest.toJson());
+    CheckListResponseModel checkListResponseModel =
+        CheckListResponseModel.fromJson(response);
 
     return checkListResponseModel;
   }
 
   //update Check List
   Future<dynamic> updateCheckListWithJson(CheckListResponseModel param) async {
-
     const url = ApplicationURLs.API_UPDATE_CHECK_LIST;
     // ignore: avoid_print
     print(url);
@@ -169,39 +181,44 @@ class HTTPManager {
   }
 
   //My Coverage Plan
-  Future<dynamic> storeImagesUpload(ImageUploadInStoreRequestModel imageUploadInStoreRequestModel,XFile photoFile) async {
-
+  Future<dynamic> storeImagesUpload(
+      ImageUploadInStoreRequestModel imageUploadInStoreRequestModel,
+      XFile photoFile) async {
     const url = ApplicationURLs.API_PHOTO_UPLOAD_STORE;
     // ignore: avoid_print
     print(url);
 
-    final response = await _handler.postImage(url, imageUploadInStoreRequestModel.toJson(),photoFile);
+    final response = await _handler.postImage(
+        url, imageUploadInStoreRequestModel.toJson(), photoFile);
     // JourneyPlanResponseModel journeyPlanResponseModel = JourneyPlanResponseModel.fromJson(response);
 
     return response;
   }
 
   //My Coverage Plan Store Image List
-  Future<StoreImageResponseModel> storeImagesList(UploadedImagesRequestModel uploadedImagesRequestModel) async {
-
+  Future<StoreImageResponseModel> storeImagesList(
+      UploadedImagesRequestModel uploadedImagesRequestModel) async {
     const url = ApplicationURLs.API_UPLOADED_PHOTO_STORE;
     // ignore: avoid_print
     print(url);
 
-    final response = await _handler.post(Uri.parse(url), uploadedImagesRequestModel.toJson());
-    StoreImageResponseModel storeImageResponseModel = StoreImageResponseModel.fromJson(response);
+    final response = await _handler.post(
+        Uri.parse(url), uploadedImagesRequestModel.toJson());
+    StoreImageResponseModel storeImageResponseModel =
+        StoreImageResponseModel.fromJson(response);
 
     return storeImageResponseModel;
   }
 
   //Store Image List Item
-  Future<dynamic> storeImagesDelete(DeleteImageRequestModel deleteImageRequestModel) async {
-
+  Future<dynamic> storeImagesDelete(
+      DeleteImageRequestModel deleteImageRequestModel) async {
     const url = ApplicationURLs.API_DELETE_PHOTO_STORE;
     // ignore: avoid_print
     print(url);
 
-    final response = await _handler.post(Uri.parse(url), deleteImageRequestModel.toJson());
+    final response =
+        await _handler.post(Uri.parse(url), deleteImageRequestModel.toJson());
     // JourneyPlanResponseModel journeyPlanResponseModel = JourneyPlanResponseModel.fromJson(response);
 
     return response;
@@ -209,15 +226,14 @@ class HTTPManager {
 
   //End Visit
   Future<dynamic> endVisit(EndVisitRequestModel endVisitRequestModel) async {
-
     const url = ApplicationURLs.API_END_VISIT;
     // ignore: avoid_print
     print(url);
 
-    final response = await _handler.post(Uri.parse(url), endVisitRequestModel.toJson());
+    final response =
+        await _handler.post(Uri.parse(url), endVisitRequestModel.toJson());
     // JourneyPlanResponseModel journeyPlanResponseModel = JourneyPlanResponseModel.fromJson(response);
 
     return response;
   }
-
 }

@@ -168,6 +168,7 @@ class JourneyResponseListItemDetails {
   String? tmrName;
   String? workingDate;
   String? storeName;
+  String? chainName;
   int? storeId;
   String? gcode;
   int? elId;
@@ -190,6 +191,7 @@ class JourneyResponseListItemDetails {
         this.checkOut,
         this.checkinGps,
         this.checkoutGps,
+        this.chainName,
         this.visitStatus});
 
   JourneyResponseListItemDetails.fromJson(Map<String, dynamic> json) {
@@ -205,6 +207,7 @@ class JourneyResponseListItemDetails {
     checkOut = json['check_out'] ?? "";
     checkinGps = json['checkin_gps'];
     checkoutGps = json['checkout_gps'];
+    chainName = json['chain_name'];
     visitStatus = json['visit_status'];
   }
 
@@ -222,6 +225,7 @@ class JourneyResponseListItemDetails {
     data['check_out'] = checkOut;
     data['checkin_gps'] = checkinGps;
     data['checkout_gps'] = checkoutGps;
+    data['chain_name'] = chainName;
     data['visit_status'] = visitStatus;
     return data;
   }

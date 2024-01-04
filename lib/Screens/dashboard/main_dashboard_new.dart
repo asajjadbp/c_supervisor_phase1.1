@@ -201,64 +201,64 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
           );
           return shouldPop!;
         },
-        child: HeaderBackgroundNew(
-          childWidgets: [
-             HeaderWidgetsNew(pageTitle: "Welcome $userName",isBackButton: false,isDrawerButton: true),
-            Expanded(
-              child:isLoading || isLoading1 ? const Center(child: CircularProgressIndicator(color: AppColors.primaryColor,),) : isError ?
-              ErrorTextAndButton(onTap: (){
-                getIpcLocations();
-                getCheckInStatus();
-              },errorText: errorText)
-                  : Stack(
-                    children: [
-                      GridView(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      childAspectRatio: (163.5 / 135),
-                      crossAxisCount: 2,
-                ),
-                children:  [
-                      MainDashboardItemCard(
-                          onTap: (){
-                            if(isCheckedIn) {
-                              showToastMessage(false,"Please check out first and try again");
-                            } else {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (
-                                      context) => const MyJourneyPlanScreenNew()));
-                            }
-                          },imageUrl: "assets/dashboard/my_journey_plan.png", cardName: "My Jp"),
-                      MainDashboardItemCard(onTap:(){
-                        if(isCheckedIn) {
-                          showToastMessage(false,"Please check out first and try again");
-                        } else {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (
-                                  context) => const MyCoveragePlanScreenNew()));
-                        }
-                        // showToastMessage(false,"Coming Soon...");
-                      },imageUrl:"assets/dashboard/my_coverage.png", cardName:"My Coverage"),
-                      // MainDashboardItemCard(onTap:(){
-                      //
-                      // },imageUrl:"assets/dashboard/my_team.png", cardName:"My Team"),
-                      // MainDashboardItemCard(onTap:(){
-                      //   showToastMessage(false,"Coming Soon...");
-                      // },imageUrl:"assets/dashboard/knowledge_share.png",cardName: "Knowledge Share"),
-                      // MainDashboardItemCard(onTap:(){
-                      //   showToastMessage(false,"Coming Soon...");
-                      // },imageUrl:"assets/dashboard/clients.png",cardName: "My Clients"),
-                ],
-              ),
-                      if(isLoading2)
-                        const Center(child: CircularProgressIndicator(color: AppColors.primaryColor,),)
-                    ],
+        child: IgnorePointer(
+          ignoring: isLoading2,
+          child: HeaderBackgroundNew(
+            childWidgets: [
+               HeaderWidgetsNew(pageTitle: "Welcome $userName",isBackButton: false,isDrawerButton: true),
+              Expanded(
+                child:isLoading || isLoading1 ? const Center(child: CircularProgressIndicator(color: AppColors.primaryColor,),) : isError ?
+                ErrorTextAndButton(onTap: (){
+                  getIpcLocations();
+                  getCheckInStatus();
+                },errorText: errorText)
+                    : Stack(
+                      children: [
+                        GridView(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        childAspectRatio: (163.5 / 135),
+                        crossAxisCount: 2,
                   ),
-            ),
+                  children:  [
+                        MainDashboardItemCard(
+                            onTap: (){
+                              if(isCheckedIn) {
+                                showToastMessage(false,"Please check out first and try again");
+                              } else {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (
+                                        context) => const MyJourneyPlanScreenNew()));
+                              }
+                            },imageUrl: "assets/dashboard/my_journey_plan.png", cardName: "My Jp"),
+                        MainDashboardItemCard(onTap:(){
+                          if(isCheckedIn) {
+                            showToastMessage(false,"Please check out first and try again");
+                          } else {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (
+                                    context) => const MyCoveragePlanScreenNew()));
+                          }
+                          // showToastMessage(false,"Coming Soon...");
+                        },imageUrl:"assets/dashboard/my_coverage.png", cardName:"My Coverage"),
+                        // MainDashboardItemCard(onTap:(){
+                        //
+                        // },imageUrl:"assets/dashboard/my_team.png", cardName:"My Team"),
+                        // MainDashboardItemCard(onTap:(){
+                        //   showToastMessage(false,"Coming Soon...");
+                        // },imageUrl:"assets/dashboard/knowledge_share.png",cardName: "Knowledge Share"),
+                        // MainDashboardItemCard(onTap:(){
+                        //   showToastMessage(false,"Coming Soon...");
+                        // },imageUrl:"assets/dashboard/clients.png",cardName: "My Clients"),
+                  ],
+                ),
+                        if(isLoading2)
+                          const Center(child: CircularProgressIndicator(color: AppColors.primaryColor,),)
+                      ],
+                    ),
+              ),
 
-              isLoading || isLoading1 ? Container() : IgnorePointer(
-                ignoring: isLoading2,
-                child: Row(
+                isLoading || isLoading1 ? Container() : Row(
                 children: [
                   Expanded(
                     child: Column(
@@ -281,7 +281,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                             width: MediaQuery.of(context).size.width,
                             decoration:  BoxDecoration(
                               border: Border.all(color: AppColors.primaryColor),
-                                color: !isCheckedIn ? AppColors.primaryColor : AppColors.white,
+                                color: !isCheckedIn ? isLoading2? AppColors.lightgreytn : AppColors.primaryColor : AppColors.white,
                                 borderRadius: const BorderRadius.only(topRight: Radius.circular(10),topLeft: Radius.circular(10))
                             ),
                             child:  Text("Check In",style: TextStyle(fontSize:20,color: !isCheckedIn ? AppColors.white : AppColors.greyColor),),
@@ -311,7 +311,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                             width: MediaQuery.of(context).size.width,
                             decoration: BoxDecoration(
                                 border: Border.all(color: AppColors.primaryColor),
-                                color: isCheckedIn ? AppColors.primaryColor : AppColors.white,
+                                color: isCheckedIn ? isLoading2? AppColors.lightgreytn : AppColors.primaryColor : AppColors.white,
                                 borderRadius: const BorderRadius.only(topRight: Radius.circular(10),topLeft: Radius.circular(10))
                             ),
                             child:   Text("Check Out",style: TextStyle(fontSize:20,color:isCheckedIn ? AppColors.white : AppColors.greyColor),),
@@ -321,10 +321,10 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                     ),
                   ),
                 ],
-            ),
               )
 
-          ],
+            ],
+          ),
         )
       ),
     );
@@ -350,9 +350,6 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
       // double distanceInKm3 = await calculateDistance(ipcLocation[2].gps!,_currentPosition);
 
       String currentPosition = "${_currentPosition!.latitude},${_currentPosition!.longitude}";
-      setState(() {
-        isLoading2 = false;
-      });
 
       // if(distanceInKm1<1.2 || distanceInKm2<1.2 || distanceInKm3<1.2) {
          if(isAllow) {
@@ -374,7 +371,9 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
       // print(distanceInKm1);
       // print(distanceInKm2);
       // print(distanceInKm3);
-
+      setState(() {
+        isLoading2 = false;
+      });
     }).catchError((e) {
       print(e);
     });

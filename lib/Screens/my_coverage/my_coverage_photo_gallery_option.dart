@@ -22,21 +22,25 @@ import '../widgets/toast_message_show.dart';
 import 'my_coverage_gallery.dart';
 
 class MyCoveragePhotoGalleryOptions extends StatefulWidget {
-  const MyCoveragePhotoGalleryOptions({Key? key,required this.journeyResponseListItemDetails}) : super(key: key);
+  const MyCoveragePhotoGalleryOptions(
+      {Key? key, required this.journeyResponseListItemDetails})
+      : super(key: key);
 
   final JourneyResponseListItemDetails journeyResponseListItemDetails;
 
   @override
-  State<MyCoveragePhotoGalleryOptions> createState() => _MyCoveragePhotoGalleryOptionsState();
+  State<MyCoveragePhotoGalleryOptions> createState() =>
+      _MyCoveragePhotoGalleryOptionsState();
 }
 
-class _MyCoveragePhotoGalleryOptionsState extends State<MyCoveragePhotoGalleryOptions> {
-
+class _MyCoveragePhotoGalleryOptionsState
+    extends State<MyCoveragePhotoGalleryOptions> {
   String userName = "";
   String userId = "";
   int? geoFence;
 
   bool isLoading = true;
+  bool isLoadingLocation = false;
 
   ImagePicker picker = ImagePicker();
   XFile? image;
@@ -66,103 +70,155 @@ class _MyCoveragePhotoGalleryOptionsState extends State<MyCoveragePhotoGalleryOp
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: HeaderBackgroundNew(
-        childWidgets: [
-          const HeaderWidgetsNew(pageTitle: "My Coverage",isBackButton: true,isDrawerButton: true,),
-          Expanded(
-            child: GridView(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                childAspectRatio: (163.5 / 135),
-                crossAxisCount: 2,
-              ),
-              children:  [
-                MyJourneyPlanModuleCardItem(
-                  onTap: () {
-                    _getCurrentPosition(true);
-                  },
-                  pendingCheckListCount: 0,
-                  cardName: 'Camera',
-                  cardImage: 'assets/icons/camera.png',
-                ),
-
-                MyJourneyPlanModuleCardItem(
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MyCoverageGallery(journeyResponseListItemDetails: widget.journeyResponseListItemDetails,)));
-                  },
-                  pendingCheckListCount: 0,
-                  cardName: "Gallery",
-                  cardImage:  "assets/icons/gallery.png",
-                ),
-
-              ],
+      body: IgnorePointer(
+        ignoring: isLoadingLocation,
+        child: HeaderBackgroundNew(
+          childWidgets: [
+            const HeaderWidgetsNew(
+              pageTitle: "My Coverage",
+              isBackButton: true,
+              isDrawerButton: true,
             ),
-          ),
-          LargeButtonInFooter(buttonTitle: "Finish Visit", onTap: (){_getCurrentPosition(false);},)
-        ],
+            Expanded(
+              child: Stack(
+                children: [
+                  GridView(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      childAspectRatio: (163.5 / 135),
+                      crossAxisCount: 2,
+                    ),
+                    children: [
+                      MyJourneyPlanModuleCardItem(
+                        onTap: () {
+                          _getCurrentPosition(true);
+                        },
+                        pendingCheckListCount: 0,
+                        cardName: 'Camera',
+                        cardImage: 'assets/icons/camera.png',
+                      ),
+                      MyJourneyPlanModuleCardItem(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => MyCoverageGallery(
+                                    journeyResponseListItemDetails:
+                                        widget.journeyResponseListItemDetails,
+                                  )));
+                        },
+                        pendingCheckListCount: 0,
+                        cardName: "Gallery",
+                        cardImage: "assets/icons/gallery.png",
+                      ),
+                    ],
+                  ),
+                  if (isLoadingLocation)
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                ],
+              ),
+            ),
+            LargeButtonInFooter(
+              buttonTitle: "Finish Visit",
+              onTap: () {
+                _getCurrentPosition(false);
+              },
+            )
+          ],
+        ),
       ),
     );
   }
 
   Future<void> _getCurrentPosition(bool takeImage) async {
+    setState(() {
+      isLoadingLocation = true;
+    });
+
     final hasPermission = await handleLocationPermission();
     if (!hasPermission) return;
-    await Geolocator.getCurrentPosition()
-        .then((Position position) async {
+    await Geolocator.getCurrentPosition().then((Position position) async {
       setState(() => _currentPosition = position);
 
       print("Current Position");
       print(_currentPosition);
 
       double distanceInKm = await calculateDistance(
-            widget.journeyResponseListItemDetails.gcode!, _currentPosition);
+          widget.journeyResponseListItemDetails.gcode!, _currentPosition);
+
+      setState(() {
+        isLoadingLocation = false;
+      });
+
       print(distanceInKm);
-      if(distanceInKm<1.2) {
-        String currentPosition = "${_currentPosition!.latitude},${_currentPosition!.longitude}";
-        if(takeImage) {
-         pickedImage(widget.journeyResponseListItemDetails, currentPosition);
+      if (distanceInKm < 1.2) {
+        String currentPosition =
+            "${_currentPosition!.latitude},${_currentPosition!.longitude}";
+        if (takeImage) {
+          pickedImage(widget.journeyResponseListItemDetails, currentPosition);
         } else {
           endVisit(currentPosition);
         }
-
       } else {
-        showToastMessage(false, "You are away from Store. please Go to store and end visit.");
+        showToastMessage(false,
+            "You are away from Store. please Go to store and end visit.($distanceInKm)km");
       }
 
+      setState(() {
+        isLoadingLocation = false;
+      });
     }).catchError((e) {
+      setState(() {
+        isLoadingLocation = false;
+      });
       debugPrint(e);
     });
   }
 
-  Future<void> pickedImage(JourneyResponseListItemDetails journeyResponseListItem,String currentLocation)  async {
-    image = await picker.pickImage(source: ImageSource.camera );
-    if(image == null) {
-
+  Future<void> pickedImage(
+      JourneyResponseListItemDetails journeyResponseListItem,
+      String currentLocation) async {
+    image = await picker.pickImage(source: ImageSource.camera);
+    if (image == null) {
     } else {
       print("Image Path");
       print(image!.path);
       compressedImage = await compressAndGetFile(image!);
-      showUploadOption(journeyResponseListItem, currentLocation,compressedImage);
+      showUploadOption(
+          journeyResponseListItem, currentLocation, compressedImage);
     }
   }
 
-  showUploadOption(JourneyResponseListItemDetails journeyResponseListItem,String currentLocation, XFile? image1) {
-    showPopUpForImageUploadForComment(context, image1!, (){
+  showUploadOption(JourneyResponseListItemDetails journeyResponseListItem,
+      String currentLocation, XFile? image1) {
+    showPopUpForImageUploadForComment(context, image1!, () {
       // String currentPosition = "${currentLocation!.latitude},${currentLocation.longitude}";
       print(currentLocation);
-      if(image1 !=null && currentLocation != "") {
-        imageUploadInsideAppStore(journeyResponseListItem, currentLocation,image1);
+      if (image1 != null && currentLocation != "") {
+        imageUploadInsideAppStore(
+            journeyResponseListItem, currentLocation, image1);
       }
-    },commentController);
+    }, commentController);
   }
 
-  imageUploadInsideAppStore(JourneyResponseListItemDetails journeyResponseListItem,String currentLocation, XFile? image1) {
-    HTTPManager().storeImagesUpload(ImageUploadInStoreRequestModel(elId: journeyResponseListItem.elId!.toString(),workingId: journeyResponseListItem.workingId.toString(),storeId: journeyResponseListItem.storeId.toString(),checkInGps: currentLocation,comment: commentController.text), image1!).then((value) {
+  imageUploadInsideAppStore(
+      JourneyResponseListItemDetails journeyResponseListItem,
+      String currentLocation,
+      XFile? image1) {
+    HTTPManager()
+        .storeImagesUpload(
+            ImageUploadInStoreRequestModel(
+                elId: journeyResponseListItem.elId!.toString(),
+                workingId: journeyResponseListItem.workingId.toString(),
+                storeId: journeyResponseListItem.storeId.toString(),
+                checkInGps: currentLocation,
+                comment: commentController.text),
+            image1!)
+        .then((value) {
       commentController.clear();
       Navigator.of(context).pop();
-      setState(() {
-
-      });
+      setState(() {});
       showToastMessage(true, "Image Uploaded successfully");
     }).catchError((e) {
       showToastMessage(false, e.toString());
@@ -174,14 +230,18 @@ class _MyCoveragePhotoGalleryOptionsState extends State<MyCoveragePhotoGalleryOp
       isLoading = true;
     });
 
-    HTTPManager().endVisit(EndVisitRequestModel(elId: widget.journeyResponseListItemDetails.elId.toString(),workingId: widget.journeyResponseListItemDetails.workingId!.toString(),checkInGps: currentPosition )).then((value) {
-
+    HTTPManager()
+        .endVisit(EndVisitRequestModel(
+            elId: widget.journeyResponseListItemDetails.elId.toString(),
+            workingId:
+                widget.journeyResponseListItemDetails.workingId!.toString(),
+            checkInGps: currentPosition))
+        .then((value) {
       setState(() {
         isLoading = true;
       });
       Navigator.of(context).pop();
       showToastMessage(true, "Visit Ended successfully");
-
     }).catchError((e) {
       setState(() {
         isLoading = false;
@@ -189,7 +249,5 @@ class _MyCoveragePhotoGalleryOptionsState extends State<MyCoveragePhotoGalleryOp
       // print(e);
       showToastMessage(false, e.toString());
     });
-
   }
-
 }
