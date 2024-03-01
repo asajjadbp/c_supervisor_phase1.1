@@ -7,7 +7,8 @@ description: A new Flutter project.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-version: 1.0.1+4
+version: 1.0.10+13
+# 1.0.7+10
 
 environment:
   sdk: '>=2.17.0 <3.0.0'
@@ -26,8 +27,20 @@ dependencies:
   http:
   shared_preferences: ^2.2.2
   image_picker: ^1.0.4
+  flutter_image_compress: ^2.1.0
+  path_provider: ^2.1.1
   geolocator: ^10.1.0
   geocoding: ^2.1.1
+  cached_network_image: ^3.3.0
+  # vpn_connection_detector: ^1.0.5
+  google_maps_flutter: ^2.5.0
+  pie_chart: ^5.4.0
+  # new_version: ^0.3.0
+  new_version_plus:
+  provider: ^6.1.1
+  internet_file:
+
+
   #injection
 #  get_it: ^7.2.0
   # logging Package
@@ -72,6 +85,7 @@ dependencies:
   flutter_expandable_fab: ^2.0.0
 #  pull_down_button: ^0.9.3
   flutter_staggered_animations: ^1.1.1
+  group_radio_button: ^1.3.0
 #  syncfusion_flutter_charts: ^21.2.4
 #  crop_image: ^1.0.11
 
@@ -102,5 +116,7 @@ flutter:
     - assets/backgrounds/
     - assets/icons/
     - assets/dashboard/
+    - assets/myicons/
+    - assets/person.jpg
 
 

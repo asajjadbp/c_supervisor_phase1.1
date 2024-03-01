@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, duplicate_ignore
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -5,6 +7,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
+import '../Screens/utills/vpn_detector_handler.dart';
 import 'app_exceptions.dart';
 
 // ignore: non_constant_identifier_names
@@ -24,6 +27,8 @@ class ResponseHandler {
     // ignore: prefer_typing_uninitialized_variables
     var responseJson;
     try {
+      bool isVpnConnected = await vpnDetector();
+      if(isVpnConnected) throw FetchDataException("Please Disable Your Vpn");
       final response = await http.post(url, body: params, headers: head).timeout(const Duration(seconds: 45));
       responseJson = json.decode(response.body.toString());
       // ignore: avoid_print
@@ -45,6 +50,8 @@ class ResponseHandler {
     var responseJson;
     var params1 = utf8.encode(json.encode(params));
     try {
+      bool isVpnConnected = await vpnDetector();
+      if(isVpnConnected) throw FetchDataException("Please Disable Your Vpn");
       final response = await http.post(url, body: params1, headers: head).timeout(const Duration(seconds: 45));
       responseJson = json.decode(response.body.toString());
       // ignore: avoid_print
@@ -82,10 +89,13 @@ class ResponseHandler {
 
   Future postImage(String url, Map<String, String> params,
       XFile image) async {
-    var head = Map<String, String>();
+    var head = <String, String>{};
     head['content-type'] = 'application/x-www-form-urlencoded';
     var res;
+    var jsonData;
     try {
+      bool isVpnConnected = await vpnDetector();
+      if(isVpnConnected) throw FetchDataException("Please Disable Your Vpn");
       final request = http.MultipartRequest('POST', Uri.parse(url));
       if (image != null) {
         final file = await http.MultipartFile.fromPath(
@@ -97,26 +107,33 @@ class ResponseHandler {
       request.fields.addAll(params);
       await request.send().then((response) {
         if (response.statusCode == 200) print("Uploaded!");
-        res = response;
+        res = response.stream;
       });
-      if(res['status']!= true) throw FetchDataException(res['msg'].toString());
-      return res;
+      await for(List<int> chunk in res) {
+        final chunkString = utf8.decode(chunk);
+         jsonData = json.decode(chunkString);
+        print('Received JSON data: $jsonData');
+      }
+      // if(res['status']!= true) throw FetchDataException(res['msg'].toString());
+      return jsonData;
     } on SocketException {
       throw FetchDataException('No Internet connection');
     }
   }
 
-  Future get(Uri url, bool isHeaderRequired) async {
+  Future get(Uri url) async {
     var head = <String, String>{};
     head['content-type'] = 'application/json; charset=utf-8';
     // ignore: prefer_typing_uninitialized_variables
     var responseJson;
     try {
+      bool isVpnConnected = await vpnDetector();
+      if(isVpnConnected) throw FetchDataException("Please Disable Your Vpn");
       final response = await http.get(url, headers: head).timeout(const Duration(seconds: 45));
       responseJson = json.decode(response.body.toString());
       // ignore: avoid_print
       print(responseJson);
-      if(responseJson['status']!= 200) throw FetchDataException(responseJson['message'].toString());
+      if(responseJson['status']!= true) throw FetchDataException(responseJson['msg'].toString());
       return responseJson;
     } on TimeoutException {
       throw FetchDataException("Slow internet connection");

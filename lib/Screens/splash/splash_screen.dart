@@ -1,6 +1,9 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 
 import 'package:c_supervisor/Screens/dashboard/main_dashboard_new.dart';
+import 'package:c_supervisor/Screens/utills/app_colors_new.dart';
 import 'package:c_supervisor/Screens/utills/user_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,7 +18,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   bool userLoggedIn = false;
 
   @override
@@ -23,19 +25,15 @@ class _SplashScreenState extends State<SplashScreen> {
     // TODO: implement initState
     getUserData();
 
-    Timer(const Duration(seconds: 5),
-            ()=>userLoggedIn ? Navigator.pushReplacement(context,
-            MaterialPageRoute(builder:
-                (context) =>
-            const MainDashboardNew()
-            )
-        ) : Navigator.pushReplacement(context,
-            MaterialPageRoute(builder:
-                (context) =>
-            const LoginScreen()
-            )
-        )
-    );
+    Timer(
+        const Duration(seconds: 5),
+        () => userLoggedIn
+            ? Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const MainDashboardNew()))
+            : Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const LoginScreen())));
 
     super.initState();
   }
@@ -49,7 +47,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
     print("UserLoggedIn");
     print(userLoggedIn);
-
   }
 
   @override
@@ -60,17 +57,30 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         width: size.width,
         height: size.height,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/backgrounds/splash_bg.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
+        decoration: const BoxDecoration(color: AppColors.primaryColor
+            // image: DecorationImage(
+            //   image: AssetImage('assets/backgrounds/splash_bg.png'),
+            //   fit: BoxFit.cover,
+            // ),
+            ),
         child: Center(
-          child: Image.asset(
-            'assets/icons/supervisor_logo.png',
-            height: 165,
-            width: 250,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                // 'assets/icons/supervisor_logo.png',
+                'assets/myicons/supervisor.png',
+                height: 165,
+                width: 250,
+              ),
+              Text(
+                "Welcome To CSupervisor",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold),
+              )
+            ],
           ),
         ),
       ),

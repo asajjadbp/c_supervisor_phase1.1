@@ -37,7 +37,7 @@ class CheckListCommentTextField extends StatelessWidget {
         hintText: 'Enter your comments',
         hintStyle: TextStyle(color: AppColors.greyColor,),
         contentPadding: EdgeInsets.symmetric(vertical: 15,horizontal: 8),),
-      maxLines:5,
+      maxLines:3,
       style: const TextStyle(color: AppColors.black,),
     );
   }

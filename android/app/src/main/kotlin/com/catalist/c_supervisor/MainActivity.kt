@@ -1,4 +1,4 @@
-package com.catalist.c_supervisor
+package com.catalist.csupervisor
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine

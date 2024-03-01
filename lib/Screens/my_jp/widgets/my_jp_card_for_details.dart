@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 import '../../utills/app_colors_new.dart';
 
 class MyJpCardForDetail extends StatelessWidget {
-  const MyJpCardForDetail({Key? key,required this.storeName,required this.visitStatus,required this.tmrName,required this.workingDate,required this.onTap,}) : super(key: key);
+  const MyJpCardForDetail({Key? key,required this.storeName,required this.isLoadingButton,required this.visitStatus,required this.tmrName,required this.workingDate,required this.tmrId,required this.buttonName,required this.onTap,required this.onMapTap}) : super(key: key);
 
  final String storeName;
   final String visitStatus;
   final String tmrName;
+  final String tmrId;
   final String workingDate;
+  final String buttonName;
   final Function onTap;
+  final Function onMapTap;
+  final bool isLoadingButton;
 
   @override
   Widget build(BuildContext context) {
@@ -34,23 +38,23 @@ class MyJpCardForDetail extends StatelessWidget {
                 const SizedBox(width: 5,),
                 const Text("|",style: TextStyle(color: AppColors.greyColor),),
                 const SizedBox(width: 5,),
-                visitStatus == "PENDING" ? Row(
+                visitStatus == "0" ? const Row(
                   children: [
-                    const Icon(Icons.close,color: AppColors.redColor,size: 20,),
-                    const SizedBox(width: 5,),
-                    Text(visitStatus,style: const TextStyle(color: AppColors.redColor),)
+                    Icon(Icons.cancel,color: AppColors.redColor,size: 20,),
+                    SizedBox(width: 5,),
+                    Text("Pending",style: TextStyle(color: AppColors.redColor),)
                   ],
-                ) : visitStatus == "FINISHED" ? Row(
+                ) : visitStatus == "2" ? const Row(
                   children: [
-                    const Icon(Icons.check_circle,color: AppColors.green,size: 20,),
-                    const SizedBox(width: 5,),
-                    Text(visitStatus,style: const TextStyle(color: AppColors.green),)
+                    Icon(Icons.check_circle,color: AppColors.green,size: 20,),
+                    SizedBox(width: 5,),
+                    Text("Finished",style: TextStyle(color: AppColors.green),)
                   ],
-                ) : Row(
+                ) : const Row(
                   children: [
-                    const Icon(Icons.pending,color: AppColors.primaryColor,size: 20,),
-                    const SizedBox(width: 5,),
-                    Text(visitStatus,style: const TextStyle(color: AppColors.primaryColor),)
+                    Icon(Icons.pending,color: AppColors.primaryColor,size: 20,),
+                    SizedBox(width: 5,),
+                    Text("In Progress",style: TextStyle(color: AppColors.primaryColor),)
                   ],
                 )
               ],
@@ -58,26 +62,38 @@ class MyJpCardForDetail extends StatelessWidget {
             const SizedBox(
               height: 5,
             ),
-            Text("TMR: $tmrName",overflow: TextOverflow.ellipsis,style: TextStyle(color: AppColors.blue),),
+            Text("TMR Name: $tmrName",overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.blue),),
+            const SizedBox(
+              height: 5,
+            ),
+            Text("TMR ID: $tmrId",overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.blue),),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(children: [
-                  const  Icon(Icons.calendar_month,color: AppColors.primaryColor,size: 20,),
-                  const SizedBox(width: 5,),
-                  Text(workingDate)
-                ],),
+                GestureDetector(
+                  onTap: () {
+                    onMapTap();
+                  },
+                  child: Row(children: [
+                    const  Icon(Icons.calendar_month,color: AppColors.primaryColor,size: 20,),
+                    const SizedBox(width: 5,),
+                    Text(workingDate,overflow: TextOverflow.ellipsis)
+                  ],),
+                ),
                 Visibility(
-                  visible: visitStatus != "FINISHED",
-                  child: ElevatedButton(
-                    onPressed: (){
-                      onTap();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.purple,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  visible: visitStatus != "2",
+                  child: IgnorePointer(
+                    ignoring: isLoadingButton,
+                    child: ElevatedButton(
+                      onPressed: (){
+                        onTap();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isLoadingButton ? AppColors.lightgreytn : AppColors.primaryColor,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      ),
+                      child: Text(buttonName),
                     ),
-                    child: const Text("Start visit"),
                   ),
                 ),
               ],

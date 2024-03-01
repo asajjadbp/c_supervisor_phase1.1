@@ -1,7 +1,6 @@
 import 'package:c_supervisor/Screens/utills/user_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../widgets/alert_dialogues.dart';

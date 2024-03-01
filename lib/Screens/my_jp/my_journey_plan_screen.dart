@@ -1,6 +1,9 @@
+// ignore_for_file: avoid_print
+
 import 'package:c_supervisor/Model/request_model/journey_plan_request.dart';
 import 'package:c_supervisor/Network/http_manager.dart';
 import 'package:c_supervisor/Screens/my_jp/widgets/my_jp_card_for_details.dart';
+import 'package:c_supervisor/Screens/utills/image_quality.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,11 +11,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../Model/request_model/start_journey_plan_request.dart';
 import '../../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
 import '../utills/app_colors_new.dart';
+import '../utills/image_compressed_functions.dart';
+import '../utills/location_calculation.dart';
+import '../utills/location_permission_handle.dart';
 import '../utills/user_constants.dart';
 import '../widgets/alert_dialogues.dart';
 import '../widgets/error_text_and_button.dart';
 import '../widgets/header_background_new.dart';
 import '../widgets/header_widgets_new.dart';
+import '../widgets/text_fields/search_text_fields.dart';
 import '../widgets/toast_message_show.dart';
 import 'my_journey_plan_module_new.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,22 +32,33 @@ class MyJourneyPlanScreenNew extends StatefulWidget {
 }
 
 class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
-
   String userName = "";
   String userId = "";
+  int? geoFence;
+
   bool isLoading = true;
-  List<JourneyResponseListItem> journeyList = <JourneyResponseListItem>[];
+  bool isLoadingLocation = false;
+
+  List<JourneyResponseListItemDetails> journeyList =
+      <JourneyResponseListItemDetails>[];
+  List<JourneyResponseListItemDetails> journeySearchList =
+      <JourneyResponseListItemDetails>[];
   bool isError = false;
   String errorText = "";
 
   ImagePicker picker = ImagePicker();
   XFile? image;
+  XFile? compressedImage;
   Position? _currentPosition;
+  Position? _currentPositionForList;
+
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     // TODO: implement initState
     getUserData();
+    getUserCurrentLocation();
     super.initState();
   }
 
@@ -50,24 +68,49 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
     setState(() {
       userName = sharedPreferences.getString(UserConstants().userName)!;
       userId = sharedPreferences.getString(UserConstants().userId)!;
+      geoFence = sharedPreferences.getInt(UserConstants().userGeoFence)!;
     });
 
     getJourneyPlanList(true);
   }
+
+  getUserCurrentLocation() async {
+    final hasPermission = await handleLocationPermission();
+    if (!hasPermission) return;
+    await Geolocator.getCurrentPosition().then((Position position) async {
+      setState(() => _currentPositionForList = position);
+
+      print("Current Position");
+      print(_currentPositionForList);
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  calculateDistanceForList(
+      JourneyResponseListItemDetails journeyResponseListItemDetails) {}
 
   getJourneyPlanList(bool isLoader) {
     setState(() {
       isLoading = isLoader;
     });
 
-    HTTPManager().userJourneyPlanList(JourneyPlanRequestModel(elId: userId)).then((value) {
+    if (journeySearchList.isNotEmpty) {
+      journeySearchList = <JourneyResponseListItemDetails>[];
+      searchController.clear();
+      FocusScope.of(context).unfocus();
+    }
+
+    HTTPManager()
+        .userJourneyPlanList(JourneyPlanRequestModel(elId: userId))
+        .then((value) {
       setState(() {
-        journeyList = value.data!;
+        journeyList = value.data!.planned!;
+
         isLoading = false;
         isError = false;
       });
-
-    }).catchError((e){
+    }).catchError((e) {
       setState(() {
         isError = true;
         errorText = e.toString();
@@ -79,212 +122,309 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: HeaderBackgroundNew(
+        body: IgnorePointer(
+      ignoring: isLoadingLocation,
+      child: HeaderBackgroundNew(
         childWidgets: [
-          const HeaderWidgetsNew(pageTitle: "My JP",isBackButton: true,isDrawerButton: true,),
+          const HeaderWidgetsNew(
+            pageTitle: "My JP",
+            isBackButton: true,
+            isDrawerButton: true,
+          ),
+          SearchTextField(
+            controller: searchController,
+            hintText: 'Search With Tmr Id',
+            onChangeField: onSearchTextFieldChanged,
+          ),
           Expanded(
-            child: isLoading ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primaryColor,),
-            ) : Container(
-              margin: const EdgeInsets.symmetric(horizontal: 10),
-              child: isError ? ErrorTextAndButton(onTap: (){
-                getJourneyPlanList(true);
-              },errorText: errorText) : journeyList.isEmpty ? const Center(child: Text("No plans found"),) : ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  itemCount: journeyList.length,
-                  itemBuilder: (context,index) {
-                    return MyJpCardForDetail(
-                      storeName: journeyList[index].storeName!,
-                      visitStatus: journeyList[index].visitStatus!,
-                      tmrName: journeyList[index].tmrId.toString(),
-                      workingDate: journeyList[index].workingDate!,
-                      onTap: (){
-                        if(journeyList[index].visitStatus! == "PENDING" ) {
-                          _getCurrentPosition(journeyList[index],index);
-                        } else {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyList[index],))).then((value) {
-                            getJourneyPlanList(false);
-                          });
-                        }
-                      },
-                    );
-
-                    //   Card(
-                    //   shape: RoundedRectangleBorder(
-                    //     borderRadius: BorderRadius.circular(15.0),
-                    //   ),
-                    //   semanticContainer: true,
-                    //   clipBehavior: Clip.antiAliasWithSaveLayer,
-                    //   shadowColor: Colors.black12,
-                    //   elevation: 10,
-                    //   child: Container(
-                    //     padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 15),
-                    //     child: Column(
-                    //       mainAxisAlignment: MainAxisAlignment.center,
-                    //       crossAxisAlignment: CrossAxisAlignment.start,
-                    //       mainAxisSize: MainAxisSize.min,
-                    //       children: [
-                    //          Row(
-                    //           children: [
-                    //             Expanded(child: Text(journeyList[index].storeName!,overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.primaryColor),)),
-                    //             const SizedBox(width: 5,),
-                    //             const Text("|",style: TextStyle(color: AppColors.greyColor),),
-                    //             const SizedBox(width: 5,),
-                    //             journeyList[index].visitStatus! == "PENDING" ? Row(
-                    //               children: [
-                    //                   const Icon(Icons.close,color: AppColors.redColor,size: 20,),
-                    //                const SizedBox(width: 5,),
-                    //                 Text(journeyList[index].visitStatus!,style: const TextStyle(color: AppColors.redColor),)
-                    //               ],
-                    //             ) : journeyList[index].visitStatus! == "FINISHED" ? Row(
-                    //               children: [
-                    //                 const Icon(Icons.check_circle,color: AppColors.green,size: 20,),
-                    //                 const SizedBox(width: 5,),
-                    //                 Text(journeyList[index].visitStatus!,style: const TextStyle(color: AppColors.green),)
-                    //               ],
-                    //             ) : Row(
-                    //               children: [
-                    //                 const Icon(Icons.pending,color: AppColors.primaryColor,size: 20,),
-                    //                 const SizedBox(width: 5,),
-                    //                 Text(journeyList[index].visitStatus!,style: const TextStyle(color: AppColors.primaryColor),)
-                    //               ],
-                    //             )
-                    //           ],
-                    //         ),
-                    //         const SizedBox(
-                    //           height: 5,
-                    //         ),
-                    //         Text("TMR: ${journeyList[index].tmrId.toString()}",overflow: TextOverflow.ellipsis,style: TextStyle(color: AppColors.blue),),
-                    //         Row(
-                    //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //           children: [
-                    //              Row(children: [
-                    //                const  Icon(Icons.calendar_month,color: AppColors.primaryColor,size: 20,),
-                    //               const SizedBox(width: 5,),
-                    //               Text(journeyList[index].workingDate!)
-                    //             ],),
-                    //             Visibility(
-                    //               visible: journeyList[index].visitStatus! != "FINISHED",
-                    //               child: ElevatedButton(
-                    //                 onPressed: (){
-                    //                   if(journeyList[index].visitStatus! == "PENDING" ) {
-                    //                     _getCurrentPosition(journeyList[index],index);
-                    //                   } else {
-                    //                     Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyList[index],)));
-                    //                   }
-                    //                 },
-                    //                 style: ElevatedButton.styleFrom(
-                    //                   primary: Colors.purple,
-                    //                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                    //                 ),
-                    //                 child: const Text("Start visit"),
-                    //               ),
-                    //             ),
-                    //           ],
-                    //         )
-                    //       ],
-                    //     ),
-                    //   ),
-                    // );
-                  }
-                  ),
-            )
+            child: Stack(
+              children: [
+                isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primaryColor,
+                        ),
+                      )
+                    : Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        child: isError
+                            ? ErrorTextAndButton(
+                                onTap: () {
+                                  getJourneyPlanList(true);
+                                },
+                                errorText: errorText)
+                            : journeyList.isEmpty
+                                ? const Center(
+                                    child: Text("No plans found"),
+                                  )
+                                : searchController.text.isNotEmpty
+                                    ? ListView.builder(
+                                        shrinkWrap: true,
+                                        scrollDirection: Axis.vertical,
+                                        itemCount: journeySearchList.length,
+                                        itemBuilder: (context, index) {
+                                          return MyJpCardForDetail(
+                                            storeName: journeySearchList[index]
+                                                .storeName!,
+                                            visitStatus:
+                                                journeySearchList[index]
+                                                    .visitStatus!
+                                                    .toString(),
+                                            tmrName: journeySearchList[index]
+                                                .tmrName
+                                                .toString(),
+                                            tmrId: journeySearchList[index]
+                                                .tmrId
+                                                .toString(),
+                                            workingDate:
+                                                journeySearchList[index]
+                                                    .workingDate!,
+                                            buttonName: journeySearchList[index]
+                                                        .visitStatus!
+                                                        .toString() ==
+                                                    "0"
+                                                ? "Evaluate"
+                                                : "Resume Visit",
+                                            onMapTap: () {
+                                              // List<String> latLong = journeyList[index].gcode!.split(",");
+                                              //
+                                              // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> GoogleMapScreen(currentLat: _currentPositionForList!.latitude.toString(),currentLong: _currentPositionForList!.longitude.toString(),storeLat:latLong[0] ,storeLong: latLong[1],))).then((value) {
+                                              //   getJourneyPlanList(false);
+                                              // });
+                                            },
+                                            isLoadingButton: isLoadingLocation,
+                                            onTap: () {
+                                              // _getCurrentPosition(journeyList[index],index);
+                                              if (journeySearchList[index]
+                                                      .visitStatus!
+                                                      .toString() ==
+                                                  "0") {
+                                                _getCurrentPosition(
+                                                    journeySearchList[index],
+                                                    index);
+                                              } else {
+                                                Navigator.of(context)
+                                                    .push(MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            MyJourneyModuleNew(
+                                                              journeyResponseListItem:
+                                                                  journeySearchList[
+                                                                      index],
+                                                            )))
+                                                    .then((value) {
+                                                  getJourneyPlanList(false);
+                                                });
+                                              }
+                                            },
+                                          );
+                                        })
+                                    : ListView.builder(
+                                        shrinkWrap: true,
+                                        scrollDirection: Axis.vertical,
+                                        itemCount: journeyList.length,
+                                        itemBuilder: (context, index) {
+                                          return MyJpCardForDetail(
+                                            storeName:
+                                                journeyList[index].storeName!,
+                                            visitStatus: journeyList[index]
+                                                .visitStatus!
+                                                .toString(),
+                                            tmrName: journeyList[index]
+                                                .tmrName
+                                                .toString(),
+                                            tmrId: journeyList[index]
+                                                .tmrId
+                                                .toString(),
+                                            workingDate:
+                                                journeyList[index].workingDate!,
+                                            onMapTap: () {
+                                              // List<String> latLong = journeyList[index].gcode!.split(",");
+                                              //
+                                              // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> GoogleMapScreen(currentLat: _currentPositionForList!.latitude.toString(),currentLong: _currentPositionForList!.longitude.toString(),storeLat:latLong[0] ,storeLong: latLong[1],))).then((value) {
+                                              //   getJourneyPlanList(false);
+                                              // });
+                                            },
+                                            isLoadingButton: isLoadingLocation,
+                                            buttonName: journeyList[index]
+                                                        .visitStatus!
+                                                        .toString() ==
+                                                    "0"
+                                                ? "Evaluate"
+                                                : "Resume Visit",
+                                            onTap: () {
+                                              // _getCurrentPosition(journeyList[index],index);
+                                              if (journeyList[index]
+                                                      .visitStatus!
+                                                      .toString() ==
+                                                  "0") {
+                                                _getCurrentPosition(
+                                                    journeyList[index], index);
+                                              } else {
+                                                Navigator.of(context)
+                                                    .push(MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            MyJourneyModuleNew(
+                                                              journeyResponseListItem:
+                                                                  journeyList[
+                                                                      index],
+                                                            )))
+                                                    .then((value) {
+                                                  getJourneyPlanList(false);
+                                                });
+                                              }
+                                            },
+                                          );
+                                        }),
+                      ),
+                if (isLoadingLocation)
+                  const Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.primaryColor,
+                    ),
+                  )
+              ],
+            ),
           )
         ],
-      )
-    );
+      ),
+    ));
   }
 
-  Future<void> _getCurrentPosition(JourneyResponseListItem journeyResponseListItem,int index) async {
-    final hasPermission = await _handleLocationPermission();
-    if (!hasPermission) return;
-    await Geolocator.getCurrentPosition()
-        .then((Position position) {
+  onSearchTextFieldChanged(String text) async {
+    journeySearchList.clear();
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+
+    for (JourneyResponseListItemDetails journeyItem in journeyList) {
+      if (journeyItem.tmrId!.toString().contains(text.toLowerCase())) {
+        journeySearchList.add(journeyItem);
+      }
+    }
+
+    setState(() {});
+  }
+
+  Future<void> _getCurrentPosition(
+      JourneyResponseListItemDetails journeyResponseListItem, int index) async {
+    setState(() {
+      isLoadingLocation = true;
+    });
+
+    final hasPermission = await handleLocationPermission();
+    if (!hasPermission) {
+      setState(() {
+        isLoadingLocation = false;
+      });
+      return;
+    }
+    ;
+    await Geolocator.getCurrentPosition().then((Position position) async {
       setState(() => _currentPosition = position);
-      
+
       print("Current Position");
       print(_currentPosition);
 
-      pickedImage(journeyResponseListItem,_currentPosition,index);
+      double distanceInKm = await calculateDistance(
+          journeyResponseListItem.gcode!, _currentPosition);
 
-        }).catchError((e) {
+      print(distanceInKm);
+
+      if (distanceInKm < 1.2) {
+        pickedImage(journeyResponseListItem, _currentPosition, index);
+      } else {
+        showToastMessage(false,
+            "You are away from Store. please Go to store and start visit.($distanceInKm)km");
+      }
+      // pickedImage(journeyResponseListItem,_currentPosition,index);
+
+      print("Loaction distance");
+      print(distanceInKm);
+      setState(() {
+        isLoadingLocation = false;
+      });
+    }).catchError((e) {
       debugPrint(e);
+      setState(() {
+        isLoadingLocation = false;
+      });
     });
   }
 
-  Future<void> pickedImage(JourneyResponseListItem journeyResponseListItem,Position? currentLocation,int index)  async {
-    image = await picker.pickImage(source: ImageSource.gallery);
-    if(image == null) {
-
+  Future<void> pickedImage(
+      JourneyResponseListItemDetails journeyResponseListItem,
+      Position? currentLocation,
+      int index) async {
+    image = await picker.pickImage(
+        source: ImageSource.camera, imageQuality: ImageValue.qualityValue);
+    if (image == null) {
     } else {
-      showUploadOption(journeyResponseListItem, currentLocation,index);
+      print("journey plan image is picking");
+      print("Image Path");
+      print(image!.path);
+      compressedImage = await compressAndGetFile(image!);
+      showUploadOption(
+          journeyResponseListItem, currentLocation, index, compressedImage);
     }
   }
 
-  showUploadOption(JourneyResponseListItem journeyResponseListItem,Position? currentLocation,int index) {
-    showPopUpForImageUpload(context, image!, (){
-      String currentPosition = "${currentLocation!.latitude},${currentLocation.longitude}";
+  showUploadOption(JourneyResponseListItemDetails journeyResponseListItem,
+      Position? currentLocation, int index, XFile? image1) {
+    showPopUpForImageUpload(context, journeyResponseListItem, image1!, () {
+      String currentPosition =
+          "${currentLocation!.latitude},${currentLocation.longitude}";
       print(currentPosition);
-      if(image !=null && currentLocation.longitude != null) {
-        startVisitCall(journeyResponseListItem, currentLocation,index);
+      if (image1 != null && currentLocation.longitude != null) {
+        startVisitCall(journeyResponseListItem, currentLocation, index);
       }
-    }, journeyResponseListItem,currentLocation);
+    }, currentLocation, "MyJp");
   }
 
-  startVisitCall(JourneyResponseListItem journeyResponseListItem,Position? currentLocation,int index) {
-    String currentPosition = "${currentLocation!.latitude},${currentLocation.longitude}";
+  startVisitCall(JourneyResponseListItemDetails journeyResponseListItem,
+      Position? currentLocation, int index) {
+    setState(() {
+      isLoading = true;
+    });
+    String currentPosition =
+        "${currentLocation!.latitude},${currentLocation.longitude}";
     print(currentPosition);
-    HTTPManager().startJourneyPlan(StartJourneyPlanRequestModel(elId: journeyResponseListItem.userId!.toString(),workingId: journeyResponseListItem.workingId.toString(),storeId: journeyResponseListItem.storeId.toString(),tmrId: journeyResponseListItem.tmrId.toString(),checkInGps: currentPosition,),image!).then((value) {
-
+    HTTPManager()
+        .startJourneyPlan(
+            StartJourneyPlanRequestModel(
+              elId: journeyResponseListItem.elId!.toString(),
+              workingId: journeyResponseListItem.workingId.toString(),
+              storeId: journeyResponseListItem.storeId.toString(),
+              tmrId: journeyResponseListItem.tmrId.toString(),
+              checkInGps: currentPosition,
+            ),
+            image!)
+        .then((value) {
       showToastMessage(true, "Visit started successfully");
 
-      // setState(() {
-      //   journeyList[index].visitStatus = "IN PROGRESS";
-      // });
-      Navigator.of(context).pop();
-      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyResponseListItem,))).then((value) {
+      setState(() {
+        journeyList[index].visitStatus = 1;
+        if (searchController.text.isNotEmpty) {
+          journeySearchList[index].visitStatus = 1;
+        }
+      });
+      // Navigator.of(context).pop();
+      Navigator.of(context)
+          .push(MaterialPageRoute(
+              builder: (context) => MyJourneyModuleNew(
+                    journeyResponseListItem: journeyResponseListItem,
+                  )))
+          .then((value) {
         getJourneyPlanList(false);
       });
-      setState((){
+      setState(() {
         isLoading = false;
       });
-    }).catchError((e){
+    }).catchError((e) {
       showToastMessage(false, e.toString());
-      setState((){
+      setState(() {
         isLoading = false;
       });
     });
   }
-
-  Future<bool> _handleLocationPermission() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      showToastMessage(false,'Location services are disabled. Please enable the services');
-      // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      //     content: Text('Location services are disabled. Please enable the services')));
-      return false;
-    }
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        showToastMessage(false,'Location permissions are denied');
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //     const SnackBar(content: Text('Location permissions are denied')));
-        return false;
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      showToastMessage(false,'Location permissions are permanently denied, we cannot request permissions.');
-      // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      //     content: Text('Location permissions are permanently denied, we cannot request permissions.')));
-      return false;
-    }
-    return true;
-  }
-
 }

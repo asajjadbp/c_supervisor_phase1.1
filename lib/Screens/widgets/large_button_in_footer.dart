@@ -22,7 +22,7 @@ class LargeButtonInFooter extends StatelessWidget {
             color: AppColors.primaryColor,
             borderRadius: BorderRadius.only(topRight: Radius.circular(10),topLeft: Radius.circular(10))
         ),
-        child:  Text(buttonTitle,style: TextStyle(fontSize:20,color: AppColors.white),),
+        child:  Text(buttonTitle,style: const TextStyle(fontSize:20,color: AppColors.white),),
       ),
     );
   }
