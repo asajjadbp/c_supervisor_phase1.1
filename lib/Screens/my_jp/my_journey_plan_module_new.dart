@@ -103,7 +103,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
         totalScore = totalScore + checkListResponseModel.data![i].score!;
 
         if (checkListResponseModel.data![i].score == 0 ||
-            checkListResponseModel.data![i].score == 0.0) {
+            checkListResponseModel.data![i].score == 0.0 && checkListResponseModel.data![i].isApplicable != "N") {
           setState(() {
             checkListPendingCount = checkListPendingCount + 1;
           });
@@ -203,6 +203,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
                                           .push(MaterialPageRoute(
                                               builder: (context) =>
                                                   MyJourneyPlanCheckList(
+                                                    pageHeader: "Journey Plan",
                                                     checkListResponseModel:
                                                         checkListResponseModel,
                                                   )))
@@ -215,8 +216,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
                                     }
                                   },
                                   pendingCheckListCount: checkListPendingCount,
-                                  questionRating:
-                                      totalScore / filledQuestionScore,
+                                  questionRating: filledQuestionScore == 0 ? 0 : totalScore / filledQuestionScore,
                                   cardName: "Check List",
                                   cardImage: "assets/myicons/checklist.png",
                                 ),

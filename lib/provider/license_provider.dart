@@ -7,6 +7,9 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LicenseProvider with ChangeNotifier {
+  //BASE URL FOR LIVE AND DEV
+  static String basePathForLive = "https://cstore.catalist-me.com/CSupervisor/";
+  static String basePathForDev = "https://cstoredev.catalist-me.com/";
   static String basepath = "";
   static String imageBasePath = "";
   bool isLicense = false;
@@ -21,10 +24,10 @@ class LicenseProvider with ChangeNotifier {
 
   Future<Map<String, dynamic>> getAppLicence(String licenceKey) async {
     final url = Uri.parse(
-        "https://cstore.catalist-me.com/CSupervisor/getClientLicense");
+        "https://cstoredev.catalist-me.com/CSupervisor/getClientLicense");
 
     final response = await http.post(url, body: {"license_key": licenceKey});
-
+    print(url);
     if (response.body.isNotEmpty) {
       final responseData = jsonDecode(response.body);
       print(responseData);

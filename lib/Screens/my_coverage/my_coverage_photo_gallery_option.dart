@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:c_supervisor/Screens/my_coverage/widgets/tme_bottom_sheet_user_list.dart';
 import 'package:c_supervisor/Screens/utills/app_colors_new.dart';
 import 'package:c_supervisor/Screens/widgets/large_button_in_footer.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +9,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Model/request_model/end_visit_request.dart';
+import '../../Model/request_model/get_check_list_request.dart';
 import '../../Model/request_model/image_upload_insde_store_request.dart';
+import '../../Model/request_model/journey_plan_request.dart';
+import '../../Model/request_model/update_tmr_user_in_coverage.dart';
+import '../../Model/response_model/checklist_responses/check_list_response_list_model.dart';
 import '../../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
+import '../../Model/response_model/tme_responses/tmr_list_response.dart';
 import '../../Network/http_manager.dart';
+import '../my_jp/my_journey_plan_check_list.dart';
 import '../my_jp/widgets/my_journey_plan_module_card_item.dart';
 import '../utills/image_compressed_functions.dart';
 import '../utills/image_quality.dart';
@@ -22,6 +29,7 @@ import '../widgets/header_background_new.dart';
 import '../widgets/header_widgets_new.dart';
 import '../widgets/toast_message_show.dart';
 import 'my_coverage_gallery.dart';
+
 
 class MyCoveragePhotoGalleryOptions extends StatefulWidget {
   const MyCoveragePhotoGalleryOptions(
@@ -40,14 +48,24 @@ class _MyCoveragePhotoGalleryOptionsState
   String userName = "";
   String userId = "";
   int? geoFence;
+  int checkListPendingCount = 0;
+  int totalScore = 0;
+  int filledQuestionScore = 0;
+  int selectedTmrUser = 0;
+  late TmrUserItem tmrUserItem;
 
   bool isLoading = true;
   bool isLoadingLocation = false;
+  bool isError = false;
+  String errorText = "";
 
   ImagePicker picker = ImagePicker();
   XFile? image;
   XFile? compressedImage;
   Position? _currentPosition;
+
+  late CheckListResponseModel checkListResponseModel;
+  late TmrUserList tmrUserList;
 
   TextEditingController commentController = TextEditingController();
 
@@ -66,7 +84,86 @@ class _MyCoveragePhotoGalleryOptionsState
       geoFence = sharedPreferences.getInt(UserConstants().userGeoFence)!;
     });
 
+    getCheckList(true);
+    getTmrUserList(true);
+
     // getJourneyPlanList(true);
+  }
+
+  getCheckList(bool loader) {
+
+    setState(() {
+      isLoading = loader;
+    });
+
+    HTTPManager()
+        .getCheckList(GetCheckListRequest(
+        elId: userId,
+        workingId: widget.journeyResponseListItemDetails.workingId.toString(),
+        storeId: widget.journeyResponseListItemDetails.storeId.toString(),
+        tmrId: widget.journeyResponseListItemDetails.tmrId.toString()))
+        .then((value) {
+      setState(() {
+        checkListPendingCount = 0;
+        checkListResponseModel = value;
+        isLoading = false;
+        isError = false;
+      });
+
+      totalScore = 0;
+
+      for (int i = 0; i < checkListResponseModel.data!.length; i++) {
+        totalScore = totalScore + checkListResponseModel.data![i].score!;
+
+        if (checkListResponseModel.data![i].score == 0 ||
+            checkListResponseModel.data![i].score == 0.0 && checkListResponseModel.data![i].isApplicable != "N") {
+          setState(() {
+            checkListPendingCount = checkListPendingCount + 1;
+          });
+        }
+      }
+      filledQuestionScore =
+          checkListResponseModel.data!.length - checkListPendingCount;
+      // print("Total question");
+      // print(checkListResponseModel.data!.length);
+      // print("filled question");
+      // print(filledQuestionScore);
+      // print("pending question");
+      // print(checkListPendingCount);
+      // print(totalScore);
+    }).catchError((e) {
+      setState(() {
+        isError = true;
+        errorText = e.toString();
+        isLoading = false;
+      });
+    });
+  }
+
+  getTmrUserList(bool loader) {
+
+    setState(() {
+      isLoading = loader;
+    });
+
+    HTTPManager()
+        .tmrUserList(JourneyPlanRequestModel(
+        elId: userId,))
+        .then((value) {
+      setState(() {
+        
+        tmrUserList = value;
+        isLoading = false;
+        isError = false;
+      });
+      
+    }).catchError((e) {
+      setState(() {
+        isError = true;
+        errorText = e.toString();
+        isLoading = false;
+      });
+    });
   }
 
   @override
@@ -114,6 +211,63 @@ class _MyCoveragePhotoGalleryOptionsState
                         questionRating: 0,
                         cardName: "Gallery",
                         cardImage: "assets/myicons/gallery.png",
+                      ),
+                      MyJourneyPlanModuleCardItem(
+                        onTap: () {
+                          if(filledQuestionScore == 0) {
+                            selectedTmrUser = 0;
+                            tmrBottomSheetUserList(
+                                context, tmrUserList, selectedTmrUser,
+                                isLoadingLocation, (value) {
+                              print(value.id);
+                              print(value.fullName);
+                              setState(() {
+                                tmrUserItem = value;
+                              });
+                            }, () {
+                              updateTmrUserInCoverage(userId,
+                                  widget.journeyResponseListItemDetails
+                                      .workingId.toString(),
+                                  tmrUserItem.id.toString());
+                            }
+                            );
+                          } else {
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(
+                                builder: (context) =>
+                                    MyJourneyPlanCheckList(
+                                      pageHeader: "My Coverage",
+                                      checkListResponseModel:
+                                      checkListResponseModel,
+                                    )))
+                                .then((value) {
+                              getCheckList(false);
+                              getTmrUserList(false);
+                            });
+                          }
+
+                          // if (checkListResponseModel
+                          //     .data!.isNotEmpty) {
+                          //   Navigator.of(context)
+                          //       .push(MaterialPageRoute(
+                          //       builder: (context) =>
+                          //           MyJourneyPlanCheckList(
+                          //             pageHeader: "My Coverage",
+                          //             checkListResponseModel:
+                          //             checkListResponseModel,
+                          //           )))
+                          //       .then((value) {
+                          //     // getCheckList(false);
+                          //   });
+                          // } else {
+                          //   showToastMessage(
+                          //       false, "Check list is empty");
+                          // }
+                        },
+                        pendingCheckListCount: checkListPendingCount,
+                        questionRating:filledQuestionScore == 0 ? 0 : totalScore / filledQuestionScore,
+                        cardName: "Check List",
+                        cardImage: "assets/myicons/checklist.png",
                       ),
                     ],
                   ),
@@ -256,6 +410,40 @@ class _MyCoveragePhotoGalleryOptionsState
       });
       // print(e);
       showToastMessage(false, e.toString());
+    });
+  }
+
+  updateTmrUserInCoverage(String elId,String workingId,String tmrId) {
+    setState(() {
+      isLoadingLocation = true;
+    });
+    Navigator.of(context).pop();
+    HTTPManager().updateTmrUserCoverage(UpdateTmrUserInCoverage(elId: elId,workingId: workingId,tmrId: tmrId,)).then((value) {
+
+      showToastMessage(true, "Tmr update successfully");
+
+      Navigator.of(context)
+          .push(MaterialPageRoute(
+          builder: (context) =>
+              MyJourneyPlanCheckList(
+                pageHeader: "My Coverage",
+                checkListResponseModel:
+                checkListResponseModel,
+              )))
+          .then((value) {
+        getCheckList(false);
+        getTmrUserList(false);
+      });
+
+      setState(() {
+        isLoadingLocation = false;
+      });
+    }).catchError((e) {
+      setState(() {
+        showToastMessage(false, e.toString());
+        isLoadingLocation = false;
+
+      });
     });
   }
 }

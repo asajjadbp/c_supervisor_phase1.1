@@ -20,10 +20,11 @@ import '../widgets/alert_dialogues.dart';
 import '../widgets/large_button_in_footer.dart';
 
 class MyJourneyPlanCheckList extends StatefulWidget {
-  const MyJourneyPlanCheckList({Key? key, required this.checkListResponseModel})
+  const MyJourneyPlanCheckList({Key? key, required this.checkListResponseModel,required this.pageHeader})
       : super(key: key);
 
   final CheckListResponseModel checkListResponseModel;
+  final String pageHeader;
 
   @override
   State<MyJourneyPlanCheckList> createState() => _MyJourneyPlanCheckListState();
@@ -66,7 +67,7 @@ class _MyJourneyPlanCheckListState extends State<MyJourneyPlanCheckList> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text("Journey Plan Check List"),
+          title:  Text("${widget.pageHeader} Check List"),
         ),
         body: Stack(
           children: [
@@ -107,7 +108,7 @@ class _MyJourneyPlanCheckListState extends State<MyJourneyPlanCheckList> {
                                           widget.checkListResponseModel
                                               .data![index].checkList!,
                                         ),
-                                        const SizedBox(height: 5),
+                                        const SizedBox(height: 6),
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -123,7 +124,7 @@ class _MyJourneyPlanCheckListState extends State<MyJourneyPlanCheckList> {
                                                 ),
                                                 RatingBar.builder(
                                                   updateOnDrag: false,
-                                                  ignoreGestures: false,
+                                                  ignoreGestures: widget.checkListResponseModel.data![index].isApplicable == "N",
                                                   initialRating: widget
                                                       .checkListResponseModel
                                                       .data![index]
@@ -153,6 +154,7 @@ class _MyJourneyPlanCheckListState extends State<MyJourneyPlanCheckList> {
                                                 )
                                               ],
                                             ),
+                                            widget.checkListResponseModel.data![index].isApplicable != "N" ?
                                             InkWell(
                                               onTap: () {
                                                 pickedImage(
@@ -173,10 +175,17 @@ class _MyJourneyPlanCheckListState extends State<MyJourneyPlanCheckList> {
                                                   size: 30,
                                                 ),
                                               ),
-                                            ),
+                                            ) : const Align(
+                                              alignment: Alignment.topRight,
+                                              child: Icon(Icons.lock,
+                                                color: AppColors.primaryColor,
+                                                size: 30,
+                                              ),
+                                            )
                                           ],
                                         ),
                                         const SizedBox(height: 10),
+                                        if(widget.checkListResponseModel.data![index].isApplicable != "N")
                                         Align(
                                           alignment: Alignment.bottomRight,
                                           child: ExpandChild(

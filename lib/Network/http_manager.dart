@@ -19,6 +19,7 @@ import '../Model/request_model/journey_plan_request.dart';
 import '../Model/request_model/login_request.dart';
 import '../Model/request_model/save_user_location_request.dart';
 import '../Model/request_model/start_journey_plan_request.dart';
+import '../Model/request_model/update_tmr_user_in_coverage.dart';
 import '../Model/request_model/upload_check_list_photo_request.dart';
 import '../Model/response_model/check_in_response/check_in_response.dart';
 import '../Model/response_model/check_in_response/check_in_status_response_details.dart';
@@ -26,6 +27,7 @@ import '../Model/response_model/checklist_responses/check_list_response_list_mod
 import '../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
 import '../Model/response_model/login_responses/login_response_model.dart';
 import '../Model/response_model/my_coverage_response/uploaded_store_images_list_response.dart';
+import '../Model/response_model/tme_responses/tmr_list_response.dart';
 import 'api_urls.dart';
 
 class HTTPManager {
@@ -123,6 +125,38 @@ class HTTPManager {
         LogInResponseModel.fromJson(response);
 
     return logInResponseModel;
+  }
+
+  //TMR USER LIST
+  Future<TmrUserList> tmrUserList(
+      JourneyPlanRequestModel journeyPlanRequestModel) async {
+    // var url = ApplicationURLs.API_JP;
+    var url = LicenseProvider.basepath + ApplicationURLs.API_TMR_USER_LIST;
+    // ignore: avoid_print
+    print("tmr list");
+    print(url);
+
+    final response =
+    await _handler.post(Uri.parse(url), journeyPlanRequestModel.toJson());
+    TmrUserList tmrUserList =
+    TmrUserList.fromJson(response);
+
+    return tmrUserList;
+  }
+
+  //Start Journey Plan
+  Future<dynamic> updateTmrUserCoverage(
+      UpdateTmrUserInCoverage updateTmrUserInCoverage) async {
+    // var url = ApplicationURLs.API_START_VISIT;
+    var url = LicenseProvider.basepath + ApplicationURLs.API_TMR_UPDATE_USER;
+    // ignore: avoid_print
+    print(url);
+
+    final response = await _handler.post(
+        Uri.parse(url), updateTmrUserInCoverage.toJson());
+    // JourneyPlanResponseModel journeyPlanResponseModel = JourneyPlanResponseModel.fromJson(response);
+
+    return response;
   }
 
   //Journey Plan List

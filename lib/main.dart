@@ -1,10 +1,9 @@
-import 'package:c_supervisor/Screens/attendence/attendence.dart';
+
 import 'package:c_supervisor/provider/license_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import 'Screens/attendence/attendence_home.dart';
 import 'Screens/license/license.dart';
 import 'Screens/splash/splash_screen.dart';
 import 'Screens/utills/app_colors_new.dart';
@@ -32,25 +31,20 @@ class MyApp extends StatelessWidget {
               indicatorColor: AppColors.primaryColor,
             ),
             debugShowCheckedModeBanner: false,
-            // home: AttendenceHome(),
             home: auth.isLicenseGet
                 ? const SplashScreen()
-                // ? AttendenceHome()
                 : FutureBuilder(
                     future: auth.fetchLicenseAtLocal(),
                     builder: (ctx, snapshot) {
                       return snapshot.connectionState == ConnectionState.waiting
                           ? Scaffold(
                               body: Container(
-                                child: Center(child: Text("Please wait...")),
+                                child: const Center(child: Text("Please wait...")),
                               ),
                             )
-                          : MyLicense();
+                          : const MyLicense();
                     })
 
-            // home: ProgressBar(),
-            // home: TeamAttendence(),
-            // home: AttendenceHome(),
             );
       }),
     );

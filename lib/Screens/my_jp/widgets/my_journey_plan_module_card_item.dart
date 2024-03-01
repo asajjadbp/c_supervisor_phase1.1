@@ -49,7 +49,7 @@ class MyJourneyPlanModuleCardItem extends StatelessWidget {
                           Text(
                             cardName,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 4,
                           ),
                           if (pendingCheckListCount != 0 ||

@@ -96,6 +96,7 @@ class CheckListItem {
   int? score;
   String? comment;
   String? imageName;
+  String? isApplicable;
 
   CheckListItem(
       {this.id,
@@ -103,7 +104,9 @@ class CheckListItem {
         this.checklistResultId,
         this.score,
         this.comment,
-        this.imageName});
+        this.imageName,
+        this.isApplicable,
+      });
 
   CheckListItem.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -112,6 +115,7 @@ class CheckListItem {
     score = json['score'];
     comment = json['comment'];
     imageName = json['image_name'];
+    isApplicable = json['applicable'];
   }
 
   Map<String, dynamic> toJson() {
@@ -122,6 +126,7 @@ class CheckListItem {
     data['score'] = score;
     data['comment'] = comment;
     data['image_name'] = imageName;
+    data['applicable'] = isApplicable;
     return data;
   }
 }

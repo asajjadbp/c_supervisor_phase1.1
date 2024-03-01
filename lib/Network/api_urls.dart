@@ -38,6 +38,12 @@ class ApplicationURLs {
   // static const API_IPC_CHECK_IN_STATUS = "${BASE_URL_APP}checkInStatus";
   static const API_IPC_CHECK_IN_STATUS = "checkInStatus";
 
+  //TMR USER LIST
+  static const API_TMR_USER_LIST = "elTmrs";
+
+  //TMR USER LIST
+  static const API_TMR_UPDATE_USER = "updateElCoverageTMR";
+
   //Check In
   // static const API_IPC_CHECK_IN = "${BASE_URL_APP}checkIn";
   static const API_IPC_CHECK_IN = "checkIn";
