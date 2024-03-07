@@ -7,18 +7,23 @@ import 'package:c_supervisor/Model/request_model/update_attendence_response.dart
 import 'package:c_supervisor/Model/response_model/attendence_response/attendence_response.dart';
 import 'package:c_supervisor/Model/response_model/attendence_response/update_attendence_response.dart';
 import 'package:c_supervisor/Model/response_model/knowledge_share/knowledge_share_model.dart';
+import 'package:c_supervisor/Model/response_model/my_team_responses/my_team_jp_responses/my_team_jp_list_response.dart';
+import 'package:c_supervisor/Model/response_model/my_team_responses/team_kpi_reponses/team_kpi_list_response_model.dart';
 import 'package:c_supervisor/Network/response_handler.dart';
 import 'package:c_supervisor/provider/license_provider.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../Model/request_model/check_in_status_request.dart';
+import '../Model/request_model/delete_special_visit.dart';
 import '../Model/request_model/end_visit_request.dart';
 import '../Model/request_model/get_check_list_request.dart';
 import '../Model/request_model/image_upload_insde_store_request.dart';
 import '../Model/request_model/journey_plan_request.dart';
 import '../Model/request_model/login_request.dart';
+import '../Model/request_model/save_special_visit.dart';
 import '../Model/request_model/save_user_location_request.dart';
 import '../Model/request_model/start_journey_plan_request.dart';
+import '../Model/request_model/update_efficiency_feedback_request_model.dart';
 import '../Model/request_model/update_tmr_user_in_coverage.dart';
 import '../Model/request_model/upload_check_list_photo_request.dart';
 import '../Model/response_model/check_in_response/check_in_response.dart';
@@ -27,7 +32,14 @@ import '../Model/response_model/checklist_responses/check_list_response_list_mod
 import '../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
 import '../Model/response_model/login_responses/login_response_model.dart';
 import '../Model/response_model/my_coverage_response/uploaded_store_images_list_response.dart';
-import '../Model/response_model/tme_responses/tmr_list_response.dart';
+import '../Model/response_model/my_team_responses/add_special_visit/client_list_model_response.dart';
+import '../Model/response_model/my_team_responses/add_special_visit/companies_list_model_response.dart';
+import '../Model/response_model/my_team_responses/add_special_visit/reason_list_model_response.dart';
+import '../Model/response_model/my_team_responses/add_special_visit/special_visit_list_model_response.dart';
+import '../Model/response_model/my_team_responses/add_special_visit/store_list_model_response.dart';
+import '../Model/response_model/my_team_responses/team_kpi_reponses/feedback_list_response_model.dart';
+import '../Model/response_model/my_team_responses/visits_history_responses/visit_history_list_model.dart';
+import '../Model/response_model/tmr_responses/tmr_list_response.dart';
 import 'api_urls.dart';
 
 class HTTPManager {
@@ -133,7 +145,6 @@ class HTTPManager {
     // var url = ApplicationURLs.API_JP;
     var url = LicenseProvider.basepath + ApplicationURLs.API_TMR_USER_LIST;
     // ignore: avoid_print
-    print("tmr list");
     print(url);
 
     final response =
@@ -142,6 +153,110 @@ class HTTPManager {
     TmrUserList.fromJson(response);
 
     return tmrUserList;
+  }
+
+  //CLIENTS LIST
+  Future<ClientListResponseModel> clientList(
+      JourneyPlanRequestModel journeyPlanRequestModel) async {
+    // var url = ApplicationURLs.API_JP;
+    var url = LicenseProvider.basepath + ApplicationURLs.API_CLIENT_LIST;
+    // ignore: avoid_print
+    print(url);
+
+    final response =
+    await _handler.post(Uri.parse(url), journeyPlanRequestModel.toJson());
+    ClientListResponseModel clientListResponseModel =
+    ClientListResponseModel.fromJson(response);
+
+    return clientListResponseModel;
+  }
+
+  //STORE LIST
+  Future<StoresListResponseModel> storeList(
+      JourneyPlanRequestModel journeyPlanRequestModel) async {
+    // var url = ApplicationURLs.API_JP;
+    var url = LicenseProvider.basepath + ApplicationURLs.API_STORES_LIST;
+    // ignore: avoid_print
+    print(url);
+
+    final response =
+    await _handler.post(Uri.parse(url), journeyPlanRequestModel.toJson());
+    StoresListResponseModel storesListResponseModel =
+    StoresListResponseModel.fromJson(response);
+
+    return storesListResponseModel;
+  }
+
+  //COMPANY LIST
+  Future<CompaniesListResponseModel> companyList(
+      JourneyPlanRequestModel journeyPlanRequestModel) async {
+    // var url = ApplicationURLs.API_JP;
+    var url = LicenseProvider.basepath + ApplicationURLs.API_COMPANIES_LIST;
+    // ignore: avoid_print
+    print(url);
+
+    final response =
+    await _handler.post(Uri.parse(url), journeyPlanRequestModel.toJson());
+    CompaniesListResponseModel companiesListResponseModel =
+    CompaniesListResponseModel.fromJson(response);
+
+    return companiesListResponseModel;
+  }
+
+  //REASON LIST
+  Future<ReasonListResponseModel> reasonList() async {
+    // var url = ApplicationURLs.API_JP;
+    var url = LicenseProvider.basepath + ApplicationURLs.API_REASON_LIST;
+    // ignore: avoid_print
+    print(url);
+
+    final response =
+    await _handler.get(Uri.parse(url));
+    ReasonListResponseModel reasonListResponseModel =
+    ReasonListResponseModel.fromJson(response);
+
+    return reasonListResponseModel;
+  }
+
+  // SPECIAL VISIT LIST
+  Future<SpecialVisitListResponseModel> specialVisitList(JourneyPlanRequestModel journeyPlanRequestModel) async {
+    // var url = ApplicationURLs.API_JP;
+    var url = LicenseProvider.basepath + ApplicationURLs.API_SPECIAL_VISIT_LIST;
+    // ignore: avoid_print
+    print(url);
+
+    final response =
+    await _handler.post(Uri.parse(url),journeyPlanRequestModel.toJson());
+    SpecialVisitListResponseModel specialVisitListResponseModel =
+    SpecialVisitListResponseModel.fromJson(response);
+
+    return specialVisitListResponseModel;
+  }
+
+  // SAVE SPECIAL VISIT
+  Future<dynamic> saveSpecialVisit(SaveSpecialVisitRequestModel specialVisitRequestModel) async {
+    // var url = ApplicationURLs.API_JP;
+    var url = LicenseProvider.basepath + ApplicationURLs.API_SAVE_SPECIAL_VISIT;
+    // ignore: avoid_print
+    print(url);
+
+    final response =
+    await _handler.post(Uri.parse(url),specialVisitRequestModel.toJson());
+
+    return response;
+  }
+
+  // DELETE SPECIAL VISIT
+  Future<dynamic> deleteSpecialVisit(DeleteSpecialVisitRequestModel deleteSpecialVisitRequestModel) async {
+    // var url = ApplicationURLs.API_JP;
+    var url = LicenseProvider.basepath + ApplicationURLs.API_DELETE_SPECIAL_VISIT;
+    // ignore: avoid_print
+    print(url);
+
+    final response =
+    await _handler.post(Uri.parse(url),deleteSpecialVisitRequestModel.toJson());
+
+    return response;
   }
 
   //Start Journey Plan
@@ -274,6 +389,24 @@ class HTTPManager {
     return storeImageResponseModel;
   }
 
+  //My Journey Plan Store Selfie Availability
+  Future<StoreSelfieAvailabilityResponseModel> storeSelfieAvailability(
+      UploadedImagesRequestModel uploadedImagesRequestModel) async {
+    // var url = ApplicationURLs.API_UPLOADED_PHOTO_STORE;
+
+    var url =
+        LicenseProvider.basepath + ApplicationURLs.API_SELFIE_AVAILABILITY;
+    // ignore: avoid_print
+    print(url);
+
+    final response = await _handler.post(
+        Uri.parse(url), uploadedImagesRequestModel.toJson());
+    StoreSelfieAvailabilityResponseModel selfieAvailabilityResponseModel =
+    StoreSelfieAvailabilityResponseModel.fromJson(response);
+
+    return selfieAvailabilityResponseModel;
+  }
+
   //Store Image List Item
   Future<dynamic> storeImagesDelete(
       DeleteImageRequestModel deleteImageRequestModel) async {
@@ -355,4 +488,65 @@ class HTTPManager {
         KnowledgeShareResponseModel.fromJson(response);
     return knowledgeShareResponseModel;
   }
+
+  /// MY Team API calls From Here
+
+  //Visits History
+  Future<VisitsHistoryResponseModel> getVisitHistoryList(
+      JourneyPlanRequestModel journeyPlanRequestModel) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_VISIT_HISTORY;
+    print(url);
+    final response = await _handler.post(
+        Uri.parse(url), journeyPlanRequestModel.toJson());
+    VisitsHistoryResponseModel visitsHistoryResponseModel =
+    VisitsHistoryResponseModel.fromJson(response);
+    return visitsHistoryResponseModel;
+  }
+
+  //Team KPI
+  Future<TeamKpiResponseModel> getMyTeamKpiList(
+      JourneyPlanRequestModel journeyPlanRequestModel) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_TEAM_KPI_LIST;
+
+    final response = await _handler.post(
+        Uri.parse(url), journeyPlanRequestModel.toJson());
+    TeamKpiResponseModel teamKpiResponseModel =
+    TeamKpiResponseModel.fromJson(response);
+    return teamKpiResponseModel;
+  }
+
+  //Team JP
+  Future<MyTeamJpResponseModel> getMyTeamJpList(
+      JourneyPlanRequestModel journeyPlanRequestModel) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_MY_TEAM_JP_LIST;
+
+    final response = await _handler.post(
+        Uri.parse(url), journeyPlanRequestModel.toJson());
+    MyTeamJpResponseModel myTeamJpResponseModel =
+    MyTeamJpResponseModel.fromJson(response);
+    return myTeamJpResponseModel;
+  }
+
+  //Feedback dropdown list
+  Future<FeedbackListResponseModel> getFeedBackList() async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_GET_FEEDBACK_DROPDOWN_LIST;
+
+    final response = await _handler.get(
+        Uri.parse(url));
+    FeedbackListResponseModel feedbackListResponseModel =
+    FeedbackListResponseModel.fromJson(response);
+    return feedbackListResponseModel;
+  }
+
+  //update Feedback in KPI
+  Future<dynamic> updateFeedBackInKpi(
+      UpdateEfficiencyFeedbackRequestModel updateEfficiencyFeedbackRequestModel) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_UPDATE_EFFICIENCY_FEEDBACK;
+
+    final response = await _handler.post(
+        Uri.parse(url), updateEfficiencyFeedbackRequestModel.toJson());
+
+    return response;
+  }
+
 }

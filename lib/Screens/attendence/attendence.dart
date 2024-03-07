@@ -148,7 +148,7 @@ class _TeamAttendenceState extends State<TeamAttendence> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              chartValuesOptions: ChartValuesOptions(
+                              chartValuesOptions: const ChartValuesOptions(
                                 // showChartValueBackground: true,
                                 // showChartValues: true,
                                 // showChartValuesInPercentage: false,

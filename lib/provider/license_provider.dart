@@ -24,7 +24,7 @@ class LicenseProvider with ChangeNotifier {
 
   Future<Map<String, dynamic>> getAppLicence(String licenceKey) async {
     final url = Uri.parse(
-        "https://cstoredev.catalist-me.com/CSupervisor/getClientLicense");
+        "https://cstoredev.catalist-me.com/CSupervisorv1/getClientLicense");
 
     final response = await http.post(url, body: {"license_key": licenceKey});
     print(url);
@@ -64,7 +64,7 @@ class LicenseProvider with ChangeNotifier {
     // ApplicationURLs().setBaseUrl(extractedLicense["base_url"] as String);
     basepath = extractedLicense["base_url"] as String;
     imageBasePath = extractedLicense["image_base_url"] as String;
-    basepath = "${basepath}CSupervisor/";
+    basepath = "${basepath}CSupervisorv1/";
     imageBasePath = "${imageBasePath}";
 
     print("The base path is  ");

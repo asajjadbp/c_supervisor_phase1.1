@@ -73,7 +73,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 height: 165,
                 width: 250,
               ),
-              Text(
+              const Text(
                 "Welcome To CSupervisor",
                 style: TextStyle(
                     color: Colors.white,

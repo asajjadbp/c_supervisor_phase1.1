@@ -41,7 +41,28 @@ class ApplicationURLs {
   //TMR USER LIST
   static const API_TMR_USER_LIST = "elTmrs";
 
-  //TMR USER LIST
+  //Clients LIST
+  static const API_CLIENT_LIST = "elClients";
+
+  //Stores LIST
+  static const API_STORES_LIST = "elStores";
+
+  //Companies LIST
+  static const API_COMPANIES_LIST = "elCompanies";
+
+  //Reasons List
+  static const API_REASON_LIST = "specialVisitReason";
+
+  //Special Visit List
+  static const API_SPECIAL_VISIT_LIST = "viewSpecialVisits";
+
+  //Save Special Visit
+  static const API_SAVE_SPECIAL_VISIT = "saveSpecialVisit";
+
+  //Delete Special Visit
+  static const API_DELETE_SPECIAL_VISIT = "deleteSpecialVisit";
+
+  //TMR Coverage LIST
   static const API_TMR_UPDATE_USER = "updateElCoverageTMR";
 
   //Check In
@@ -83,6 +104,24 @@ class ApplicationURLs {
   //Store Image List
   // static const API_UPLOADED_PHOTO_STORE = "${BASE_URL_APP}getInStoreImages";
   static const API_UPLOADED_PHOTO_STORE = "getInStoreImages";
+
+  //Store Selfie Availability
+  static const API_SELFIE_AVAILABILITY = "getInStoreSelfie";
+
+  //Visit History
+  static const API_VISIT_HISTORY = "visitHistory";
+
+  //EL Team JP List
+  static const API_MY_TEAM_JP_LIST = "elTeamJP";
+
+  //EL Team KPI List
+  static const API_TEAM_KPI_LIST = "elTeamKPI";
+
+  //Feed back drop down List
+  static const API_GET_FEEDBACK_DROPDOWN_LIST = "getFeedBackReason";
+
+  //Update efficiency feedback
+  static const API_UPDATE_EFFICIENCY_FEEDBACK = "updateEffFeedback";
 
   //Delete Store Image
   // static const API_DELETE_PHOTO_STORE =

@@ -2,11 +2,14 @@ import 'package:c_supervisor/Model/request_model/get_attendence_request.dart';
 import 'package:c_supervisor/Model/request_model/get_check_list_request.dart';
 import 'package:c_supervisor/Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
 import 'package:c_supervisor/Screens/attendence/attendence.dart';
+import 'package:c_supervisor/Screens/myteam/special_visit_screen.dart';
+import 'package:c_supervisor/Screens/myteam/team_kpi.dart';
 import 'package:flutter/material.dart';
 
 import '../../Model/response_model/attendence_response/attendence_response.dart';
 import '../../Network/http_manager.dart';
 import '../dashboard/widgets/main_dashboard_card_item.dart';
+import '../myteam/visits_history.dart';
 import '../widgets/header_background_new.dart';
 import '../widgets/header_widgets_new.dart';
 
@@ -25,7 +28,7 @@ class _AttendenceHomeState extends State<AttendenceHome> {
         ignoring: false,
         child: HeaderBackgroundNew(
           childWidgets: [
-            HeaderWidgetsNew(
+            const HeaderWidgetsNew(
                 pageTitle: "My Team", isBackButton: true, isDrawerButton: true),
             Expanded(
               child: Stack(
@@ -51,6 +54,42 @@ class _AttendenceHomeState extends State<AttendenceHome> {
                           },
                           imageUrl: "assets/myicons/attendance.png",
                           cardName: "Team Attendance"),
+                      MainDashboardItemCard(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                const VisitHistory()));
+
+                            // showToastMessage(false,"Coming Soon...");
+                          },
+                          imageUrl:
+                          // "assets/dashboard/my_coverage.png"
+                          "assets/myicons/visithistory.png",
+                          cardName: "Visits History"),
+                      MainDashboardItemCard(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                const TeamKpiScreen()));
+
+                            // showToastMessage(false,"Coming Soon...");
+                          },
+                          imageUrl:
+                          // "assets/dashboard/my_coverage.png"
+                          "assets/myicons/teamkpi.png",
+                          cardName: "Team KPIS"),
+                      MainDashboardItemCard(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                const SpecialVisitScreen()));
+
+                            // showToastMessage(false,"Coming Soon...");
+                          },
+                          imageUrl:
+                          // "assets/dashboard/my_coverage.png"
+                          "assets/myicons/specialvisit.png",
+                          cardName: "Special Visits"),
                       // MainDashboardItemCard(onTap:(){
                       //
                       // },imageUrl:"assets/dashboard/my_team.png", cardName:"My Team"),

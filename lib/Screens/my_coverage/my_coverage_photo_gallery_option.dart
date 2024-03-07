@@ -15,7 +15,7 @@ import '../../Model/request_model/journey_plan_request.dart';
 import '../../Model/request_model/update_tmr_user_in_coverage.dart';
 import '../../Model/response_model/checklist_responses/check_list_response_list_model.dart';
 import '../../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
-import '../../Model/response_model/tme_responses/tmr_list_response.dart';
+import '../../Model/response_model/tmr_responses/tmr_list_response.dart';
 import '../../Network/http_manager.dart';
 import '../my_jp/my_journey_plan_check_list.dart';
 import '../my_jp/widgets/my_journey_plan_module_card_item.dart';
@@ -374,7 +374,8 @@ class _MyCoveragePhotoGalleryOptionsState
                 elId: journeyResponseListItem.elId!.toString(),
                 workingId: journeyResponseListItem.workingId.toString(),
                 storeId: journeyResponseListItem.storeId.toString(),
-                checkInGps: currentLocation,
+                isSelfie: "N",
+                selfieType: "0",
                 comment: commentController.text),
             image1!)
         .then((value) {

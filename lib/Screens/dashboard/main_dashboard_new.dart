@@ -8,13 +8,11 @@ import 'package:c_supervisor/Network/http_manager.dart';
 import 'package:c_supervisor/Screens/attendence/attendence_home.dart';
 import 'package:c_supervisor/Screens/dashboard/widgets/main_dashboard_card_item.dart';
 import 'package:c_supervisor/Screens/knowledge/knowledge_share.dart';
-import 'package:c_supervisor/Screens/myteam/my_team.dart';
 import 'package:flutter/material.dart';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:new_version_plus/new_version_plus.dart';
-// import 'package:new_version/new_version.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Model/request_model/check_in_status_request.dart';
@@ -51,7 +49,6 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
   XFile? compressedImage;
   Position? _currentPosition;
 
-  bool isLoading = true;
   bool isLoading1 = false;
   bool isLoading2 = false;
   bool isError = false;
@@ -80,7 +77,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
     getUserData();
     updateAvailable();
     // checkUpdate();
-    getIpcLocations();
+    // getIpcLocations();
     checkVpnDetector();
 
     super.initState();
@@ -203,27 +200,27 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
     });
   }
 
-  getIpcLocations() {
-    setState(() {
-      isLoading = true;
-    });
-
-    HTTPManager().getIPCLocation().then((value) {
-      setState(() {
-        ipcLocation = value.data!;
-
-        isLoading = false;
-        isError = false;
-      });
-    }).catchError((e) {
-      setState(() {
-        print(e.toString());
-        isLoading = false;
-        isError = true;
-        errorText = e.toString();
-      });
-    });
-  }
+  // getIpcLocations() {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+  //
+  //   HTTPManager().getIPCLocation().then((value) {
+  //     setState(() {
+  //       ipcLocation = value.data!;
+  //
+  //       isLoading = false;
+  //       isError = false;
+  //     });
+  //   }).catchError((e) {
+  //     setState(() {
+  //       print(e.toString());
+  //       isLoading = false;
+  //       isError = true;
+  //       errorText = e.toString();
+  //     });
+  //   });
+  // }
 
   getCheckInStatus() {
     setState(() {
@@ -322,7 +319,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                     isBackButton: false,
                     isDrawerButton: true),
                 Expanded(
-                  child: isLoading || isLoading1
+                  child: isLoading1
                       ? const Center(
                           child: CircularProgressIndicator(
                             color: AppColors.primaryColor,
@@ -331,7 +328,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                       : isError
                           ? ErrorTextAndButton(
                               onTap: () {
-                                getIpcLocations();
+                                // getIpcLocations();
                                 getCheckInStatus();
                               },
                               errorText: errorText)
@@ -433,7 +430,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                               ],
                             ),
                 ),
-                isLoading || isLoading1
+                isLoading1
                     ? Container()
                     : Row(
                         children: [

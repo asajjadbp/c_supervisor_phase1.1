@@ -13,8 +13,10 @@ import '../../Model/request_model/get_check_list_request.dart';
 import '../../Model/request_model/image_upload_insde_store_request.dart';
 import '../../Model/response_model/checklist_responses/check_list_response_list_model.dart';
 import '../../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
+import '../../Model/response_model/my_coverage_response/uploaded_store_images_list_response.dart';
 import '../../Network/http_manager.dart';
 import '../my_coverage/my_coverage_gallery.dart';
+import '../my_coverage/widgets/tme_bottom_sheet_user_list.dart';
 import '../utills/app_colors_new.dart';
 import '../utills/image_compressed_functions.dart';
 import '../utills/image_quality.dart';
@@ -47,6 +49,10 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
   bool isEndLoading = false;
   String errorText = "";
 
+  String selfieWithTmr = "0";
+  String selfieWithTmrWorking = "0";
+  String selfieWithTmrCompleted = "0";
+
   bool isLoadingLocation = false;
 
   late CheckListResponseModel checkListResponseModel;
@@ -56,6 +62,8 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
   ImagePicker picker = ImagePicker();
   XFile? image;
   XFile? compressedImage;
+
+  List<StoreSelfieAvailabilityResponseItem> storeSelfieAvailabilityResponseItem = <StoreSelfieAvailabilityResponseItem>[];
 
   TextEditingController commentController = TextEditingController();
 
@@ -76,6 +84,57 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
     });
 
     getCheckList(true);
+    getStoreImageList(true);
+  }
+
+  getStoreImageList(bool loader) {
+    setState(() {
+      isLoading = loader;
+    });
+
+    HTTPManager()
+        .storeSelfieAvailability(UploadedImagesRequestModel(
+      elId: userId,
+      workingId: widget.journeyResponseListItem.workingId.toString(),
+      storeId: widget.journeyResponseListItem.storeId.toString(),
+    ))
+        .then((value) {
+      setState(() {
+        storeSelfieAvailabilityResponseItem = value.data!;
+
+        for(int i=0;i<storeSelfieAvailabilityResponseItem.length;i++) {
+          if(storeSelfieAvailabilityResponseItem[i].selfieType == "1" ) {
+            setState(() {
+              selfieWithTmr = storeSelfieAvailabilityResponseItem[i].selfieType!;
+            });
+          } else if(storeSelfieAvailabilityResponseItem[i].selfieType == "2" ) {
+            setState(() {
+              selfieWithTmrWorking = storeSelfieAvailabilityResponseItem[i].selfieType!;
+            });
+          } else if(storeSelfieAvailabilityResponseItem[i].selfieType == "3" ) {
+            setState(() {
+              selfieWithTmrCompleted = storeSelfieAvailabilityResponseItem[i].selfieType!;
+            });
+          } else {
+              setState(() {
+                selfieWithTmr = "0";
+                selfieWithTmrWorking = "0";
+                selfieWithTmrCompleted = "0";
+              });
+
+          }
+        }
+
+        isLoading = false;
+        isError = false;
+      });
+    }).catchError((e) {
+      setState(() {
+        isError = true;
+        errorText = e.toString();
+        isLoading = false;
+      });
+    });
   }
 
   getCheckList(bool loader) {
@@ -153,6 +212,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
                           ? ErrorTextAndButton(
                               onTap: () {
                                 getCheckList(true);
+                                getStoreImageList(false);
                               },
                               errorText: errorText)
                           : GridView(
@@ -171,7 +231,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
                                 // ),
                                 MyJourneyPlanModuleCardItem(
                                   onTap: () {
-                                    _getCurrentPosition1(true);
+                                    _getCurrentPosition1(true,"N","0");
                                   },
                                   pendingCheckListCount: 0,
                                   questionRating: 0,
@@ -188,7 +248,9 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
                                                   journeyResponseListItemDetails:
                                                       widget
                                                           .journeyResponseListItem,
-                                                )));
+                                                ))).then((value) {
+                                      getStoreImageList(false);
+                                    });
                                   },
                                   pendingCheckListCount: 0,
                                   questionRating: 0,
@@ -209,6 +271,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
                                                   )))
                                           .then((value) {
                                         getCheckList(false);
+                                        getStoreImageList(false);
                                       });
                                     } else {
                                       showToastMessage(
@@ -219,6 +282,19 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
                                   questionRating: filledQuestionScore == 0 ? 0 : totalScore / filledQuestionScore,
                                   cardName: "Check List",
                                   cardImage: "assets/myicons/checklist.png",
+                                ),
+                                MyJourneyPlanModuleCardItem(
+                                  onTap: () {
+                                    selfieOptionForJpBottomSheet(context,false,selfieWithTmr,selfieWithTmrWorking,selfieWithTmrCompleted,(value){
+                                      print(value);
+                                      Navigator.of(context).pop();
+                                      _getCurrentPosition1(true,"Y",value);
+                                    });
+                                  },
+                                  pendingCheckListCount: 0,
+                                  questionRating: 0,
+                                  cardName: "Selfie",
+                                  cardImage: "assets/myicons/selfie.png",
                                 ),
                               ],
                             ),
@@ -243,7 +319,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
     );
   }
 
-  Future<void> _getCurrentPosition1(bool takeImage) async {
+  Future<void> _getCurrentPosition1(bool takeImage,String isSelfie,String selfieType) async {
     setState(() {
       isLoadingLocation = true;
     });
@@ -268,7 +344,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
         String currentPosition =
             "${_currentPosition!.latitude},${_currentPosition!.longitude}";
         if (takeImage) {
-          pickedImage(widget.journeyResponseListItem, currentPosition);
+          pickedImage(widget.journeyResponseListItem, isSelfie, selfieType, currentPosition);
         } else {
           endVisit(currentPosition);
         }
@@ -285,7 +361,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
   }
 
   Future<void> pickedImage(
-      JourneyResponseListItemDetails journeyResponseListItem,
+      JourneyResponseListItemDetails journeyResponseListItem,String isSelfie,String selfieType,
       String currentLocation) async {
     image = await picker.pickImage(
         source: ImageSource.camera, imageQuality: ImageValue.qualityValue);
@@ -295,25 +371,25 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
       print(image!.path);
       compressedImage = await compressAndGetFile(image!);
       showUploadOption(
-          journeyResponseListItem, currentLocation, compressedImage);
+          journeyResponseListItem, currentLocation, isSelfie, selfieType, compressedImage);
     }
   }
 
   showUploadOption(JourneyResponseListItemDetails journeyResponseListItem,
-      String currentLocation, XFile? image1) {
+      String currentLocation,String isSelfie,String selfieType,XFile? image1) {
     showPopUpForImageUploadForComment(context, image1!, () {
       // String currentPosition = "${currentLocation!.latitude},${currentLocation.longitude}";
       print(currentLocation);
       if (image1 != null && currentLocation != "") {
         imageUploadInsideAppStore(
-            journeyResponseListItem, currentLocation, image1);
+            journeyResponseListItem, currentLocation,isSelfie,selfieType, image1);
       }
     }, commentController);
   }
 
   imageUploadInsideAppStore(
       JourneyResponseListItemDetails journeyResponseListItem,
-      String currentLocation,
+      String currentLocation,String isSelfie,String selfieType,
       XFile? image1) {
     HTTPManager()
         .storeImagesUpload(
@@ -321,12 +397,14 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
                 elId: journeyResponseListItem.elId!.toString(),
                 workingId: journeyResponseListItem.workingId.toString(),
                 storeId: journeyResponseListItem.storeId.toString(),
-                checkInGps: currentLocation,
+                isSelfie: isSelfie,
+                selfieType: selfieType,
                 comment: commentController.text),
             image1!)
         .then((value) {
       commentController.clear();
       Navigator.of(context).pop();
+      getStoreImageList(false);
       setState(() {});
       showToastMessage(true, "Image Uploaded successfully");
     }).catchError((e) {
