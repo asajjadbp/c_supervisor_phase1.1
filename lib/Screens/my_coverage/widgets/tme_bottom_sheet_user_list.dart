@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../Model/response_model/tmr_responses/tmr_list_response.dart';
 import '../../utills/app_colors_new.dart';
 
-selfieOptionForJpBottomSheet(BuildContext context,bool isLoadingLocation,String isSelfieWithTmr,String isSelfieWithTmrWorking,String isSelfieWithTmrCompleted,Function(String value) selectedOption) {
+selfieOptionForJpBottomSheet(BuildContext context,bool isLoadingLocation,bool isSelfieWithTmr,bool isSelfieWithTmrWorking,bool isSelfieWithTmrCompleted,Function(String value) selectedOption) {
   showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -30,7 +30,7 @@ selfieOptionForJpBottomSheet(BuildContext context,bool isLoadingLocation,String 
                             children: [
                               InkWell(
                                 onTap: () {
-                                  if(isSelfieWithTmr != "1") {
+                                  if(isSelfieWithTmr) {
                                     menuState(() {
                                       selectedOption("1");
                                     });
@@ -41,15 +41,15 @@ selfieOptionForJpBottomSheet(BuildContext context,bool isLoadingLocation,String 
                                     child: Row(
                                       children: [
                                         const Expanded(child: Text("Take Selfie with TMR",style: TextStyle(fontSize: 15),)),
-                                        if(isSelfieWithTmr == "1")
-                                          const Icon(Icons.lock,color: AppColors.primaryColor,),
+                                        if(isSelfieWithTmr)
+                                          const Icon(Icons.check,color: AppColors.primaryColor,),
                                       ],
                                     )),
                               ),
                               const Divider(color: AppColors.primaryColor,),
                               InkWell(
                                 onTap: () {
-                                  if(isSelfieWithTmrWorking != "2") {
+                                  if(isSelfieWithTmrWorking) {
                                     menuState(() {
                                       selectedOption("2");
                                     });
@@ -60,15 +60,15 @@ selfieOptionForJpBottomSheet(BuildContext context,bool isLoadingLocation,String 
                                     child: Row(
                                       children: [
                                         const Expanded(child: Text("Take Picture of TMR during work",style: TextStyle(fontSize: 15),)),
-                                        if(isSelfieWithTmrWorking == "2")
-                                        const Icon(Icons.lock,color: AppColors.primaryColor,)
+                                        if(isSelfieWithTmrWorking)
+                                        const Icon(Icons.check,color: AppColors.primaryColor,)
                                       ],
                                     )),
                               ),
                               const Divider(color: AppColors.primaryColor,),
                               InkWell(
                                 onTap: () {
-                                  if(isSelfieWithTmrCompleted != "3") {
+                                  if(isSelfieWithTmrCompleted) {
                                     menuState(() {
                                       selectedOption("3");
                                     });
@@ -79,8 +79,8 @@ selfieOptionForJpBottomSheet(BuildContext context,bool isLoadingLocation,String 
                                     child: Row(
                                       children: [
                                         const Expanded(child: Text("Take Picture when TMR completed his work(optional)",style: TextStyle(fontSize: 15),)),
-                                        if(isSelfieWithTmrCompleted == "3")
-                                          const Icon(Icons.lock,color: AppColors.primaryColor,)
+                                        if(isSelfieWithTmrCompleted)
+                                          const Icon(Icons.check,color: AppColors.primaryColor,)
                                       ],
                                     )),
                               ),
@@ -110,6 +110,21 @@ selfieOptionForJpBottomSheet(BuildContext context,bool isLoadingLocation,String 
           })
   );
 }
+
+// class selfieOptionForJpBottomSheet extends StatefulWidget {
+//   const selfieOptionForJpBottomSheet({super.key});
+//
+//   @override
+//   State<selfieOptionForJpBottomSheet> createState() => _selfieOptionForJpBottomSheetState();
+// }
+//
+// class _selfieOptionForJpBottomSheetState extends State<selfieOptionForJpBottomSheet> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Placeholder();
+//   }
+// }
+
 
 tmrBottomSheetUserList (BuildContext context, TmrUserList tmrUserList, int selectedTmrUser, bool isLoadingLocation,Function(TmrUserItem value) selectedTmr, Function onTap) {
   showModalBottomSheet(
@@ -167,18 +182,22 @@ tmrBottomSheetUserList (BuildContext context, TmrUserList tmrUserList, int selec
                             })),
                     IgnorePointer(
                       ignoring: isLoadingLocation,
-                      child: ElevatedButton(
-                        onPressed: () {
+                      child: InkWell(
+                        onTap: () {
                           onTap();
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: isLoadingLocation
-                              ? AppColors.lightgreytn
-                              : AppColors.primaryColor,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                        ),
-                        child: const Text("Continue"),
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration:  BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color(0xFF0F408D),
+                                  Color(0xFF6A82A9),
+                                ],
+                              )
+                          ),
+                          child: const Text("Continue",style: TextStyle(color: AppColors.white),),),
                       ),
                     ),
                     const SizedBox(height: 5,),

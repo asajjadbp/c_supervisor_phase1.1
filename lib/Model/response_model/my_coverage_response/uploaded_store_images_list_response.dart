@@ -89,13 +89,13 @@ class StoreSelfieAvailabilityResponseModel {
 
 class StoreSelfieAvailabilityResponseItem {
   int? id;
-  String? selfieType;
+  int? selfieType;
 
   StoreSelfieAvailabilityResponseItem({this.id,this.selfieType});
 
   StoreSelfieAvailabilityResponseItem.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    selfieType = json['selfie_type'].toString();
+    selfieType = json['selfie_type'] ?? 0;
   }
 
   Map<String, dynamic> toJson() {

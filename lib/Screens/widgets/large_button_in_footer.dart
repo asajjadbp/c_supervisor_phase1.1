@@ -19,7 +19,12 @@ class LargeButtonInFooter extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 15),
         width: MediaQuery.of(context).size.width,
         decoration: const BoxDecoration(
-            color: AppColors.primaryColor,
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF0F408D),
+                Color(0xFF6A82A9),
+              ],
+            ),
             borderRadius: BorderRadius.only(topRight: Radius.circular(10),topLeft: Radius.circular(10))
         ),
         child:  Text(buttonTitle,style: const TextStyle(fontSize:20,color: AppColors.white),),

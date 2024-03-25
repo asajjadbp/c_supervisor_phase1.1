@@ -175,11 +175,60 @@ class _MyJourneyPlanCheckListState extends State<MyJourneyPlanCheckList> {
                                                   size: 30,
                                                 ),
                                               ),
-                                            ) : const Align(
-                                              alignment: Alignment.topRight,
-                                              child: Icon(Icons.lock,
-                                                color: AppColors.primaryColor,
-                                                size: 30,
+                                            ) : InkWell(
+                                              onTap: () async {
+                                                await showDialog<bool>(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return AlertDialog(
+                                                      title: const Text(
+                                                          'Do you want to answer this question?'),
+                                                      actions: [
+                                                        TextButton(
+                                                          onPressed:
+                                                              () {
+                                                            Navigator.pop(
+                                                                context,
+                                                                false);
+                                                          },
+                                                          child:
+                                                          const Text(
+                                                            'No',
+                                                            style: TextStyle(
+                                                                color:
+                                                                AppColors.primaryColor),
+                                                          ),
+                                                        ),
+                                                        TextButton(
+                                                          onPressed:
+                                                              () {
+                                                              setState(() {
+                                                                widget.checkListResponseModel.data![index].isApplicable = "Y";
+                                                              });
+                                                              print(widget.checkListResponseModel.data![index].isApplicable);
+                                                              Navigator.pop(
+                                                                  context,
+                                                                  false);
+                                                          },
+                                                          child:
+                                                          const Text(
+                                                            'Yes',
+                                                            style: TextStyle(
+                                                                color:
+                                                                AppColors.primaryColor),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              child: const Align(
+                                                alignment: Alignment.topRight,
+                                                child: Icon(Icons.lock,
+                                                  color: AppColors.primaryColor,
+                                                  size: 30,
+                                                ),
                                               ),
                                             )
                                           ],

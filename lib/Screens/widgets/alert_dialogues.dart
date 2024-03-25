@@ -115,58 +115,7 @@ showPopUpForImageUpload(
                       onTap: () {
                         onTap();
                         Navigator.of(context).pop();
-
-                        // setState((){
-                        //   isLoading = true;
-                        // });
-                        // String currentPositionForApi = "${currentPosition!.latitude},${currentPosition.longitude}";
-                        // if(type == "MyCoverage") {
-                        //   HTTPManager().startJourneyPlan(StartJourneyPlanRequestModel(elId: journeyResponseListItemDetails.elId!.toString(),workingId: journeyResponseListItemDetails.workingId.toString(),storeId: journeyResponseListItemDetails.storeId.toString(),tmrId: journeyResponseListItemDetails.tmrId.toString(),checkInGps: currentPositionForApi,),imageFile!).then((value) {
-
-                        //     showToastMessage(true, "Visit started successfully");
-
-                        //     // setState(() {
-                        //     //   journeyList[index].visitStatus = "IN PROGRESS";
-                        //     // });
-                        //     Navigator.of(context).pop();
-                        //     Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyCoveragePhotoGalleryOptions(journeyResponseListItemDetails: journeyResponseListItemDetails,))).then((value) {
-                        //       // getJourneyPlanList(false);
-                        //     });
-                        //     setState((){
-                        //       isLoading = false;
-                        //     });
-                        //   }).catchError((e){
-                        //     showToastMessage(false, e.toString());
-                        //     setState((){
-                        //       isLoading = false;
-                        //     });
-                        //   });
-                        // } else if(type == "MyJp") {
-                        //   HTTPManager().startJourneyPlan(StartJourneyPlanRequestModel(elId: journeyResponseListItemDetails.elId!.toString(),workingId: journeyResponseListItemDetails.workingId.toString(),storeId: journeyResponseListItemDetails.storeId.toString(),tmrId: journeyResponseListItemDetails.tmrId.toString(),checkInGps: currentPositionForApi,),imageFile!).then((value) {
-
-                        //     showToastMessage(true, "Visit started successfully");
-
-                        //     // setState(() {
-                        //     //   journeyList[index].visitStatus = "IN PROGRESS";
-                        //     // });
-                        //     Navigator.of(context).pop();
-                        //     Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyResponseListItemDetails,))).then((value) {
-                        //       // getJourneyPlanList(false);
-                        //     });
-                        //     setState((){
-                        //       isLoading = false;
-                        //     });
-                        //   }).catchError((e){
-                        //     showToastMessage(false, e.toString());
-                        //     setState((){
-                        //       isLoading = false;
-                        //     });
-                        //   });
-                        // } else {
-
-                        // }
-                        // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyResponseListItem,)));
-                      },
+                        },
                       child: Container(
                         alignment: Alignment.center,
                         decoration: BoxDecoration(

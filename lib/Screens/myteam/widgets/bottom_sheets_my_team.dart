@@ -51,16 +51,22 @@ feedbackDropdownBottomSheet (BuildContext context,FeedbackListItem initialFeedba
                                 });
                           })),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
+                    InkWell(
+                      onTap: () {
                         onTap();
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryColor,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: MediaQuery.of(context).size.width/4, vertical: 10),
-                      ),
-                      child: const Text("Save"),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+                        decoration:  BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            gradient:const LinearGradient(
+                              colors: [
+                                Color(0xFF0F408D),
+                                Color(0xFF6A82A9),
+                              ],
+                            )
+                        ),
+                        child: const Text("Save",style: TextStyle(color: AppColors.white),),),
                     ),
                     const SizedBox(height: 5,),
                   ],
@@ -194,16 +200,22 @@ addSpecialVisitDropdownBottomSheet (BuildContext context,
                               })),
                     ),
                     const SizedBox(height: 5,),
-                    ElevatedButton(
-                      onPressed: () {
+                    InkWell(
+                      onTap: () {
                         onTap();
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryColor,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: MediaQuery.of(context).size.width/4, vertical: 10),
-                      ),
-                      child: const Text("Submit"),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+                        decoration:  BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            gradient:const LinearGradient(
+                              colors: [
+                                Color(0xFF0F408D),
+                                Color(0xFF6A82A9),
+                              ],
+                            )
+                        ),
+                        child: const Text("Submit",style: TextStyle(color: AppColors.white),),),
                     ),
                     const SizedBox(height: 5,),
                   ],

@@ -1,13 +1,17 @@
+import 'package:c_supervisor/Model/response_model/common_list/comon_list_response_model.dart';
 import 'package:c_supervisor/Network/http_manager.dart';
 import 'package:c_supervisor/Screens/widgets/toast_message_show.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../Model/request_model/journey_plan_request.dart';
 import '../../Model/request_model/save_special_visit.dart';
 import '../../Model/response_model/my_team_responses/add_special_visit/client_list_model_response.dart';
+import '../../Model/response_model/my_team_responses/add_special_visit/companies_list_model_response.dart';
 import '../../Model/response_model/my_team_responses/add_special_visit/reason_list_model_response.dart';
 import '../../Model/response_model/my_team_responses/add_special_visit/store_list_model_response.dart';
 import '../../Model/response_model/tmr_responses/tmr_list_response.dart';
+import '../recruite_suggest/widgets/recruite_suggest_bottom_sheets.dart';
 import '../utills/app_colors_new.dart';
 import '../utills/user_constants.dart';
 import '../widgets/header_background_new.dart';
@@ -15,12 +19,8 @@ import '../widgets/header_widgets_new.dart';
 import 'package:intl/intl.dart';
 
 class AddSpecialVisitScreen extends StatefulWidget {
-  const AddSpecialVisitScreen({Key? key,required this.clientList,required this.storesList,required this.tmrUserList,required this.reasonsList}) : super(key: key);
+  const AddSpecialVisitScreen({Key? key,}) : super(key: key);
 
-  final TmrUserList tmrUserList;
-  final ClientListResponseModel clientList;
-  final StoresListResponseModel storesList;
-  final ReasonListResponseModel reasonsList;
 
   @override
   State<AddSpecialVisitScreen> createState() => _AddSpecialVisitScreenState();
@@ -33,11 +33,32 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
    late StoresListItem initialStoresList;
    late ReasonListItem initialReasonsList;
 
+  late TmrUserList tmrUserList;
+  late ClientListResponseModel clientList;
+  late StoresListResponseModel storesList;
+  late CompaniesListResponseModel companiesList;
+  late ReasonListResponseModel reasonsList;
+
   String userName = "";
   String userId = "";
   int? geoFence;
 
+  final GlobalKey<FormState> _formKey = GlobalKey();
+
+  bool isLoading1 = true;
+  bool isLoading2 = true;
+  bool isLoading3 = false;
+  bool isLoading4 = true;
+  bool isLoading5 = true;
+
+  TextEditingController storeController = TextEditingController();
+  TextEditingController timeController = TextEditingController();
+
+  late CommonListItem initialCommonListItem;
+
    bool isLoading = false;
+  bool isError = false;
+  String errorText = "";
 
   DateTime selectedDate = DateTime.now();
   String formattedTime = "--:-- --";
@@ -57,13 +78,10 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
    @override
   void initState() {
     // TODO: implement initState
-    setState(() {
-      initialClientList = widget.clientList.data![0];
-      initialStoresList = widget.storesList.data![0];
-      initialTmrUserList = widget.tmrUserList.data![0];
-      initialReasonsList = widget.reasonsList.data![0];
-    });
     getUserData();
+    setState(() {
+      timeController.text = "--:-- --";
+    });
      super.initState();
 
   }
@@ -76,7 +94,150 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
       userId = sharedPreferences.getString(UserConstants().userId)!;
       geoFence = sharedPreferences.getInt(UserConstants().userGeoFence)!;
     });
-    // getJourneyPlanList(true);
+
+    getTmrUserList(true);
+    getClientList(true);
+    // getStoresList(true);
+    getCompaniesList(true);
+    getReasonList(true);
+
+  }
+
+  getTmrUserList(bool loader) {
+
+    setState(() {
+      isLoading1 = loader;
+    });
+
+    HTTPManager()
+        .tmrUserList(JourneyPlanRequestModel(
+      elId: userId,))
+        .then((value) {
+      setState(() {
+
+        tmrUserList = value;
+
+        initialTmrUserList = tmrUserList.data![0];
+        isLoading1 = false;
+        isError = false;
+      });
+
+    }).catchError((e) {
+      setState(() {
+        isError = true;
+        errorText = e.toString();
+        isLoading1 = false;
+      });
+    });
+  }
+
+  getClientList(bool loader) {
+
+    setState(() {
+      isLoading2 = loader;
+    });
+
+    HTTPManager()
+        .clientList(JourneyPlanRequestModel(
+      elId: userId,))
+        .then((value) {
+      setState(() {
+
+        clientList = value;
+
+        initialClientList = clientList.data![0];
+        isLoading2 = false;
+        isError = false;
+      });
+
+    }).catchError((e) {
+      setState(() {
+        isError = true;
+        errorText = e.toString();
+        isLoading2 = false;
+      });
+    });
+  }
+
+  // getStoresList(bool loader) {
+  //
+  //   setState(() {
+  //     isLoading3 = loader;
+  //   });
+  //
+  //   HTTPManager()
+  //       .storeList(JourneyPlanRequestModel(
+  //     elId: userId,))
+  //       .then((value) {
+  //     setState(() {
+  //
+  //       storesList = value;
+  //
+  //       initialStoresList = storesList.data![0];
+  //       isLoading3 = false;
+  //       isError = false;
+  //     });
+  //
+  //   }).catchError((e) {
+  //     setState(() {
+  //       isError = true;
+  //       errorText = e.toString();
+  //       isLoading3 = false;
+  //     });
+  //   });
+  // }
+
+  getCompaniesList(bool loader) {
+
+    setState(() {
+      isLoading4 = loader;
+    });
+
+    HTTPManager()
+        .companyList(JourneyPlanRequestModel(
+      elId: userId,))
+        .then((value) {
+      setState(() {
+
+        companiesList = value;
+        isLoading4 = false;
+        isError = false;
+      });
+
+    }).catchError((e) {
+      setState(() {
+        isError = true;
+        errorText = e.toString();
+        isLoading4 = false;
+      });
+    });
+  }
+
+  getReasonList(bool loader) {
+
+    setState(() {
+      isLoading5 = loader;
+    });
+
+    HTTPManager()
+        .reasonList()
+        .then((value) {
+      setState(() {
+
+        reasonsList = value;
+
+        initialReasonsList = reasonsList.data![0];
+        isLoading5 = false;
+        isError = false;
+      });
+
+    }).catchError((e) {
+      setState(() {
+        isError = true;
+        errorText = e.toString();
+        isLoading5 = false;
+      });
+    });
   }
 
   @override
@@ -90,181 +251,273 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
             isDrawerButton: true,
           ),
           Expanded(
-              child: IgnorePointer(
+              child: isLoading1 || isLoading2 || isLoading3 || isLoading4 || isLoading5 ? const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                ),
+              ) : IgnorePointer(
                 ignoring: isLoading,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 5),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const SizedBox(height: 50,),
-                            const Text("  Select Client",style: TextStyle(color: AppColors.primaryColor),),
-                            Container(
-                              width: MediaQuery.of(context).size.width,
-                              padding: const EdgeInsets.symmetric(horizontal: 5),
-                              margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: AppColors.primaryColor)
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<ClientListItem>(
-                                      value: initialClientList,
-                                      isExpanded: true,
-                                      items: widget.clientList.data!.map((ClientListItem items) {
-                                        return DropdownMenuItem(
-                                          value: items,
-                                          child: Text(items.companyName!,overflow: TextOverflow.ellipsis,),
-                                        );
-                                      }).toList(),
-                                      onChanged: (value) {
-                                        setState((){
-                                          initialClientList = value!;
-                                        });
-                                      })),
-                            ),
-                            const SizedBox(height: 5,),
-                            const Text("  Select Store",style: TextStyle(color: AppColors.primaryColor),),
-                            Container(
-                              width: MediaQuery.of(context).size.width,
-                              padding: const EdgeInsets.symmetric(horizontal: 5),
-                              margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: AppColors.primaryColor)
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<StoresListItem>(
-                                      value: initialStoresList,
-                                      isExpanded: true,
-                                      items: widget.storesList.data!.map((StoresListItem items) {
-                                        return DropdownMenuItem(
-                                          value: items,
-                                          child: Text(items.name!,overflow: TextOverflow.ellipsis,),
-                                        );
-                                      }).toList(),
-                                      onChanged: (value) {
-                                        setState((){
-                                          initialStoresList = value!;
-                                        });
-                                      })),
-                            ),
-                            const SizedBox(height: 5,),
-                            const Text("  Select TMR",style: TextStyle(color: AppColors.primaryColor),),
-                            Container(
-                              width: MediaQuery.of(context).size.width,
-                              padding: const EdgeInsets.symmetric(horizontal: 5),
-                              margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: AppColors.primaryColor)
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<TmrUserItem>(
-                                      value: initialTmrUserList,
-                                      isExpanded: true,
-                                      items: widget.tmrUserList.data!.map((TmrUserItem items) {
-                                        return DropdownMenuItem(
-                                          value: items,
-                                          child: Text(items.fullName!,overflow: TextOverflow.ellipsis,),
-                                        );
-                                      }).toList(),
-                                      onChanged: (value) {
-                                        setState((){
-                                          initialTmrUserList = value!;
-                                        });
-                                      })),
-                            ),
-                            const SizedBox(height: 5,),
-                            const Text("  Select Reason",style: TextStyle(color: AppColors.primaryColor),),
-                            Container(
-                              width: MediaQuery.of(context).size.width,
-                              padding: const EdgeInsets.symmetric(horizontal: 5),
-                              margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: AppColors.primaryColor)
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<ReasonListItem>(
-                                      value: initialReasonsList,
-                                      isExpanded: true,
-                                      items: widget.reasonsList.data!.map((ReasonListItem items) {
-                                        return DropdownMenuItem(
-                                          value: items,
-                                          child: Text(items.reason!,overflow: TextOverflow.ellipsis,),
-                                        );
-                                      }).toList(),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          initialReasonsList = value!;
-                                        });
-                                      })),
-                            ),
-                            const SizedBox(height: 5,),
-                            const Text("  Select Date",style: TextStyle(color: AppColors.primaryColor),),
-                            InkWell(
-                              onTap: ()=>_selectDate(context),
-                              child: Container(
+                    Form(
+                      key: _formKey,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 5),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              const SizedBox(height: 50,),
+                              const Text("  Select Client",style: TextStyle(color: AppColors.primaryColor),),
+                              Container(
                                 width: MediaQuery.of(context).size.width,
-                                padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 5),
+                                padding: const EdgeInsets.symmetric(horizontal: 5),
                                 margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
                                 decoration: BoxDecoration(
                                     border: Border.all(color: AppColors.primaryColor)
                                 ),
-                                child: Text(DateFormat('MM/dd/yyyy').format(selectedDate)),
+                                child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<ClientListItem>(
+                                        value: initialClientList,
+                                        isExpanded: true,
+                                        items: clientList.data!.map((ClientListItem items) {
+                                          return DropdownMenuItem(
+                                            value: items,
+                                            child: Text(items.companyName!,overflow: TextOverflow.ellipsis,),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) {
+                                          setState((){
+                                            initialClientList = value!;
+                                          });
+                                        })),
                               ),
-                            ),
-                            const SizedBox(height: 5,),
-                            const Text("  Select Time",style: TextStyle(color: AppColors.primaryColor),),
-                            InkWell(
-                              onTap: () async {
-                                TimeOfDay? pickedTime =  await showTimePicker(
-                                  initialTime: TimeOfDay.now(),
-                                  context: context, //context of current state
-                                );
+                              const SizedBox(height: 5,),
+                              const Text("  Select Store",style: TextStyle(color: AppColors.primaryColor),),
+                              Container(
+                                margin:const EdgeInsets.symmetric(horizontal: 5),
+                                child: TextFormField(
+                                  readOnly: true,
+                                  onTap: () {
+                                    commonSuggestBottomSheet(context, "store","query","", (value) {
+                                      setState(() {
+                                        storeController.text = value.text!;
+                                        initialCommonListItem = value;
+                                      });
+                                    });
+                                  },
+                                  controller: storeController,
+                                  validator: (value) {
+                                    if(value!.isEmpty) {
+                                      return "Store field required";
+                                    } else {
+                                      return null;
+                                    }
+                                  },
+                                  decoration: const InputDecoration(
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: AppColors.primaryColor,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: AppColors.primaryColor,
+                                        )),
+                                    border: OutlineInputBorder(
 
-                                if(pickedTime != null ){
-
-                                  DateTime parsedTime = DateFormat.jm().parse(pickedTime.format(context).toString());
-
-                                  setState(() {
-                                    formattedTime = DateFormat('HH:mm:ss').format(parsedTime);
-                                  });
-
-                                }else{
-                                  print("Time is not selected");
-                                }
-                              },
-                              child: Container(
+                                        borderSide: BorderSide(
+                                            color: AppColors.primaryColor, width: 1.0)),
+                                    labelStyle: TextStyle(color: AppColors.black),
+                                    hintText: 'City',
+                                    hintStyle: TextStyle(color: AppColors.greyColor),
+                                    contentPadding: EdgeInsets.symmetric(vertical: 5,horizontal: 5),),
+                                  keyboardType: TextInputType.text,
+                                  style: const TextStyle(color: AppColors.primaryColor),
+                                ),
+                              ),
+                              // Container(
+                              //   width: MediaQuery.of(context).size.width,
+                              //   padding: const EdgeInsets.symmetric(horizontal: 5),
+                              //   margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
+                              //   decoration: BoxDecoration(
+                              //       border: Border.all(color: AppColors.primaryColor)
+                              //   ),
+                              //   child: DropdownButtonHideUnderline(
+                              //       child: DropdownButton<StoresListItem>(
+                              //           value: initialStoresList,
+                              //           isExpanded: true,
+                              //           items: storesList.data!.map((StoresListItem items) {
+                              //             return DropdownMenuItem(
+                              //               value: items,
+                              //               child: Text(items.name!,overflow: TextOverflow.ellipsis,),
+                              //             );
+                              //           }).toList(),
+                              //           onChanged: (value) {
+                              //             setState((){
+                              //               initialStoresList = value!;
+                              //             });
+                              //           })),
+                              // ),
+                              const SizedBox(height: 5,),
+                              const Text("  Select User",style: TextStyle(color: AppColors.primaryColor),),
+                              Container(
                                 width: MediaQuery.of(context).size.width,
-                                padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 5),
+                                padding: const EdgeInsets.symmetric(horizontal: 5),
                                 margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
                                 decoration: BoxDecoration(
                                     border: Border.all(color: AppColors.primaryColor)
                                 ),
-                                child: Text(formattedTime),
+                                child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<TmrUserItem>(
+                                        value: initialTmrUserList,
+                                        isExpanded: true,
+                                        items: tmrUserList.data!.map((TmrUserItem items) {
+                                          return DropdownMenuItem(
+                                            value: items,
+                                            child: Text(items.fullName!,overflow: TextOverflow.ellipsis,),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) {
+                                          setState((){
+                                            initialTmrUserList = value!;
+                                          });
+                                        })),
                               ),
-                            ),
-                            const SizedBox(height:5),
-                            ElevatedButton(
-                              onPressed: () {
-                                if(formattedTime != "--:-- --") {
-                                  addSpecialVisit();
-                                } else {
-                                  showToastMessage(false, "Please select a date");
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primaryColor,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: MediaQuery.of(context).size.width/4, vertical: 10),
+                              const SizedBox(height: 5,),
+                              const Text("  Select Reason",style: TextStyle(color: AppColors.primaryColor),),
+                              Container(
+                                width: MediaQuery.of(context).size.width,
+                                padding: const EdgeInsets.symmetric(horizontal: 5),
+                                margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: AppColors.primaryColor)
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<ReasonListItem>(
+                                        value: initialReasonsList,
+                                        isExpanded: true,
+                                        items: reasonsList.data!.map((ReasonListItem items) {
+                                          return DropdownMenuItem(
+                                            value: items,
+                                            child: Text(items.reason!,overflow: TextOverflow.ellipsis,),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            initialReasonsList = value!;
+                                          });
+                                        })),
                               ),
-                              child: const Text("Submit"),
-                            ),
-                            const SizedBox(height: 5,),
-                          ],
+                              const SizedBox(height: 5,),
+                              const Text("  Select Date",style: TextStyle(color: AppColors.primaryColor),),
+                              InkWell(
+                                onTap: ()=>_selectDate(context),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 15),
+                                  margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(color: AppColors.primaryColor)
+                                  ),
+                                  child: Text(DateFormat('MM/dd/yyyy').format(selectedDate)),
+                                ),
+                              ),
+                              const SizedBox(height: 5,),
+                              const Text("  Select Time",style: TextStyle(color: AppColors.primaryColor),),
+
+                              Container(
+                                margin:const EdgeInsets.symmetric(horizontal: 5),
+                                child: TextFormField(
+                                  readOnly: true,
+                                  onTap: () async {
+                                    TimeOfDay? pickedTime =  await showTimePicker(
+                                      initialTime: TimeOfDay.now(),
+                                      context: context, //context of current state
+                                    );
+
+                                    if(pickedTime != null ){
+
+                                      DateTime parsedTime = DateFormat.jm().parse(pickedTime.format(context).toString());
+
+                                      setState(() {
+                                        formattedTime = DateFormat('HH:mm:ss').format(parsedTime);
+                                        timeController.text = formattedTime;
+                                      });
+
+                                    }else{
+                                      print("Time is not selected");
+                                    }
+                                  },
+                                  controller: timeController,
+                                  validator: (value) {
+                                    if(value!.isEmpty || value == "--:-- --") {
+                                      return "Time field required";
+                                    } else {
+                                      return null;
+                                    }
+                                  },
+                                  decoration: const InputDecoration(
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: AppColors.primaryColor,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: AppColors.primaryColor,
+                                        )),
+                                    border: OutlineInputBorder(
+
+                                        borderSide: BorderSide(
+                                            color: AppColors.primaryColor, width: 1.0)),
+                                    labelStyle: TextStyle(color: AppColors.black),
+                                    hintText: 'Select Time',
+                                    hintStyle: TextStyle(color: AppColors.greyColor),
+                                    contentPadding: EdgeInsets.symmetric(vertical: 5,horizontal: 5),),
+                                  keyboardType: TextInputType.text,
+                                  style: const TextStyle(color: AppColors.primaryColor),
+                                ),
+                              ),
+
+
+                              // InkWell(
+                              //
+                              //   child: Container(
+                              //     width: MediaQuery.of(context).size.width,
+                              //     padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 15),
+                              //     margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
+                              //     decoration: BoxDecoration(
+                              //         border: Border.all(color: AppColors.primaryColor)
+                              //     ),
+                              //     child: Text(formattedTime),
+                              //   ),
+                              // ),
+                              const SizedBox(height:15),
+                              InkWell(
+                                onTap: () {
+                                    addSpecialVisit();
+                                },
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+                                  decoration:  BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      gradient:const LinearGradient(
+                                        colors: [
+                                          Color(0xFF0F408D),
+                                          Color(0xFF6A82A9),
+                                        ],
+                                      )
+                                  ),
+                                  child: const Text("Submit",style: TextStyle(color: AppColors.white),),),
+                              ),
+
+                              const SizedBox(height: 5,),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -278,34 +531,33 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
     );
   }
   addSpecialVisit() {
-    setState(() {
-      isLoading = true;
-    });
-    HTTPManager().saveSpecialVisit(SaveSpecialVisitRequestModel(
-      elId: userId,
-      companyId: initialClientList.companyId.toString(),
-      storeId: initialStoresList.id.toString(),
-      reason: initialReasonsList.reason,
-      userId: initialTmrUserList.id.toString(),
-      visitDate: DateFormat('MM/dd/yyyy').format(selectedDate),
-      visitTime: formattedTime,
-    )).then((value) {
-
-      print(value);
-
-      showToastMessage(true,"Special visit added successfully");
-      Navigator.of(context).pop();
+    if (_formKey.currentState!.validate()) {
       setState(() {
-        isLoading = false;
+        isLoading = true;
       });
-    }).catchError((e) {
-      print(e.toString());
-      showToastMessage(false,e.toString());
-      setState(() {
-        isLoading = false;
+      HTTPManager().saveSpecialVisit(SaveSpecialVisitRequestModel(
+        elId: userId,
+        companyId: initialClientList.companyId.toString(),
+        storeId: initialCommonListItem.id.toString(),
+        reason: initialReasonsList.reason,
+        userId: initialTmrUserList.id.toString(),
+        visitDate: DateFormat('MM/dd/yyyy').format(selectedDate),
+        visitTime: formattedTime,
+      )).then((value) {
+        print(value);
+
+        showToastMessage(true, "Special visit added successfully");
+        Navigator.of(context).pop();
+        setState(() {
+          isLoading = false;
+        });
+      }).catchError((e) {
+        print(e.toString());
+        showToastMessage(false, e.toString());
+        setState(() {
+          isLoading = false;
+        });
       });
-    });
-
-
+    }
   }
 }

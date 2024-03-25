@@ -7,7 +7,7 @@ description: A new Flutter project.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-version: 1.0.10+13
+version: 1.0.12+15
 # 1.0.7+10
 
 environment:
@@ -38,8 +38,10 @@ dependencies:
   # new_version: ^0.3.0
   new_version_plus:
   provider: ^6.1.1
+  device_info_plus: ^9.1.2
   internet_file:
-
+  file_picker:
+  dropdown_search: ^5.0.6
 
   #injection
 #  get_it: ^7.2.0

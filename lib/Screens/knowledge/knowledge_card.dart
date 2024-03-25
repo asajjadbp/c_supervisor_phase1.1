@@ -1,13 +1,9 @@
 // ignore_for_file: must_be_immutable
 
-import 'dart:io';
-
-import 'package:c_supervisor/Network/download_file.dart';
-import 'package:c_supervisor/Screens/widgets/toast_message_show.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:http/http.dart' as http;
 import 'package:c_supervisor/provider/license_provider.dart';
+
+import 'package:url_launcher/url_launcher.dart';
 
 class KnowledgeCard extends StatefulWidget {
   KnowledgeCard(
@@ -30,37 +26,38 @@ class KnowledgeCard extends StatefulWidget {
 }
 
 class _KnowledgeCardState extends State<KnowledgeCard> {
-  String? _downloadedFilePath;
-  double _downloadProgress = 0.0;
+  // String? _downloadedFilePath;
+  // double _downloadProgress = 0.0;
 
-  Future<void> _downloadFile() async {
-    final response = await http.get(
-      Uri.parse(
-          "${LicenseProvider.imageBasePath}knowledge_share/${widget.fileName}"),
-      // headers: (optional) add headers if needed
-    );
-
-    print("${LicenseProvider.imageBasePath}knowledge_share/${widget.fileName}");
-
-    if (response.statusCode == 200) {
-      // Get the directory for storing the downloaded file
-      final appDocDir = await getApplicationDocumentsDirectory();
-      final file = File('${appDocDir.path}/downloaded_file');
-
-      // Write the file
-      await file.writeAsBytes(response.bodyBytes);
-
-      setState(() {
-        _downloadedFilePath = file.path;
-      });
-      showToastMessage(true, "file downloaded");
-      print(_downloadedFilePath);
-      print(_downloadProgress);
-    } else {
-      print("failed to download");
-      throw Exception('Failed to download file');
-    }
-  }
+  // Future<void> _downloadFile() async {
+  //   final response = await http.get(
+  //     Uri.parse(
+  //         "${LicenseProvider.imageBasePath}knowledge_share/${widget.fileName}"),
+  //     // headers: (optional) add headers if needed
+  //   );
+  //
+  //   print("${LicenseProvider.imageBasePath}knowledge_share/${widget.fileName}");
+  //
+  //   if (response.statusCode == 200) {
+  //     // Get the directory for storing the downloaded file
+  //     final appDocDir = await getApplicationDocumentsDirectory();
+  //     final file = File('${appDocDir.path}/downloaded_file');
+  //
+  //     // Write the file
+  //     await file.writeAsBytes(response.bodyBytes);
+  //
+  //     setState(() {
+  //       _downloadedFilePath = file.path;
+  //     });
+  //     showToastMessage(true, "file downloaded");
+  //     print("File uploaded");
+  //     print(_downloadedFilePath);
+  //     print(_downloadProgress);
+  //   } else {
+  //     print("failed to download");
+  //     throw Exception('Failed to download file');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +79,10 @@ class _KnowledgeCardState extends State<KnowledgeCard> {
                 onTap: () async {
                   // widget.onTap();
                   // await DonwloadFile().getFile(widget.fileName);
-                  _downloadFile();
+                  // _downloadFile();
+                  String url = "${LicenseProvider.imageBasePath}knowledge_share/${widget.fileName}";
+
+                  _launchUrl(url);
                 },
                 child: Image.asset(
                   widget.imageUrl,
@@ -92,10 +92,10 @@ class _KnowledgeCardState extends State<KnowledgeCard> {
               // if (_downloadedFilePath != null)
               //   Text('File downloaded to: $_downloadedFilePath'),
               // SizedBox(height: 20),
-              if (_downloadProgress > 0)
-                Text(
-                    'Download progress: ${(_downloadProgress * 100).toStringAsFixed(2)}%'),
-              SizedBox(height: 20),
+              // if (_downloadProgress > 0)
+              //   Text(
+              //       'Download progress: ${(_downloadProgress * 100).toStringAsFixed(2)}%'),
+              const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.only(top: 5),
                 child: Text(widget.cardName),
@@ -143,5 +143,10 @@ class _KnowledgeCardState extends State<KnowledgeCard> {
         ],
       ),
     );
+  }
+  Future<void> _launchUrl(String url) async {
+    if (!await launchUrl(Uri.parse(url))) {
+      throw Exception('Could not launch $url');
+    }
   }
 }

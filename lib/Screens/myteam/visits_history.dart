@@ -9,6 +9,7 @@ import '../utills/user_constants.dart';
 import '../widgets/error_text_and_button.dart';
 import '../widgets/header_background_new.dart';
 import '../widgets/header_widgets_new.dart';
+import '../widgets/text_fields/search_text_fields.dart';
 
 class VisitHistory extends StatefulWidget {
   const VisitHistory({Key? key}) : super(key: key);
@@ -27,6 +28,11 @@ class _VisitHistoryState extends State<VisitHistory> {
   bool isLoadingLocation = false;
 
   List<VisitsHistoryResponseItem> visitHistoryList = <VisitsHistoryResponseItem>[];
+
+  List<VisitsHistoryResponseItem> visitHistorySearchList =
+  <VisitsHistoryResponseItem>[];
+
+  TextEditingController searchController = TextEditingController();
 
   bool isError = false;
   String errorText = "";
@@ -56,6 +62,11 @@ class _VisitHistoryState extends State<VisitHistory> {
       isLoading = isLoader;
     });
 
+    if (visitHistorySearchList.isNotEmpty) {
+      visitHistorySearchList = <VisitsHistoryResponseItem>[];
+      searchController.clear();
+      FocusScope.of(context).unfocus();
+    }
 
     HTTPManager()
         .getVisitHistoryList(JourneyPlanRequestModel(elId: userId))
@@ -96,22 +107,33 @@ class _VisitHistoryState extends State<VisitHistory> {
                       color: AppColors.primaryColor,
                     ),
                   )
-                      : Container(
+                      : Column(
+                        children: [
+                          SearchTextField(
+                            controller: searchController,
+                            hintText: 'Search With Store Name',
+                            onChangeField: onSearchTextFieldChanged,
+                          ),
+                          Expanded(
+                            child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 10),
                     child: isError
-                        ? ErrorTextAndButton(
-                        onTap: () {
-                          getVisitsHistoryList(true);
-                        },
-                        errorText: errorText)
-                        : visitHistoryList.isEmpty
-                        ? const Center(
-                      child: Text("No history found"),
+                              ? ErrorTextAndButton(
+                              onTap: () {
+                                getVisitsHistoryList(true);
+                              },
+                              errorText: errorText)
+                              : visitHistoryList.isEmpty
+                              ? const Center(
+                            child: Text("No history found"),
                     )
-                        : ListView.builder(
+                              : searchController.text.isNotEmpty
+                        ? visitHistorySearchList.isEmpty ? const Center(
+                      child: Text("Nothing found with this name"),
+                    ) : ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.vertical,
-                        itemCount: visitHistoryList.length,
+                        itemCount: visitHistorySearchList.length,
                         itemBuilder: (context, index) {
                           return Card(
                             shape: RoundedRectangleBorder(
@@ -132,37 +154,60 @@ class _VisitHistoryState extends State<VisitHistory> {
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(visitHistoryList[index].storeName!,style: const TextStyle(color: AppColors.primaryColor),),
+                                        Row(
+                                          children: [
+                                            const Icon(Icons.person_2_outlined,size: 18,),
+                                            const SizedBox(width: 5,),
+                                            Expanded(child: Text(visitHistorySearchList[index].fullName!,overflow: TextOverflow.ellipsis,maxLines: 1,style: const TextStyle(color: AppColors.primaryColor),)),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 5,),
+                                        Row(
+                                          children: [
+                                            const Icon(Icons.store,color: AppColors.primaryColor,size: 18,),
+                                            const SizedBox(width: 5,),
+                                            Text(visitHistorySearchList[index].storeName!,style: const TextStyle(color: AppColors.primaryColor),),
+                                          ],
+                                        ),
                                         const SizedBox(height: 3,),
-                                        Text(visitHistoryList[index].companyName!,style: const TextStyle(color: AppColors.paleYellow),),
+                                        Row(
+                                          children: [
+                                            Image.asset("assets/myicons/company_icon.png",width: 18,height: 18,),
+                                            const SizedBox(width: 5,),
+                                            Text(visitHistorySearchList[index].companyName!,style: const TextStyle(color: AppColors.primaryColor),),
+                                          ],
+                                        ),
                                       ],
                                     ),
                                   ),
                                   Row(
                                     children: [
                                       Expanded(
-                                        child: Column(
+                                        child: Row(
                                           children: [
-                                            const Text("Check In",style:  TextStyle(color: AppColors.greyColor)),
-                                            Text(visitHistoryList[index].checkInTime!,style: const TextStyle(color: AppColors.primaryColor),),
+                                            Image.asset("assets/myicons/check_in_icon.png",width: 18,height: 18,),
+                                            const SizedBox(width: 5,),
+                                            Text(visitHistorySearchList[index].checkInTime!,style: const TextStyle(color: AppColors.primaryColor),),
                                           ],
                                         ),
                                       ),
                                       const Text("|",style:  TextStyle(color: AppColors.greyColor)),
                                       Expanded(
-                                        child: Column(
+                                        child: Row(
                                           children: [
-                                            const Text("Check Out",style:  TextStyle(color: AppColors.greyColor)),
-                                            Text(visitHistoryList[index].checkOutTime!,style: const TextStyle(color: AppColors.primaryColor),),
+                                            Image.asset("assets/myicons/check_out_icon.png",width: 18,height: 18,),
+                                            const SizedBox(width: 5,),
+                                            Text(visitHistorySearchList[index].checkOutTime!,style: const TextStyle(color: AppColors.primaryColor),),
                                           ],
                                         ),
                                       ),
                                       const Text("|",style:  TextStyle(color: AppColors.greyColor)),
                                       Expanded(
-                                        child: Column(
+                                        child: Row(
                                           children: [
-                                            const Text("Working HRS",style:  TextStyle(color: AppColors.greyColor)),
-                                            Text(visitHistoryList[index].workingHours!,style: const TextStyle(color: AppColors.primaryColor),),
+                                            const Icon(Icons.watch_later_outlined,color: AppColors.primaryColor,size: 18,),
+                                            const SizedBox(width: 5,),
+                                            Text(visitHistorySearchList[index].workingHours!,style: const TextStyle(color: AppColors.primaryColor),),
                                           ],
                                         ),
                                       ),
@@ -173,54 +218,54 @@ class _VisitHistoryState extends State<VisitHistory> {
                                     children: [
                                       Expanded(
                                           child: Container(
-                                        decoration: BoxDecoration(
-                                          color: visitHistoryList[index].isAvailability == 1 ? AppColors.blue : AppColors.white,
-                                          border: Border.all(color: AppColors.blue),
-                                          borderRadius: BorderRadius.circular(5)
-                                        ),
-                                        padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
-                                        child:   Center(child: Text("AVL",style: TextStyle(color: visitHistoryList[index].isAvailability == 1 ? AppColors.white : AppColors.blue),)),
-                                      )),
+                                            decoration: BoxDecoration(
+                                                color: visitHistorySearchList[index].isAvailability == 1 ? AppColors.blue : AppColors.white,
+                                                border: Border.all(color: AppColors.blue),
+                                                borderRadius: BorderRadius.circular(5)
+                                            ),
+                                            padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
+                                            child:   Center(child: Text("AVL",style: TextStyle(color: visitHistorySearchList[index].isAvailability == 1 ? AppColors.white : AppColors.blue),)),
+                                          )),
                                       const SizedBox(width: 3,),
                                       Expanded(child: Container(
                                         decoration: BoxDecoration(
-                                            color: visitHistoryList[index].isFreshness == 1 ? AppColors.blue : AppColors.white,
+                                            color: visitHistorySearchList[index].isFreshness == 1 ? AppColors.blue : AppColors.white,
                                             border: Border.all(color: AppColors.blue),
                                             borderRadius: BorderRadius.circular(5)
                                         ),
                                         padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
-                                        child:   Center(child: Text("FRES",style: TextStyle(color: visitHistoryList[index].isFreshness == 1 ? AppColors.white : AppColors.blue),)),
+                                        child:   Center(child: Text("FRES",style: TextStyle(color: visitHistorySearchList[index].isFreshness == 1 ? AppColors.white : AppColors.blue),)),
                                       )),
                                       const SizedBox(width: 3,),
                                       Expanded(child: Container(
                                         decoration: BoxDecoration(
-                                            color: visitHistoryList[index].isPlanogram == 1 ? AppColors.blue : AppColors.white,
+                                            color: visitHistorySearchList[index].isPlanogram == 1 ? AppColors.blue : AppColors.white,
                                             border: Border.all(color: AppColors.blue),
                                             borderRadius: BorderRadius.circular(5)
                                         ),
                                         padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
-                                        child:   Center(child: Text("PLANO",style: TextStyle(color: visitHistoryList[index].isPlanogram == 1 ? AppColors.white : AppColors.blue),)),
+                                        child:   Center(child: Text("PLANO",style: TextStyle(color: visitHistorySearchList[index].isPlanogram == 1 ? AppColors.white : AppColors.blue),)),
                                       )),
                                       const SizedBox(width: 3,),
                                       Expanded(
                                           child: Container(
-                                        decoration: BoxDecoration(
-                                            color: visitHistoryList[index].isSos == 1 ? AppColors.blue : AppColors.white,
-                                            border: Border.all(color: AppColors.blue),
-                                            borderRadius: BorderRadius.circular(5)
-                                        ),
-                                        padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
-                                        child:  Center(child: Text("SOS",style: TextStyle(color: visitHistoryList[index].isSos == 1 ? AppColors.white : AppColors.blue),)),
-                                      )),
+                                            decoration: BoxDecoration(
+                                                color: visitHistorySearchList[index].isSos == 1 ? AppColors.blue : AppColors.white,
+                                                border: Border.all(color: AppColors.blue),
+                                                borderRadius: BorderRadius.circular(5)
+                                            ),
+                                            padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
+                                            child:  Center(child: Text("SOS",style: TextStyle(color: visitHistorySearchList[index].isSos == 1 ? AppColors.white : AppColors.blue),)),
+                                          )),
                                       const SizedBox(width: 3,),
                                       Expanded(child: Container(
                                         decoration: BoxDecoration(
-                                            color: visitHistoryList[index].isRtv == 1 ? AppColors.blue : AppColors.white,
+                                            color: visitHistorySearchList[index].isRtv == 1 ? AppColors.blue : AppColors.white,
                                             border: Border.all(color: AppColors.blue),
                                             borderRadius: BorderRadius.circular(5)
                                         ),
                                         padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
-                                        child:  Center(child: Text("RTV",style: TextStyle(color: visitHistoryList[index].isRtv == 1 ? AppColors.white : AppColors.blue),)),
+                                        child:  Center(child: Text("RTV",style: TextStyle(color: visitHistorySearchList[index].isRtv == 1 ? AppColors.white : AppColors.blue),)),
                                       )),
 
                                     ],
@@ -246,8 +291,173 @@ class _VisitHistoryState extends State<VisitHistory> {
                               ),
                             ),
                           );
-                        }),
+                        })
+                         : ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              itemCount: visitHistoryList.length,
+                              itemBuilder: (context, index) {
+                                return Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                                  semanticContainer: true,
+                                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                                  shadowColor: Colors.black12,
+                                  elevation: 10,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 5),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          alignment: Alignment.centerLeft,
+                                          margin:const EdgeInsets.only(left: 25,bottom: 5,top: 5),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  const Icon(Icons.person_2_outlined,size: 18,),
+                                                  const SizedBox(width: 5,),
+                                                  Expanded(child: Text(visitHistoryList[index].fullName!,overflow: TextOverflow.ellipsis,maxLines: 1,style: const TextStyle(color: AppColors.primaryColor),)),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 5,),
+                                              Row(
+                                                children: [
+                                                  const Icon(Icons.store,color: AppColors.primaryColor,size: 18,),
+                                                  const SizedBox(width: 5,),
+                                                  Text(visitHistoryList[index].storeName!,style: const TextStyle(color: AppColors.primaryColor),),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 3,),
+                                              Row(
+                                                children: [
+                                                  Image.asset("assets/myicons/company_icon.png",width: 18,height: 18,),
+                                                  const SizedBox(width: 5,),
+                                                  Text(visitHistoryList[index].companyName!,style: const TextStyle(color: AppColors.primaryColor),),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Row(
+                                                children: [
+                                                  Image.asset("assets/myicons/check_in_icon.png",width: 18,height: 18,),
+                                                  const SizedBox(width: 5,),
+                                                  Expanded(child: Text(visitHistoryList[index].checkInTime!,style: const TextStyle(color: AppColors.primaryColor),)),
+                                                ],
+                                              ),
+                                            ),
+                                            const Text("|",style:  TextStyle(color: AppColors.greyColor)),
+                                            Expanded(
+                                              child: Row(
+                                                children: [
+                                                  Image.asset("assets/myicons/check_out_icon.png",width: 18,height: 18,),
+                                                  const SizedBox(width: 5,),
+                                                  Expanded(child: Text(visitHistoryList[index].checkOutTime!,style: const TextStyle(color: AppColors.primaryColor),)),
+                                                ],
+                                              ),
+                                            ),
+                                            const Text("|",style:  TextStyle(color: AppColors.greyColor)),
+                                            Expanded(
+                                              child: Row(
+                                                children: [
+                                                 const Icon(Icons.watch_later_outlined,color: AppColors.primaryColor,size: 18,),
+                                                  const SizedBox(width: 5,),
+                                                  Expanded(child: Text(visitHistoryList[index].workingHours!,style: const TextStyle(color: AppColors.primaryColor),)),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 5,),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                                child: Container(
+                                              decoration: BoxDecoration(
+                                                color: visitHistoryList[index].isAvailability == 1 ? AppColors.blue : AppColors.white,
+                                                border: Border.all(color: AppColors.blue),
+                                                borderRadius: BorderRadius.circular(5)
+                                              ),
+                                              padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
+                                              child:   Center(child: Text("AVL",style: TextStyle(color: visitHistoryList[index].isAvailability == 1 ? AppColors.white : AppColors.blue),)),
+                                            )),
+                                            const SizedBox(width: 3,),
+                                            Expanded(child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: visitHistoryList[index].isFreshness == 1 ? AppColors.blue : AppColors.white,
+                                                  border: Border.all(color: AppColors.blue),
+                                                  borderRadius: BorderRadius.circular(5)
+                                              ),
+                                              padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
+                                              child:   Center(child: Text("FRES",style: TextStyle(color: visitHistoryList[index].isFreshness == 1 ? AppColors.white : AppColors.blue),)),
+                                            )),
+                                            const SizedBox(width: 3,),
+                                            Expanded(child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: visitHistoryList[index].isPlanogram == 1 ? AppColors.blue : AppColors.white,
+                                                  border: Border.all(color: AppColors.blue),
+                                                  borderRadius: BorderRadius.circular(5)
+                                              ),
+                                              padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
+                                              child:   Center(child: Text("PLANO",style: TextStyle(color: visitHistoryList[index].isPlanogram == 1 ? AppColors.white : AppColors.blue),)),
+                                            )),
+                                            const SizedBox(width: 3,),
+                                            Expanded(
+                                                child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: visitHistoryList[index].isSos == 1 ? AppColors.blue : AppColors.white,
+                                                  border: Border.all(color: AppColors.blue),
+                                                  borderRadius: BorderRadius.circular(5)
+                                              ),
+                                              padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
+                                              child:  Center(child: Text("SOS",style: TextStyle(color: visitHistoryList[index].isSos == 1 ? AppColors.white : AppColors.blue),)),
+                                            )),
+                                            const SizedBox(width: 3,),
+                                            Expanded(child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: visitHistoryList[index].isRtv == 1 ? AppColors.blue : AppColors.white,
+                                                  border: Border.all(color: AppColors.blue),
+                                                  borderRadius: BorderRadius.circular(5)
+                                              ),
+                                              padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
+                                              child:  Center(child: Text("RTV",style: TextStyle(color: visitHistoryList[index].isRtv == 1 ? AppColors.white : AppColors.blue),)),
+                                            )),
+
+                                          ],
+                                        ),
+                                        const SizedBox(height: 5,),
+                                        // IgnorePointer(
+                                        //   ignoring: false,
+                                        //   child: ElevatedButton(
+                                        //     onPressed: () {
+                                        //
+                                        //     },
+                                        //     style: ElevatedButton.styleFrom(
+                                        //       backgroundColor: false
+                                        //           ? AppColors.lightgreytn
+                                        //           : AppColors.primaryColor,
+                                        //       padding: EdgeInsets.symmetric(
+                                        //           horizontal: MediaQuery.of(context).size.width/3, vertical: 10),
+                                        //     ),
+                                        //     child: const Text("INSPECT"),
+                                        //   ),
+                                        // ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }),
                   ),
+                          ),
+                        ],
+                      ),
                   if (isLoadingLocation)
                     const Center(
                       child: CircularProgressIndicator(
@@ -262,4 +472,21 @@ class _VisitHistoryState extends State<VisitHistory> {
       ),
     );
   }
+
+  onSearchTextFieldChanged(String text) async {
+    visitHistorySearchList.clear();
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+
+    for (VisitsHistoryResponseItem visitHistoryItem in visitHistoryList) {
+      if (visitHistoryItem.storeName.toString().toLowerCase().contains(text.toLowerCase())) {
+        visitHistorySearchList.add(visitHistoryItem);
+      }
+    }
+
+    setState(() {});
+  }
+
 }

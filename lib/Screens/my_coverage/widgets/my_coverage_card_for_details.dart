@@ -117,18 +117,27 @@ class MyCoverageCardForDetail extends StatelessWidget {
                   visible: visitStatus != "2",
                   child: IgnorePointer(
                     ignoring: isLoadingButton,
-                    child: ElevatedButton(
-                      onPressed: () {
+                    child: InkWell(
+                      onTap: () {
                         onTap();
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isLoadingButton
-                            ? AppColors.lightgreytn
-                            : AppColors.primaryColor,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                      ),
-                      child: Text(buttonName),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration:  BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            gradient: isLoadingButton ? const LinearGradient(
+                              colors: [
+                                AppColors.greyColor,
+                                AppColors.greyColor,
+                              ],
+                            ) : const LinearGradient(
+                              colors: [
+                                Color(0xFF0F408D),
+                                Color(0xFF6A82A9),
+                              ],
+                            )
+                        ),
+                        child: Text(buttonName,style: const TextStyle(color: AppColors.white),),),
                     ),
                   ),
                 ),

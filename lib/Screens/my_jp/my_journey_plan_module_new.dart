@@ -49,9 +49,9 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
   bool isEndLoading = false;
   String errorText = "";
 
-  String selfieWithTmr = "0";
-  String selfieWithTmrWorking = "0";
-  String selfieWithTmrCompleted = "0";
+  bool selfieWithTmr = false;
+  bool selfieWithTmrWorking = false;
+  bool selfieWithTmrCompleted = false;
 
   bool isLoadingLocation = false;
 
@@ -100,33 +100,46 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
     ))
         .then((value) {
       setState(() {
+        setState(() {
+          selfieWithTmr = false;
+          selfieWithTmrWorking = false;
+          selfieWithTmrCompleted = false;
+        });
+
         storeSelfieAvailabilityResponseItem = value.data!;
 
-        for(int i=0;i<storeSelfieAvailabilityResponseItem.length;i++) {
-          if(storeSelfieAvailabilityResponseItem[i].selfieType == "1" ) {
-            setState(() {
-              selfieWithTmr = storeSelfieAvailabilityResponseItem[i].selfieType!;
-            });
-          } else if(storeSelfieAvailabilityResponseItem[i].selfieType == "2" ) {
-            setState(() {
-              selfieWithTmrWorking = storeSelfieAvailabilityResponseItem[i].selfieType!;
-            });
-          } else if(storeSelfieAvailabilityResponseItem[i].selfieType == "3" ) {
-            setState(() {
-              selfieWithTmrCompleted = storeSelfieAvailabilityResponseItem[i].selfieType!;
-            });
-          } else {
+        if(storeSelfieAvailabilityResponseItem.isEmpty) {
+          setState(() {
+            selfieWithTmr = false;
+            selfieWithTmrWorking = false;
+            selfieWithTmrCompleted = false;
+          });
+        } else {
+          for (int i = 0; i < storeSelfieAvailabilityResponseItem.length; i++) {
+            if (storeSelfieAvailabilityResponseItem[i].selfieType == 1) {
               setState(() {
-                selfieWithTmr = "0";
-                selfieWithTmrWorking = "0";
-                selfieWithTmrCompleted = "0";
+                selfieWithTmr = true;
               });
-
+            } else if (storeSelfieAvailabilityResponseItem[i].selfieType == 2) {
+              setState(() {
+                selfieWithTmrWorking = true;
+              });
+            } else if (storeSelfieAvailabilityResponseItem[i].selfieType == 3) {
+              setState(() {
+                selfieWithTmrCompleted = true;
+              });
+            }
+            print(selfieWithTmr);
+            print(selfieWithTmrWorking);
+            print(selfieWithTmrCompleted);
           }
         }
 
         isLoading = false;
         isError = false;
+      });
+      setState(() {
+
       });
     }).catchError((e) {
       setState(() {
@@ -212,7 +225,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
                           ? ErrorTextAndButton(
                               onTap: () {
                                 getCheckList(true);
-                                getStoreImageList(false);
+                                getStoreImageList(true);
                               },
                               errorText: errorText)
                           : GridView(
@@ -231,7 +244,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
                                 // ),
                                 MyJourneyPlanModuleCardItem(
                                   onTap: () {
-                                    _getCurrentPosition1(true,"N","0");
+                                    pickedImage(widget.journeyResponseListItem,"N","0");
                                   },
                                   pendingCheckListCount: 0,
                                   questionRating: 0,
@@ -285,10 +298,119 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
                                 ),
                                 MyJourneyPlanModuleCardItem(
                                   onTap: () {
+
+                                    // showModalBottomSheet(
+                                    //     context: context,
+                                    //     isScrollControlled: true,
+                                    //     backgroundColor: Colors.transparent,
+                                    //     builder: (context) => StatefulBuilder(
+                                    //         builder: (BuildContext context, StateSetter menuState){
+                                    //           return Container(
+                                    //               height: MediaQuery.of(context).size.height * 0.25,
+                                    //               decoration: const BoxDecoration(
+                                    //                 color: Colors.white,
+                                    //                 borderRadius: BorderRadius.only(
+                                    //                   topLeft: Radius.circular(25.0),
+                                    //                   topRight: Radius.circular(25.0),
+                                    //                 ),
+                                    //               ),
+                                    //               child: Column(
+                                    //                 children: [
+                                    //                   const SizedBox(height: 11,),
+                                    //                   Expanded(
+                                    //                       child: ListView(
+                                    //                         shrinkWrap: true,
+                                    //                         scrollDirection: Axis.vertical,
+                                    //                         children: [
+                                    //                           InkWell(
+                                    //                             onTap: () {
+                                    //                               Navigator.of(context).pop();
+                                    //                               // if(isSelfieWithTmr != "1") {
+                                    //                               setState(() {
+                                    //                                 pickedImage(widget.journeyResponseListItem,"Y","1");
+                                    //                               });
+                                    //                               // }
+                                    //                             },
+                                    //                             child:  Padding(
+                                    //                                 padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 5),
+                                    //                                 child: Row(
+                                    //                                   children: [
+                                    //                                     const Expanded(child: Text("Take Selfie with TMR",style: TextStyle(fontSize: 15),)),
+                                    //                                     if(selfieWithTmr)
+                                    //                                     const Icon(Icons.check, color: AppColors.primaryColor,)
+                                    //                                   ],
+                                    //                                 )),
+                                    //                           ),
+                                    //                           const Divider(color: AppColors.primaryColor,),
+                                    //                           InkWell(
+                                    //                             onTap: () {
+                                    //                               Navigator.of(context).pop();
+                                    //                               // if(isSelfieWithTmrWorking != "2") {
+                                    //                               setState(() {
+                                    //                                 pickedImage(widget.journeyResponseListItem,"Y","2");
+                                    //                               });
+                                    //                               // }
+                                    //                             },
+                                    //                             child:  Padding(
+                                    //                                 padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 5),
+                                    //                                 child: Row(
+                                    //                                   children: [
+                                    //                                     const Expanded(child: Text("Take Picture of TMR during work",style: TextStyle(fontSize: 15),)),
+                                    //                                     if(selfieWithTmrWorking)
+                                    //                                     const Icon(Icons.check, color: AppColors.primaryColor,)
+                                    //                                   ],
+                                    //                                 )),
+                                    //                           ),
+                                    //                           const Divider(color: AppColors.primaryColor,),
+                                    //                           InkWell(
+                                    //                             onTap: () {
+                                    //                               Navigator.of(context).pop();
+                                    //                               // if(isSelfieWithTmrCompleted != "3") {
+                                    //                               setState(() {
+                                    //                                 pickedImage(widget.journeyResponseListItem,"Y","3");
+                                    //                               });
+                                    //                               // }
+                                    //                             },
+                                    //                             child:  Padding(
+                                    //                                 padding:const EdgeInsets.symmetric(vertical: 10,horizontal: 5),
+                                    //                                 child: Row(
+                                    //                                   children: [
+                                    //                                     const Expanded(child: Text("Take Picture when TMR completed his work(optional)",style: TextStyle(fontSize: 15),)),
+                                    //                                     if(selfieWithTmrCompleted)
+                                    //                                     const Icon(Icons.check, color: AppColors.primaryColor,)
+                                    //                                   ],
+                                    //                                 )),
+                                    //                           ),
+                                    //                           const Divider(color: AppColors.primaryColor,),
+                                    //                         ],
+                                    //                       )),
+                                    //                   // IgnorePointer(
+                                    //                   //   ignoring: isLoadingLocation,
+                                    //                   //   child: ElevatedButton(
+                                    //                   //     onPressed: () {
+                                    //                   //       onTap();
+                                    //                   //     },
+                                    //                   //     style: ElevatedButton.styleFrom(
+                                    //                   //       backgroundColor: isLoadingLocation
+                                    //                   //           ? AppColors.lightgreytn
+                                    //                   //           : AppColors.primaryColor,
+                                    //                   //       padding: const EdgeInsets.symmetric(
+                                    //                   //           horizontal: 20, vertical: 10),
+                                    //                   //     ),
+                                    //                   //     child: const Text(" Next "),
+                                    //                   //   ),
+                                    //                   // ),
+                                    //                   const SizedBox(height: 5,),
+                                    //                 ],
+                                    //               )
+                                    //           );
+                                    //         })
+                                    // );
                                     selfieOptionForJpBottomSheet(context,false,selfieWithTmr,selfieWithTmrWorking,selfieWithTmrCompleted,(value){
                                       print(value);
-                                      Navigator.of(context).pop();
-                                      _getCurrentPosition1(true,"Y",value);
+                                      pickedImage(widget.journeyResponseListItem,"Y",value);
+                                      // _getCurrentPosition1(true,"Y",value);
+
                                     });
                                   },
                                   pendingCheckListCount: 0,
@@ -344,7 +466,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
         String currentPosition =
             "${_currentPosition!.latitude},${_currentPosition!.longitude}";
         if (takeImage) {
-          pickedImage(widget.journeyResponseListItem, isSelfie, selfieType, currentPosition);
+          pickedImage(widget.journeyResponseListItem, isSelfie, selfieType);
         } else {
           endVisit(currentPosition);
         }
@@ -361,35 +483,31 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
   }
 
   Future<void> pickedImage(
-      JourneyResponseListItemDetails journeyResponseListItem,String isSelfie,String selfieType,
-      String currentLocation) async {
-    image = await picker.pickImage(
-        source: ImageSource.camera, imageQuality: ImageValue.qualityValue);
+      JourneyResponseListItemDetails journeyResponseListItem,String isSelfie,String selfieType,) async {
+    image = await picker.pickImage(source: ImageSource.camera,preferredCameraDevice: isSelfie == "Y" ? CameraDevice.front : CameraDevice.rear, imageQuality: ImageValue.qualityValue);
     if (image == null) {
     } else {
       print("Image Path");
       print(image!.path);
       compressedImage = await compressAndGetFile(image!);
       showUploadOption(
-          journeyResponseListItem, currentLocation, isSelfie, selfieType, compressedImage);
+          journeyResponseListItem, isSelfie, selfieType, compressedImage);
     }
   }
 
-  showUploadOption(JourneyResponseListItemDetails journeyResponseListItem,
-      String currentLocation,String isSelfie,String selfieType,XFile? image1) {
+  showUploadOption(JourneyResponseListItemDetails journeyResponseListItem, String isSelfie,String selfieType,XFile? image1) {
     showPopUpForImageUploadForComment(context, image1!, () {
       // String currentPosition = "${currentLocation!.latitude},${currentLocation.longitude}";
-      print(currentLocation);
-      if (image1 != null && currentLocation != "") {
+
+      if (image1 != null ) {
         imageUploadInsideAppStore(
-            journeyResponseListItem, currentLocation,isSelfie,selfieType, image1);
+            journeyResponseListItem,isSelfie,selfieType, image1);
       }
     }, commentController);
   }
 
   imageUploadInsideAppStore(
-      JourneyResponseListItemDetails journeyResponseListItem,
-      String currentLocation,String isSelfie,String selfieType,
+      JourneyResponseListItemDetails journeyResponseListItem,String isSelfie,String selfieType,
       XFile? image1) {
     HTTPManager()
         .storeImagesUpload(

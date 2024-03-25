@@ -133,7 +133,7 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
           ),
           SearchTextField(
             controller: searchController,
-            hintText: 'Search With Tmr Id',
+            hintText: 'Search With User Id',
             onChangeField: onSearchTextFieldChanged,
           ),
           Expanded(

@@ -17,6 +17,7 @@ import '../utills/user_constants.dart';
 import '../widgets/error_text_and_button.dart';
 import '../widgets/header_background_new.dart';
 import '../widgets/header_widgets_new.dart';
+import '../widgets/text_fields/search_text_fields.dart';
 import 'add_special_visit_screen.dart';
 
 class SpecialVisitScreen extends StatefulWidget {
@@ -45,6 +46,10 @@ class _SpecialVisitScreenState extends State<SpecialVisitScreen> {
   late CompaniesListResponseModel companiesList;
   late ReasonListResponseModel reasonsList;
 
+  TextEditingController searchController = TextEditingController();
+  List<SpecialVisitListItem> specialVisitSearchList =
+  <SpecialVisitListItem>[];
+
   @override
   void initState() {
     getUserData();
@@ -61,11 +66,11 @@ class _SpecialVisitScreenState extends State<SpecialVisitScreen> {
     });
 
     getSpecialVisitList(true);
-    getTmrUserList(true);
-    getClientList(true);
-    getStoresList(true);
-    getCompaniesList(true);
-    getReasonList(true);
+    // getTmrUserList(true);
+    // getClientList(true);
+    // getStoresList(true);
+    // getCompaniesList(true);
+    // getReasonList(true);
 
     // getJourneyPlanList(true);
   }
@@ -228,36 +233,38 @@ class _SpecialVisitScreenState extends State<SpecialVisitScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton:  FloatingActionButton(
-        backgroundColor: AppColors.primaryColor,
-        onPressed: () {
-
-          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AddSpecialVisitScreen(
-            clientList: clientList,
-            storesList: storesList,
-            tmrUserList: tmrUserList,
-            reasonsList: reasonsList,
-          ))).then((value) {
-            getSpecialVisitList(false);
-          });
-          // addSpecialVisitDropdownBottomSheet(context,
-          //   initialClientList,clientList.data!,(value){setState(() {
-          //     initialClientList = value;
-          //   });},
-          //     initialStoresList,storesList.data!,(value){setState(() {
-          //       initialStoresList = value;
-          //     });},
-          //     initialTmrUserList,tmrUserList.data!,(value){setState(() {
-          //       initialTmrUserList = value;
-          //     });},
-          //     initialReasonsList,reasonsList.data!,(value){setState(() {
-          //       initialReasonsList = value;
-          //     });},(){
-          //
-          //     }
-          // );
-        },
-        child:const Icon(Icons.add,size: 30,color: AppColors.white,),
+      floatingActionButton:  Visibility(
+        visible: !isLoading,
+        child: FloatingActionButton(
+          backgroundColor: AppColors.primaryColor,
+          onPressed: () {
+            // if(clientList.data!.isNotEmpty && storesList.data!.isNotEmpty && tmrUserList.data!.isNotEmpty && reasonsList.data!.isNotEmpty) {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
+                  const AddSpecialVisitScreen())).then((value) {
+                getSpecialVisitList(false);
+              });
+            // } else {
+            //   showToastMessage(false, "Please refresh your screen");
+            // }
+            // addSpecialVisitDropdownBottomSheet(context,
+            //   initialClientList,clientList.data!,(value){setState(() {
+            //     initialClientList = value;
+            //   });},
+            //     initialStoresList,storesList.data!,(value){setState(() {
+            //       initialStoresList = value;
+            //     });},
+            //     initialTmrUserList,tmrUserList.data!,(value){setState(() {
+            //       initialTmrUserList = value;
+            //     });},
+            //     initialReasonsList,reasonsList.data!,(value){setState(() {
+            //       initialReasonsList = value;
+            //     });},(){
+            //
+            //     }
+            // );
+          },
+          child:const Icon(Icons.add,size: 30,color: AppColors.white,),
+        ),
       ),
         body: HeaderBackgroundNew(
           childWidgets: [
@@ -275,30 +282,33 @@ class _SpecialVisitScreenState extends State<SpecialVisitScreen> {
                         color: AppColors.primaryColor,
                       ),
                     )
-                        : Container(
+                        : Column(
+                          children: [
+                            SearchTextField(
+                              controller: searchController,
+                              hintText: 'Search With Store Name',
+                              onChangeField: onSearchTextFieldChanged,
+                            ),
+                            Container(
                       margin: const EdgeInsets.symmetric(horizontal: 10),
                       child: isError
-                          ? ErrorTextAndButton(
-                          onTap: () {
+                              ? ErrorTextAndButton(
+                              onTap: () {
+                                getSpecialVisitList(true);
 
-                            getSpecialVisitList(true);
-                            getTmrUserList(true);
-                            getClientList(true);
-                            getStoresList(true);
-                            getCompaniesList(true);
-                            getReasonList(true);
-
-                          },
-                          errorText: errorText)
-                          : specialVisitList.isEmpty
-                          ? const Center(
-                        child: Text("No Special visit found"),
-                      )
-                          : ListView.builder(
+                              },
+                              errorText: errorText)
+                              : specialVisitList.isEmpty
+                              ? const Center(
+                            child: Text("No Special visit found"),
+                      ) : searchController.text.isNotEmpty
+                          ? specialVisitSearchList.isEmpty ? const Center(
+                        child: Text("Nothing found with this name"),
+                      ) : ListView.builder(
                           padding: const EdgeInsets.only(bottom: 100),
                           shrinkWrap: true,
                           scrollDirection: Axis.vertical,
-                          itemCount: specialVisitList.length,
+                          itemCount: specialVisitSearchList.length,
                           itemBuilder: (context, index) {
                             return Card(
                               shape: RoundedRectangleBorder(
@@ -317,82 +327,100 @@ class _SpecialVisitScreenState extends State<SpecialVisitScreen> {
                                   children: [
                                     Row(
                                       children: [
-                                        Expanded(child: Text("Store: ${specialVisitList[index].store!}",overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.primaryColor),)),
-                                        InkWell(
-                                          onTap: () async {
-                                            await showDialog<
-                                                bool>(
-                                              context: context,
-                                              builder: (context) {
-                                                return AlertDialog(
-                                                  title: const Text(
-                                                      'Are you sure you want to delete this visit?'),
-                                                  actions: [
-                                                    TextButton(
-                                                      onPressed:
-                                                          () {
-                                                        Navigator.pop(
-                                                            context,
-                                                            false);
-                                                      },
-                                                      child:
-                                                      const Text(
-                                                        'No',
-                                                        style: TextStyle(
-                                                            color:
-                                                            AppColors.primaryColor),
-                                                      ),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed:
-                                                          () {
-                                                        deleteSpecialVisit(
-                                                            index,
-                                                            specialVisitList[
-                                                            index]);
-                                                      },
-                                                      child:
-                                                      const Text(
-                                                        'Yes',
-                                                        style: TextStyle(
-                                                            color:
-                                                            AppColors.primaryColor),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            );
-                                          },
-                                          child: Container(
-                                            padding:
-                                            const EdgeInsets
-                                                .all(5),
-                                            decoration: BoxDecoration(
-                                                color: AppColors
-                                                    .white,
-                                                borderRadius:
-                                                BorderRadius
-                                                    .circular(
-                                                    50)),
-                                            child: const Icon(
-                                              Icons.delete,
-                                              color: AppColors
-                                                  .redColor,
-                                              size: 25,
-                                            ),
-                                          ),
-                                        )
+                                        Expanded(child: Row(
+                                          children: [
+                                            const Icon(Icons.store,color: AppColors.primaryColor,size: 18,),
+                                            const SizedBox(width: 5,),
+                                            Text(specialVisitSearchList[index].store!,overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.primaryColor),),
+                                          ],
+                                        )),
+                                        // InkWell(
+                                        //   onTap: () async {
+                                        //     await showDialog<
+                                        //         bool>(
+                                        //       context: context,
+                                        //       builder: (context) {
+                                        //         return AlertDialog(
+                                        //           title: const Text(
+                                        //               'Are you sure you want to delete this visit?'),
+                                        //           actions: [
+                                        //             TextButton(
+                                        //               onPressed:
+                                        //                   () {
+                                        //                 Navigator.pop(
+                                        //                     context,
+                                        //                     false);
+                                        //               },
+                                        //               child:
+                                        //               const Text(
+                                        //                 'No',
+                                        //                 style: TextStyle(
+                                        //                     color:
+                                        //                     AppColors.primaryColor),
+                                        //               ),
+                                        //             ),
+                                        //             TextButton(
+                                        //               onPressed:
+                                        //                   () {
+                                        //                 deleteSpecialVisit(
+                                        //                     index,
+                                        //                     specialVisitList[
+                                        //                     index]);
+                                        //               },
+                                        //               child:
+                                        //               const Text(
+                                        //                 'Yes',
+                                        //                 style: TextStyle(
+                                        //                     color:
+                                        //                     AppColors.primaryColor),
+                                        //               ),
+                                        //             ),
+                                        //           ],
+                                        //         );
+                                        //       },
+                                        //     );
+                                        //   },
+                                        //   child: Container(
+                                        //     padding:
+                                        //     const EdgeInsets
+                                        //         .all(5),
+                                        //     decoration: BoxDecoration(
+                                        //         color: AppColors
+                                        //             .white,
+                                        //         borderRadius:
+                                        //         BorderRadius
+                                        //             .circular(
+                                        //             50)),
+                                        //     child: const Icon(
+                                        //       Icons.delete,
+                                        //       color: AppColors
+                                        //           .redColor,
+                                        //       size: 25,
+                                        //     ),
+                                        //   ),
+                                        // )
                                       ],
                                     ),
                                     const SizedBox(
                                       height: 5,
                                     ),
-                                    Text("Company: ${specialVisitList[index].companyName!}",overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.blue),),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.person_2_outlined,size: 18,),
+                                        const SizedBox(width: 5,),
+                                        Text(specialVisitSearchList[index].companyName!,overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.blue),),
+                                      ],
+                                    ),
                                     const SizedBox(
                                       height: 5,
                                     ),
-                                    Text(specialVisitList[index].reason!,overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.blue),),
+                                    Row(
+                                      children: [
+                                        Image.asset("assets/myicons/reason.png",width: 18,height: 18,),
+                                        const SizedBox(width: 5,),
+                                        Text(specialVisitSearchList[index].reason!,overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.blue),),
+                                      ],
+                                    ),
                                     const SizedBox(
                                       height: 5,
                                     ),
@@ -400,16 +428,175 @@ class _SpecialVisitScreenState extends State<SpecialVisitScreen> {
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
-                                        Text("Date: ${specialVisitList[index].visitDate!}",overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.blue),),
-                                        Text("Time: ${specialVisitList[index].visitTime!}",overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.blue),),
+                                        Row(
+                                          children: [
+                                            const Icon(Icons.calendar_month,color: AppColors.primaryColor,size: 18,),
+                                            const SizedBox(width: 5,),
+                                            Text(specialVisitSearchList[index].visitDate!,overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.blue),),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            const Icon(Icons.watch_later_outlined,color: AppColors.primaryColor,size: 18,),
+                                            const SizedBox(width: 5,),
+                                            Text(specialVisitSearchList[index].visitTime!,overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.blue),),
+                                          ],
+                                        ),
                                       ],
                                     )
                                   ],
                                 ),
                               ),
                             );
-                          }),
+                          })
+                          : ListView.builder(
+                              padding: const EdgeInsets.only(bottom: 100),
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              itemCount: specialVisitList.length,
+                              itemBuilder: (context, index) {
+                                return Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                                  semanticContainer: true,
+                                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                                  shadowColor: Colors.black12,
+                                  elevation: 10,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(child: Row(
+                                              children: [
+                                                const Icon(Icons.store, size: 18,color: AppColors.primaryColor,),
+                                                const SizedBox(width: 5,),
+                                                Text(specialVisitList[index].store!,overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.primaryColor),),
+                                              ],
+                                            )),
+                                            // InkWell(
+                                            //   onTap: () async {
+                                            //     await showDialog<
+                                            //         bool>(
+                                            //       context: context,
+                                            //       builder: (context) {
+                                            //         return AlertDialog(
+                                            //           title: const Text(
+                                            //               'Are you sure you want to delete this visit?'),
+                                            //           actions: [
+                                            //             TextButton(
+                                            //               onPressed:
+                                            //                   () {
+                                            //                 Navigator.pop(
+                                            //                     context,
+                                            //                     false);
+                                            //               },
+                                            //               child:
+                                            //               const Text(
+                                            //                 'No',
+                                            //                 style: TextStyle(
+                                            //                     color:
+                                            //                     AppColors.primaryColor),
+                                            //               ),
+                                            //             ),
+                                            //             TextButton(
+                                            //               onPressed:
+                                            //                   () {
+                                            //                 deleteSpecialVisit(
+                                            //                     index,
+                                            //                     specialVisitList[
+                                            //                     index]);
+                                            //               },
+                                            //               child:
+                                            //               const Text(
+                                            //                 'Yes',
+                                            //                 style: TextStyle(
+                                            //                     color:
+                                            //                     AppColors.primaryColor),
+                                            //               ),
+                                            //             ),
+                                            //           ],
+                                            //         );
+                                            //       },
+                                            //     );
+                                            //   },
+                                            //   child: Container(
+                                            //     padding:
+                                            //     const EdgeInsets
+                                            //         .all(5),
+                                            //     decoration: BoxDecoration(
+                                            //         color: AppColors
+                                            //             .white,
+                                            //         borderRadius:
+                                            //         BorderRadius
+                                            //             .circular(
+                                            //             50)),
+                                            //     child: const Icon(
+                                            //       Icons.delete,
+                                            //       color: AppColors
+                                            //           .redColor,
+                                            //       size: 25,
+                                            //     ),
+                                            //   ),
+                                            // )
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        Row(
+                                          children: [
+                                            const Icon(Icons.person_2_outlined,color: AppColors.primaryColor,size: 18,),
+                                            const SizedBox(width: 5,),
+                                            Text(specialVisitList[index].companyName!,overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.blue),),
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Image.asset("assets/myicons/reason.png",width: 18,height: 18,),
+                                            const SizedBox(width: 5,),
+                                            Text(specialVisitList[index].reason!,overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.blue),),
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                const Icon(Icons.calendar_month_outlined,color: AppColors.primaryColor,size: 18,),
+                                                const SizedBox(width: 5,),
+                                                Text(specialVisitList[index].visitDate!,overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.blue),),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                const Icon(Icons.watch_later_outlined, color: AppColors.primaryColor,size: 18),
+                                                const SizedBox(width: 5,),
+                                                Text(specialVisitList[index].visitTime!,overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.blue),),
+                                              ],
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }),
                     ),
+                          ],
+                        ),
                     if (isLoadingLocation)
                       const Center(
                         child: CircularProgressIndicator(
@@ -420,6 +607,22 @@ class _SpecialVisitScreenState extends State<SpecialVisitScreen> {
                 ))
           ],
         ));
+  }
+
+  onSearchTextFieldChanged(String text) async {
+    specialVisitSearchList.clear();
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+
+    for (SpecialVisitListItem specialVisitListItem in specialVisitList) {
+      if (specialVisitListItem.store.toString().toLowerCase().contains(text.toLowerCase())) {
+        specialVisitSearchList.add(specialVisitListItem);
+      }
+    }
+
+    setState(() {});
   }
 
   deleteSpecialVisit(int index,SpecialVisitListItem specialVisitListItem) {

@@ -80,7 +80,9 @@ class _KnowledgeShareState extends State<KnowledgeShare> {
                       color: AppColors.primaryColor,
                     ),
                   )
-                : GridView.builder(
+                : knowledgeShareLst.isEmpty ? const Center(
+              child: Text("Nothing shared yet"),
+            ) : GridView.builder(
                     itemCount: knowledgeShareLst.length,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
@@ -100,13 +102,13 @@ class _KnowledgeShareState extends State<KnowledgeShare> {
                             imageUrl:
                                 // "assets/dashboard/my_journey_plan.png",
                                 knowledgeShareLst[i].type == "IMAGE"
-                                    ? "assets/myicons/picture_download.png"
+                                    ? "assets/myicons/image_icon.png"
                                     : knowledgeShareLst[i]
                                                 .type
                                                 ?.toUpperCase() ==
                                             "PDF"
-                                        ? "assets/myicons/pdf_download.png"
-                                        : "assets/myicons/video_download.png",
+                                        ? "assets/myicons/pdf_icon.png"
+                                        : "assets/myicons/video_icon.png",
                             cardName: knowledgeShareLst[i].companyName);
                       }
                       return null;

@@ -153,6 +153,9 @@ class _MyCoveragePhotoGalleryOptionsState
       setState(() {
         
         tmrUserList = value;
+        if(tmrUserList.data!.isNotEmpty) {
+          tmrUserItem = tmrUserList.data![0];
+        }
         isLoading = false;
         isError = false;
       });
@@ -192,7 +195,8 @@ class _MyCoveragePhotoGalleryOptionsState
                     children: [
                       MyJourneyPlanModuleCardItem(
                         onTap: () {
-                          _getCurrentPosition(true);
+                          // _getCurrentPosition(true);
+                          pickedImage(widget.journeyResponseListItemDetails,);
                         },
                         pendingCheckListCount: 0,
                         questionRating: 0,
@@ -317,7 +321,7 @@ class _MyCoveragePhotoGalleryOptionsState
         String currentPosition =
             "${_currentPosition!.latitude},${_currentPosition!.longitude}";
         if (takeImage) {
-          pickedImage(widget.journeyResponseListItemDetails, currentPosition);
+          pickedImage(widget.journeyResponseListItemDetails);
         } else {
           endVisit(currentPosition);
         }
@@ -338,8 +342,7 @@ class _MyCoveragePhotoGalleryOptionsState
   }
 
   Future<void> pickedImage(
-      JourneyResponseListItemDetails journeyResponseListItem,
-      String currentLocation) async {
+      JourneyResponseListItemDetails journeyResponseListItem,) async {
     image = await picker.pickImage(
         source: ImageSource.camera, imageQuality: ImageValue.qualityValue);
     if (image == null) {
@@ -348,25 +351,23 @@ class _MyCoveragePhotoGalleryOptionsState
       print(image!.path);
       compressedImage = await compressAndGetFile(image!);
       showUploadOption(
-          journeyResponseListItem, currentLocation, compressedImage);
+          journeyResponseListItem, compressedImage);
     }
   }
 
-  showUploadOption(JourneyResponseListItemDetails journeyResponseListItem,
-      String currentLocation, XFile? image1) {
+  showUploadOption(JourneyResponseListItemDetails journeyResponseListItem, XFile? image1) {
     showPopUpForImageUploadForComment(context, image1!, () {
       // String currentPosition = "${currentLocation!.latitude},${currentLocation.longitude}";
-      print(currentLocation);
-      if (image1 != null && currentLocation != "") {
+
+      if (image1 != null ) {
         imageUploadInsideAppStore(
-            journeyResponseListItem, currentLocation, image1);
+            journeyResponseListItem, image1);
       }
     }, commentController);
   }
 
   imageUploadInsideAppStore(
       JourneyResponseListItemDetails journeyResponseListItem,
-      String currentLocation,
       XFile? image1) {
     HTTPManager()
         .storeImagesUpload(
@@ -421,7 +422,7 @@ class _MyCoveragePhotoGalleryOptionsState
     Navigator.of(context).pop();
     HTTPManager().updateTmrUserCoverage(UpdateTmrUserInCoverage(elId: elId,workingId: workingId,tmrId: tmrId,)).then((value) {
 
-      showToastMessage(true, "Tmr update successfully");
+      showToastMessage(true, "User update successfully");
 
       Navigator.of(context)
           .push(MaterialPageRoute(

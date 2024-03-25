@@ -124,6 +124,7 @@ class _MyCoverageGalleryState extends State<MyCoverageGallery> {
                                       ),
                                       itemBuilder:
                                           (BuildContext context, int index) {
+                                        print( "${LicenseProvider.imageBasePath + "capture_photo/"}${storeImageList[index].imageName}");
                                         // print("${ApplicationURLs.BASE_URL_IMAGE}${storeImageList[index].imageName}");
                                         return InkWell(
                                           onTap: () {
@@ -201,8 +202,7 @@ class _MyCoverageGalleryState extends State<MyCoverageGallery> {
                                                       top: 5,
                                                       child: InkWell(
                                                         onTap: () async {
-                                                          await showDialog<
-                                                              bool>(
+                                                          await showDialog<bool>(
                                                             context: context,
                                                             builder: (context) {
                                                               return AlertDialog(

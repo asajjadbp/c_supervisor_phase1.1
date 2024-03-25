@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:c_supervisor/Model/request_model/save_user_location_request.dart';
@@ -8,7 +9,11 @@ import 'package:c_supervisor/Network/http_manager.dart';
 import 'package:c_supervisor/Screens/attendence/attendence_home.dart';
 import 'package:c_supervisor/Screens/dashboard/widgets/main_dashboard_card_item.dart';
 import 'package:c_supervisor/Screens/knowledge/knowledge_share.dart';
+import 'package:c_supervisor/Screens/recruite_suggest/recruit_suggest_screen.dart';
+import 'package:c_supervisor/Screens/time_motion/time_motion_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,6 +24,7 @@ import '../../Model/request_model/check_in_status_request.dart';
 import '../../Model/response_model/check_in_response/check_in_response.dart';
 import '../../Model/response_model/check_in_response/check_in_status_response.dart';
 import '../../Model/response_model/check_in_response/check_in_status_response_details.dart';
+import '../buisness_trips/business_trips_screen.dart';
 import '../my_coverage/my_coverage_plan_screen.dart';
 import '../my_jp/my_journey_plan_screen.dart';
 import '../utills/app_colors_new.dart';
@@ -33,6 +39,8 @@ import '../widgets/header_background_new.dart';
 import '../widgets/header_widgets_new.dart';
 import '../widgets/toast_message_show.dart';
 import 'package:intl/intl.dart';
+
+import 'package:device_info_plus/device_info_plus.dart';
 
 class MainDashboardNew extends StatefulWidget {
   const MainDashboardNew({Key? key}) : super(key: key);
@@ -64,6 +72,9 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
   Timer? timer;
   bool? isVpnConnected;
 
+  static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+  Map<String, dynamic> _deviceData = <String, dynamic>{};
+
   List<CheckInStatusItem> checkListItem = <CheckInStatusItem>[];
   List<CheckInStatusDetailsItem> checkListItemStatus =
       <CheckInStatusDetailsItem>[];
@@ -82,6 +93,90 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
 
     super.initState();
   }
+
+  // Map<String, dynamic> _readLinuxDeviceInfo(LinuxDeviceInfo data) {
+  //   return <String, dynamic>{
+  //     'name': data.name,
+  //     'version': data.version,
+  //     'id': data.id,
+  //     'idLike': data.idLike,
+  //     'versionCodename': data.versionCodename,
+  //     'versionId': data.versionId,
+  //     'prettyName': data.prettyName,
+  //     'buildId': data.buildId,
+  //     'variant': data.variant,
+  //     'variantId': data.variantId,
+  //     'machineId': data.machineId,
+  //   };
+  // }
+  //
+  // Map<String, dynamic> _readWebBrowserInfo(WebBrowserInfo data) {
+  //   return <String, dynamic>{
+  //     'browserName': describeEnum(data.browserName),
+  //     'appCodeName': data.appCodeName,
+  //     'appName': data.appName,
+  //     'appVersion': data.appVersion,
+  //     'deviceMemory': data.deviceMemory,
+  //     'language': data.language,
+  //     'languages': data.languages,
+  //     'platform': data.platform,
+  //     'product': data.product,
+  //     'productSub': data.productSub,
+  //     'userAgent': data.userAgent,
+  //     'vendor': data.vendor,
+  //     'vendorSub': data.vendorSub,
+  //     'hardwareConcurrency': data.hardwareConcurrency,
+  //     'maxTouchPoints': data.maxTouchPoints,
+  //   };
+  // }
+  //
+  // Map<String, dynamic> _readMacOsDeviceInfo(MacOsDeviceInfo data) {
+  //   return <String, dynamic>{
+  //     'computerName': data.computerName,
+  //     'hostName': data.hostName,
+  //     'arch': data.arch,
+  //     'model': data.model,
+  //     'kernelVersion': data.kernelVersion,
+  //     'majorVersion': data.majorVersion,
+  //     'minorVersion': data.minorVersion,
+  //     'patchVersion': data.patchVersion,
+  //     'osRelease': data.osRelease,
+  //     'activeCPUs': data.activeCPUs,
+  //     'memorySize': data.memorySize,
+  //     'cpuFrequency': data.cpuFrequency,
+  //     'systemGUID': data.systemGUID,
+  //   };
+  // }
+  //
+  // Map<String, dynamic> _readWindowsDeviceInfo(WindowsDeviceInfo data) {
+  //   return <String, dynamic>{
+  //     'numberOfCores': data.numberOfCores,
+  //     'computerName': data.computerName,
+  //     'systemMemoryInMegabytes': data.systemMemoryInMegabytes,
+  //     'userName': data.userName,
+  //     'majorVersion': data.majorVersion,
+  //     'minorVersion': data.minorVersion,
+  //     'buildNumber': data.buildNumber,
+  //     'platformId': data.platformId,
+  //     'csdVersion': data.csdVersion,
+  //     'servicePackMajor': data.servicePackMajor,
+  //     'servicePackMinor': data.servicePackMinor,
+  //     'suitMask': data.suitMask,
+  //     'productType': data.productType,
+  //     'reserved': data.reserved,
+  //     'buildLab': data.buildLab,
+  //     'buildLabEx': data.buildLabEx,
+  //     'digitalProductId': data.digitalProductId,
+  //     'displayVersion': data.displayVersion,
+  //     'editionId': data.editionId,
+  //     'installDate': data.installDate,
+  //     'productId': data.productId,
+  //     'productName': data.productName,
+  //     'registeredOwner': data.registeredOwner,
+  //     'releaseId': data.releaseId,
+  //     'deviceId': data.deviceId,
+  //   };
+  // }
 
   updateAvailable() {
     // Instantiate NewVersion manager object (Using GCP Console app as example)
@@ -410,6 +505,76 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                                             // "assets/dashboard/my_coverage.png"
                                             "assets/myicons/knowledge.png",
                                         cardName: "Knowledge Share"),
+                                    // MainDashboardItemCard(
+                                    //     onTap: () {
+                                    //       if (isCheckedIn) {
+                                    //         showToastMessage(false,
+                                    //             "Please check out first and try again");
+                                    //       } else {
+                                    //         Navigator.of(context).push(
+                                    //             MaterialPageRoute(
+                                    //                 builder: (context) =>
+                                    //                 const KnowledgeShare()));
+                                    //       }
+                                    //       // showToastMessage(false,"Coming Soon...");
+                                    //     },
+                                    //     imageUrl:
+                                    //     // "assets/dashboard/my_coverage.png"
+                                    //     "assets/myicons/client.png",
+                                    //     cardName: "Clients"),
+                                    MainDashboardItemCard(
+                                        onTap: () {
+                                          if (isCheckedIn) {
+                                            showToastMessage(false,
+                                                "Please check out first and try again");
+                                          } else {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                    const RecruitSuggestScreen()));
+                                          }
+                                          // showToastMessage(false,"Coming Soon...");
+                                        },
+                                        imageUrl:
+                                        // "assets/dashboard/my_coverage.png"
+                                        "assets/myicons/recruit_suggest.png",
+                                        cardName: "Recruit Suggest"),
+                                    MainDashboardItemCard(
+                                        onTap: () {
+                                          if (isCheckedIn) {
+                                            showToastMessage(false,
+                                                "Please check out first and try again");
+                                          } else {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                    const BusinessTripsScreen()));
+                                          }
+                                          // showToastMessage(false,"Coming Soon...");
+                                        },
+                                        imageUrl:
+                                        // "assets/dashboard/my_coverage.png"
+                                        "assets/myicons/business_trip.png",
+                                        cardName: "Business Trips"),
+                                    // MainDashboardItemCard(
+                                    //     onTap: () {
+                                    //       if (isCheckedIn) {
+                                    //         showToastMessage(false,
+                                    //             "Please check out first and try again");
+                                    //       } else {
+                                    //         Navigator.of(context).push(
+                                    //             MaterialPageRoute(
+                                    //                 builder: (context) =>
+                                    //                 const TimeMotionScreen()));
+                                    //       }
+                                    //       // showToastMessage(false,"Coming Soon...");
+                                    //     },
+                                    //     imageUrl:
+                                    //     // "assets/dashboard/my_coverage.png"
+                                    //     "assets/myicons/time_motion.png",
+                                    //     cardName: "Time Motion Study"),
+
+
                                     // MainDashboardItemCard(onTap:(){
                                     //
                                     // },imageUrl:"assets/dashboard/my_team.png", cardName:"My Team"),
@@ -462,13 +627,26 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                                         vertical: 15),
                                     width: MediaQuery.of(context).size.width,
                                     decoration: BoxDecoration(
+                                      gradient: !isCheckedIn
+                                          ? isLoading2
+                                          ? const LinearGradient(
+                                        colors: [
+                                          AppColors.greyColor,
+                                          AppColors.greyColor,
+                                        ],
+                                      ) : const LinearGradient(
+                                        colors: [
+                                          Color(0xFF0F408D),
+                                          Color(0xFF6A82A9),
+                                        ],
+                                      ) : const LinearGradient(
+                                        colors: [
+                                          Color(0xFFFFFFFF),
+                                          Color(0xFFFFFFFF),
+                                        ],
+                                      ),
                                         border: Border.all(
                                             color: AppColors.primaryColor),
-                                        color: !isCheckedIn
-                                            ? isLoading2
-                                                ? AppColors.lightgreytn
-                                                : AppColors.primaryColor
-                                            : AppColors.white,
                                         borderRadius: const BorderRadius.only(
                                             topRight: Radius.circular(10),
                                             topLeft: Radius.circular(10))),
@@ -515,11 +693,24 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                                     decoration: BoxDecoration(
                                         border: Border.all(
                                             color: AppColors.primaryColor),
-                                        color: isCheckedIn
+                                        gradient: isCheckedIn
                                             ? isLoading2
-                                                ? AppColors.lightgreytn
-                                                : AppColors.primaryColor
-                                            : AppColors.white,
+                                            ? const LinearGradient(
+                                          colors: [
+                                            AppColors.greyColor,
+                                            AppColors.greyColor,
+                                          ],
+                                        ) : const LinearGradient(
+                                          colors: [
+                                            Color(0xFF0F408D),
+                                            Color(0xFF6A82A9),
+                                          ],
+                                        ) : const LinearGradient(
+                                          colors: [
+                                            Color(0xFFFFFFFF),
+                                            Color(0xFFFFFFFF),
+                                          ],
+                                        ),
                                         borderRadius: const BorderRadius.only(
                                             topRight: Radius.circular(10),
                                             topLeft: Radius.circular(10))),

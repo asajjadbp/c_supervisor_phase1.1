@@ -5,7 +5,7 @@ import 'package:c_supervisor/provider/license_provider.dart';
 class ApplicationURLs {
   //Live Base URL
   // static const BASE_URL_APP = "https://cstore.catalist-me.com/CSupervisor/";
-  // static const BASE_URL_APP = "https://cstoredev.catalist-me.com/CSupervisor/";
+  static const COMMON_LIST_API = "getControlListForSelectEL";
 
   String baseUrl = "";
 
@@ -140,4 +140,25 @@ class ApplicationURLs {
 
 // api get knowledge share data
   static const API_KNOWLEDGE_SHARE = "getKnowledgeShare";
+
+  //save device info
+  static const API_DEVICE_INFO = "deviceDataCollection";
+
+  //Business Trips url
+  static const API_ADD_BUSINESS_TRIPS = "buisnessTrip";
+  static const API_GET_BUSINESS_TRIPS = "getBuisnessTrip";
+  static const API_UPDATE_BUSINESS_TRIPS = "updateBuisnessTrip";
+  static const API_DELETE_BUSINESS_TRIPS = "deleteBuisnessTrip";
+
+  //Recruit Suggest url
+  static const API_ADD_RECRUIT_SUGGEST = "recruitSuggest";
+  static const API_GET_RECRUIT_SUGGEST = "getRecruitSuggestion";
+  static const API_UPDATE_RECRUIT_SUGGEST = "updateRecruitSuggestion";
+  static const API_DELETE_RECRUIT_SUGGEST = "deleteRecruitSuggestion";
+
+  //Time Motion url
+  static const API_ADD_TIME_MOTION = "timeMotionStudy";
+  static const API_GET_TIME_MOTION = "getTimeMotionStudy";
+  static const API_UPDATE_TIME_MOTION = "updateTimeMotionStudy";
+  static const API_DELETE_TIME_MOTION = "deleteTimeMotionStudy";
 }

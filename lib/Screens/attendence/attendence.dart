@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:c_supervisor/Screens/utills/app_colors_new.dart';
 import 'package:c_supervisor/Screens/widgets/toast_message_show.dart';
 import 'package:flutter/material.dart';
@@ -53,23 +55,26 @@ class _TeamAttendenceState extends State<TeamAttendence> {
       isLoading = true;
     });
 
+    print(elId);
+
     await HTTPManager()
         .teamAttendence(GetAttendenceRequestModel(elId: elId))
         .then((value) {
       setState(() {
+
         attendenceList = value.data.data;
         attendenceSummary = value.data.summary;
-
         isLoading = false;
         isError = false;
       });
     }).catchError((e) {
+      log(e.toString());
       setState(() {
         isError = true;
         errorText = e.toString();
         isLoading = false;
       });
-      showToastMessage(false, errorText);
+      // showToastMessage(false, errorText);
     });
   }
 
@@ -79,18 +84,18 @@ class _TeamAttendenceState extends State<TeamAttendence> {
 
     Map<String, double> dataMap = {
       // "Total": attendenceSummary.total.toDouble(),
-      "Present (${attendenceSummary!.present})":
-          attendenceSummary!.present.toDouble(),
-      "Absent (${attendenceSummary!.absent})":
-          attendenceSummary!.absent.toDouble(),
+      "Present (${attendenceSummary.present})":
+          attendenceSummary.present.toDouble(),
+      "Absent (${attendenceSummary.absent})":
+          attendenceSummary.absent.toDouble(),
       // "3 L1": attendenceSummary!.l1.toDouble(),
       // "4 L2": attendenceSummary!.l2.toDouble(),
       // "7 L3": attendenceSummary!.l3.toDouble(),
     };
 
     var colorList = [
-      Color.fromRGBO(10, 200, 300, 100),
-      Color.fromRGBO(238, 6, 6, 0.612),
+      const Color.fromRGBO(10, 200, 300, 100),
+      const Color.fromRGBO(238, 6, 6, 0.612),
       // Color.fromRGBO(7, 22, 236, 0.612),
       // Colors.blue,
       // Colors.purple
@@ -126,7 +131,7 @@ class _TeamAttendenceState extends State<TeamAttendence> {
                                 BorderRadius.all(Radius.circular(10.0)),
                           ),
                           child: Padding(
-                            padding: EdgeInsets.all(10.0),
+                            padding: const EdgeInsets.all(10.0),
                             child: PieChart(
                               dataMap: dataMap,
                               animationDuration:

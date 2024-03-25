@@ -1,20 +1,31 @@
 // ignore_for_file: avoid_print, duplicate_ignore
 
+import 'dart:io';
+import 'dart:math';
+
+import 'package:c_supervisor/Model/request_model/business_trips.dart';
 import 'package:c_supervisor/Model/request_model/get_attendence_request.dart';
 import 'package:c_supervisor/Model/request_model/knowledge_share_request.dart';
 import 'package:c_supervisor/Model/request_model/myconverter.dart';
+import 'package:c_supervisor/Model/request_model/recruit_suggest.dart';
+import 'package:c_supervisor/Model/request_model/time_motion.dart';
 import 'package:c_supervisor/Model/request_model/update_attendence_response.dart';
 import 'package:c_supervisor/Model/response_model/attendence_response/attendence_response.dart';
 import 'package:c_supervisor/Model/response_model/attendence_response/update_attendence_response.dart';
+import 'package:c_supervisor/Model/response_model/business_trips_response/business_trips_list_model.dart';
 import 'package:c_supervisor/Model/response_model/knowledge_share/knowledge_share_model.dart';
 import 'package:c_supervisor/Model/response_model/my_team_responses/my_team_jp_responses/my_team_jp_list_response.dart';
 import 'package:c_supervisor/Model/response_model/my_team_responses/team_kpi_reponses/team_kpi_list_response_model.dart';
+import 'package:c_supervisor/Model/response_model/recruit_suggest_responses/recruit_suggest_list_model.dart';
+import 'package:c_supervisor/Model/response_model/time_motion_response/time_motion_list_response_model.dart';
 import 'package:c_supervisor/Network/response_handler.dart';
 import 'package:c_supervisor/provider/license_provider.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../Model/request_model/check_in_status_request.dart';
+import '../Model/request_model/common_api_call_request.dart';
 import '../Model/request_model/delete_special_visit.dart';
+import '../Model/request_model/device_info_request.dart';
 import '../Model/request_model/end_visit_request.dart';
 import '../Model/request_model/get_check_list_request.dart';
 import '../Model/request_model/image_upload_insde_store_request.dart';
@@ -29,6 +40,7 @@ import '../Model/request_model/upload_check_list_photo_request.dart';
 import '../Model/response_model/check_in_response/check_in_response.dart';
 import '../Model/response_model/check_in_response/check_in_status_response_details.dart';
 import '../Model/response_model/checklist_responses/check_list_response_list_model.dart';
+import '../Model/response_model/common_list/comon_list_response_model.dart';
 import '../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
 import '../Model/response_model/login_responses/login_response_model.dart';
 import '../Model/response_model/my_coverage_response/uploaded_store_images_list_response.dart';
@@ -130,6 +142,8 @@ class HTTPManager {
     // print(ApplicationURLs().getBaseUrl());
     // var url = ApplicationURLs.API_LOGIN;
     var url = LicenseProvider.basepath + ApplicationURLs.API_LOGIN;
+
+    print(url);
 
     final response =
         await _handler.post(Uri.parse(url), loginRequestModel.toJson());
@@ -444,7 +458,7 @@ class HTTPManager {
     // var url = ApplicationURLs.API_JP;
     var url = LicenseProvider.basepath + ApplicationURLs.API_TEAM_ATTENDENCE;
     // ignore: avoid_print
-
+    print(url);
     final response =
         await _handler.post(Uri.parse(url), getAttendenceRequestModel.toJson());
     GetAttendenceResponseModel attendenceResponseModel =
@@ -548,5 +562,183 @@ class HTTPManager {
 
     return response;
   }
+
+
+  //Save Device Info
+  Future<dynamic> saveDeviceInfo(
+      DeviceInfoRequestModel deviceInfoRequestModel) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_DEVICE_INFO;
+    print(url);
+
+    final response = await _handler.post(
+        Uri.parse(url), deviceInfoRequestModel.toJson());
+
+    return response;
+  }
+
+  /// Business Trips Api Calls
+
+  Future<BusinessTripsListModel> getBusinessTrips(JourneyPlanRequestModel journeyPlanRequestModel) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_GET_BUSINESS_TRIPS;
+    print(url);
+
+    final response = await _handler.post(
+        Uri.parse(url), journeyPlanRequestModel.toJson());
+
+    BusinessTripsListModel businessTripsListModel = BusinessTripsListModel.fromJson(response);
+
+    return businessTripsListModel;
+  }
+
+  Future<dynamic> addBusinessTrips(AddBusinessTripsRequestModel addBusinessTripsRequestModel,List<File> filesList) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_ADD_BUSINESS_TRIPS;
+    print(url);
+
+    final response = await _handler.postImageForAddBusinessScreen(url, addBusinessTripsRequestModel.toJson(),filesList);
+
+    return response;
+  }
+
+  Future<dynamic> updateBusinessTripsWithFiles(UpdateBusinessTripsRequestModel updateBusinessTripsRequestModel,List<File> filesList) async {
+    print(updateBusinessTripsRequestModel.toCity);
+    print(updateBusinessTripsRequestModel.fromCity);
+    var url = LicenseProvider.basepath + ApplicationURLs.API_UPDATE_BUSINESS_TRIPS;
+    print(url);
+
+    final response = await _handler.postImageForAddBusinessScreen(url, updateBusinessTripsRequestModel.toJson(), filesList);
+
+    return response;
+  }
+
+  Future<dynamic> updateBusinessTripsWithOutFiles(UpdateBusinessTripsRequestModel updateBusinessTripsRequestModel) async {
+    print(updateBusinessTripsRequestModel.toCity);
+    print(updateBusinessTripsRequestModel.fromCity);
+
+    var url = LicenseProvider.basepath + ApplicationURLs.API_UPDATE_BUSINESS_TRIPS;
+    print(url);
+
+    final response = await _handler.postWithBothString(Uri.parse(url), updateBusinessTripsRequestModel.toJson());
+
+    return response;
+  }
+
+  Future<dynamic> deleteBusinessTrips(DeleteBusinessTripsRequestModel deleteBusinessTripsRequestModel) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_DELETE_BUSINESS_TRIPS;
+    print(url);
+
+    final response = await _handler.post(
+        Uri.parse(url), deleteBusinessTripsRequestModel.toJson());
+
+    return response;
+  }
+
+  /// Time Motion Api Calls
+
+  Future<TimeMotionListModel> getTimeMotion(JourneyPlanRequestModel journeyPlanRequestModel) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_GET_TIME_MOTION;
+    print(url);
+
+    final response = await _handler.post(
+        Uri.parse(url), journeyPlanRequestModel.toJson());
+    TimeMotionListModel timeMotionListModel = TimeMotionListModel.fromJson(response);
+    return timeMotionListModel;
+  }
+
+  Future<dynamic> addTimeMotion(AddTimeMotionRequestModel addTimeMotionRequestModel) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_ADD_TIME_MOTION;
+    print(url);
+
+    final response = await _handler.post(
+        Uri.parse(url), addTimeMotionRequestModel.toJson());
+
+    return response;
+  }
+
+  Future<dynamic> updateTimeMotion(UpdateTimeMotionRequestModel updateTimeMotionRequestModel) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_UPDATE_TIME_MOTION;
+    print(url);
+
+    final response = await _handler.post(
+        Uri.parse(url), updateTimeMotionRequestModel.toJson());
+
+    return response;
+  }
+
+  Future<dynamic> deleteTimeMotion(DeleteTimeMotionRequestModel deleteTimeMotionRequestModel) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_DELETE_TIME_MOTION;
+    print(url);
+
+    final response = await _handler.post(
+        Uri.parse(url), deleteTimeMotionRequestModel.toJson());
+
+    return response;
+  }
+
+  /// Recruit Suggest Api Calls
+
+  Future<RecruitSuggestListModel> getRecruitSuggest(JourneyPlanRequestModel journeyPlanRequestModel) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_GET_RECRUIT_SUGGEST;
+    print(url);
+
+    final response = await _handler.post(
+        Uri.parse(url), journeyPlanRequestModel.toJson());
+    RecruitSuggestListModel recruitSuggestListModel = RecruitSuggestListModel.fromJson(response);
+    return recruitSuggestListModel;
+  }
+
+  Future<dynamic> addRecruitSuggest(AddRecruitSuggestRequestModel addRecruitSuggestRequestModel,File file) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_ADD_RECRUIT_SUGGEST;
+    print(url);
+
+    final response = await _handler.postImageForAddRecruitSuggestScreen(
+        Uri.parse(url), addRecruitSuggestRequestModel.toJson(),file);
+
+    return response;
+  }
+
+  Future<dynamic> updateRecruitSuggestWithFile(UpdateRecruitSuggestRequestModel updateRecruitSuggestRequestModel,File file) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_UPDATE_RECRUIT_SUGGEST;
+    print(url);
+
+      final response = await _handler.postImageForAddRecruitSuggestScreen(
+          Uri.parse(url), updateRecruitSuggestRequestModel.toJson(), file);
+      return response;
+
+  }
+
+  Future<dynamic> updateRecruitSuggestWithoutFile(UpdateRecruitSuggestRequestModel updateRecruitSuggestRequestModel, ) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_UPDATE_RECRUIT_SUGGEST;
+    print(url);
+
+      final response = await _handler.postWithBothString(
+          Uri.parse(url), updateRecruitSuggestRequestModel.toJson());
+      return response;
+
+  }
+
+  Future<dynamic> deleteRecruitSuggest(DeleteRecruitSuggestRequestModel deleteRecruitSuggestRequestModel) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_DELETE_RECRUIT_SUGGEST;
+    print(url);
+
+    final response = await _handler.post(
+        Uri.parse(url), deleteRecruitSuggestRequestModel.toJson());
+
+    return response;
+  }
+
+
+  /// Common List ApI Call
+
+  Future<CommonListModel> commonApiCallForList(CommonApiCallRequestModel commonApiCallRequestModel) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.COMMON_LIST_API;
+    print(url);
+
+    final response = await _handler.post(
+        Uri.parse(url), commonApiCallRequestModel.toJson());
+    CommonListModel commonListModel = CommonListModel.fromJson(response);
+
+    return commonListModel;
+  }
+
 
 }

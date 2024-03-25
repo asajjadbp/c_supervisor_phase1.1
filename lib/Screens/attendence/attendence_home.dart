@@ -1,13 +1,8 @@
-import 'package:c_supervisor/Model/request_model/get_attendence_request.dart';
-import 'package:c_supervisor/Model/request_model/get_check_list_request.dart';
-import 'package:c_supervisor/Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
 import 'package:c_supervisor/Screens/attendence/attendence.dart';
 import 'package:c_supervisor/Screens/myteam/special_visit_screen.dart';
 import 'package:c_supervisor/Screens/myteam/team_kpi.dart';
 import 'package:flutter/material.dart';
 
-import '../../Model/response_model/attendence_response/attendence_response.dart';
-import '../../Network/http_manager.dart';
 import '../dashboard/widgets/main_dashboard_card_item.dart';
 import '../myteam/visits_history.dart';
 import '../widgets/header_background_new.dart';

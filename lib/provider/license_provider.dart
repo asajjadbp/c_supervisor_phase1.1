@@ -8,8 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LicenseProvider with ChangeNotifier {
   //BASE URL FOR LIVE AND DEV
-  static String basePathForLive = "https://cstore.catalist-me.com/CSupervisor/";
-  static String basePathForDev = "https://cstoredev.catalist-me.com/";
   static String basepath = "";
   static String imageBasePath = "";
   bool isLicense = false;
@@ -24,7 +22,7 @@ class LicenseProvider with ChangeNotifier {
 
   Future<Map<String, dynamic>> getAppLicence(String licenceKey) async {
     final url = Uri.parse(
-        "https://cstoredev.catalist-me.com/CSupervisorv1/getClientLicense");
+        "https://cstore.catalist-me.com/CSupervisorv1/getClientLicense");
 
     final response = await http.post(url, body: {"license_key": licenceKey});
     print(url);
@@ -34,7 +32,7 @@ class LicenseProvider with ChangeNotifier {
       if (responseData["data"].isNotEmpty) {
         final extractedData = responseData["data"][0];
         // ApplicationURLs().setBaseUrl(extractedData["base_url"]);
-        basepath = extractedData["base_url"] + "CSupervisor/";
+        basepath = extractedData["base_url"] + "CSupervisorv1/";
         imageBasePath = extractedData["image_base_url"];
         storeLicenseAtLocal(LicenseModel.fromJson(extractedData));
         isLicense = true;

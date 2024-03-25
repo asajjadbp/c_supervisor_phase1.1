@@ -28,18 +28,18 @@ class TeamKpiResponseModel {
 }
 
 class TeamKpiResponseItem {
-  int? userId;
+  String? userId;
   String? id;
   String? userName;
-  int? isPresent;
-  int? totalPlanned;
-  int? compliance;
-  int? productivity;
-  int? workingCity;
-  int? stores;
-  int? workingMinutesNew;
-  int? wHOURS;
-  int? efficiencyN;
+  String? isPresent;
+  String? totalPlanned;
+  String? compliance;
+  String? productivity;
+  String? workingCity;
+  String? stores;
+  String? workingMinutesNew;
+  String? wHOURS;
+  String? efficiencyN;
 
   TeamKpiResponseItem(
       {this.userId,
@@ -56,18 +56,18 @@ class TeamKpiResponseItem {
         this.efficiencyN});
 
   TeamKpiResponseItem.fromJson(Map<String, dynamic> json) {
-    userId = json['user_id'];
+    userId = json['user_id'].toString();
     id = json['id'].toString();
-    isPresent = json['is_present'];
+    isPresent = json['is_present'].toString();
     userName = json['full_name'];
-    totalPlanned = json['total_planned'];
-    compliance = json['compliance'] ?? 0;
-    productivity = json['productivity'] ?? 0;
-    workingCity = json['working_city'];
-    stores = json['stores'];
-    workingMinutesNew = json['working_minutes_new'];
-    wHOURS = json['W_HOURS'];
-    efficiencyN = json['efficiency_n'] ?? 0;
+    totalPlanned = json['total_planned'].toString();
+    compliance = json['compliance'].toString();
+    productivity = json['productivity'].toString();
+    workingCity = json['working_city'].toString();
+    stores = json['stores'].toString();
+    workingMinutesNew = json['working_minutes_new'].toString();
+    wHOURS = json['W_HOURS'].toString();
+    efficiencyN = json['efficiency_n'].toString() == "null" ?  "0" : json['efficiency_n'].toString();
   }
 
   Map<String, dynamic> toJson() {
