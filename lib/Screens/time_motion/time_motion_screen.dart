@@ -2,7 +2,9 @@ import 'package:c_supervisor/Model/request_model/recruit_suggest.dart';
 import 'package:c_supervisor/Model/request_model/time_motion.dart';
 import 'package:c_supervisor/Model/response_model/recruit_suggest_responses/recruit_suggest_list_model.dart';
 import 'package:c_supervisor/Model/response_model/time_motion_response/time_motion_list_response_model.dart';
+import 'package:c_supervisor/Screens/time_motion/widgets/custom_minutes_text_fields.dart';
 import 'package:c_supervisor/Screens/widgets/toast_message_show.dart';
+import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,6 +15,7 @@ import '../utills/user_constants.dart';
 import '../widgets/error_text_and_button.dart';
 import '../widgets/header_background_new.dart';
 import '../widgets/header_widgets_new.dart';
+import '../widgets/large_button_in_footer.dart';
 import 'add_time_motion_screen.dart';
 
 class TimeMotionScreen extends StatefulWidget {
@@ -33,7 +36,9 @@ class _TimeMotionScreenState extends State<TimeMotionScreen> {
   bool isError = false;
   String errorText = "";
 
-  List<TimeMotion> timeMotionList = [];
+  late TimeMotionListModel timeMotionListModel;
+
+  List<TimeMotionItem> timeMotionList = [];
 
   @override
   void initState() {
@@ -65,7 +70,7 @@ class _TimeMotionScreenState extends State<TimeMotionScreen> {
       elId: userId,))
         .then((value) {
       setState(() {
-
+        timeMotionListModel = value;
         timeMotionList = value.data!;
         isLoading = false;
         isError = false;
@@ -83,21 +88,21 @@ class _TimeMotionScreenState extends State<TimeMotionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        floatingActionButton:  Visibility(
-          visible: !isLoading,
-          child: FloatingActionButton(
-            backgroundColor: AppColors.primaryColor,
-            onPressed: () {
-
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
-                AddTimeMotionScreen(timeMotion: TimeMotion(),isEdit:false))).then((value) {
-                getTimeMotionList(false);
-              });
-
-            },
-            child:const Icon(Icons.add,size: 30,color: AppColors.white,),
-          ),
-        ),
+        // floatingActionButton:  Visibility(
+        //   visible: !isLoading,
+        //   child: FloatingActionButton(
+        //     backgroundColor: AppColors.primaryColor,
+        //     onPressed: () {
+        //
+        //       Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
+        //         AddTimeMotionScreen(timeMotion: TimeMotionItem(),isEdit:false))).then((value) {
+        //         getTimeMotionList(false);
+        //       });
+        //
+        //     },
+        //     child:const Icon(Icons.add,size: 30,color: AppColors.white,),
+        //   ),
+        // ),
         body: HeaderBackgroundNew(
           childWidgets: [
             const HeaderWidgetsNew(
@@ -122,7 +127,7 @@ class _TimeMotionScreenState extends State<TimeMotionScreen> {
                             getTimeMotionList(true);
                           },
                           errorText: errorText)
-                          : timeMotionList.isEmpty
+                          : timeMotionListModel.data!.isEmpty
                           ? const Center(
                         child: Text("No time motion found"),
                       )
@@ -130,7 +135,7 @@ class _TimeMotionScreenState extends State<TimeMotionScreen> {
                           padding: const EdgeInsets.only(bottom: 100),
                           shrinkWrap: true,
                           scrollDirection: Axis.vertical,
-                          itemCount: timeMotionList.length,
+                          itemCount: timeMotionListModel.data!.length,
                           itemBuilder: (context, index) {
                             return Card(
                               shape: RoundedRectangleBorder(
@@ -149,115 +154,82 @@ class _TimeMotionScreenState extends State<TimeMotionScreen> {
                                   children: [
                                     Row(
                                       children: [
-                                        Expanded(child: Text("Company: ${timeMotionList[index].companyName}",overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.primaryColor),)),
-                                        InkWell(
-                                          onTap: () {
-                                            Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
-                                                AddTimeMotionScreen(timeMotion: timeMotionList[index],isEdit:true))).then((value) {
-                                              getTimeMotionList(false);
-                                            });
-                                          },
-                                          child: Container(
-                                            padding:
-                                            const EdgeInsets
-                                                .all(5),
-                                            decoration: BoxDecoration(
-                                                color: AppColors
-                                                    .white,
-                                                borderRadius:
-                                                BorderRadius
-                                                    .circular(
-                                                    50)),
-                                            child: const Icon(
-                                              Icons.edit,
-                                              color: AppColors
-                                                  .primaryColor,
-                                              size: 25,
-                                            ),
-                                          ),
-                                        ),
-                                        InkWell(
-                                          onTap: () async {
-                                            await showDialog<
-                                                bool>(
-                                              context: context,
-                                              builder: (context) {
-                                                return AlertDialog(
-                                                  title: const Text(
-                                                      'Are you sure you want to delete this time motion?'),
-                                                  actions: [
-                                                    TextButton(
-                                                      onPressed:
-                                                          () {
-                                                        Navigator.pop(
-                                                            context,
-                                                            false);
-                                                      },
-                                                      child:
-                                                      const Text(
-                                                        'No',
-                                                        style: TextStyle(
-                                                            color:
-                                                            AppColors.primaryColor),
-                                                      ),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed:
-                                                          () {
-                                                        deleteTimeMotion(
-                                                            index,
-                                                            timeMotionList[
-                                                            index]);
-                                                      },
-                                                      child:
-                                                      const Text(
-                                                        'Yes',
-                                                        style: TextStyle(
-                                                            color:
-                                                            AppColors.primaryColor),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            );
-                                          },
-                                          child: Container(
-                                            padding:
-                                            const EdgeInsets
-                                                .all(5),
-                                            decoration: BoxDecoration(
-                                                color: AppColors
-                                                    .white,
-                                                borderRadius:
-                                                BorderRadius
-                                                    .circular(
-                                                    50)),
-                                            child: const Icon(
-                                              Icons.delete,
-                                              color: AppColors
-                                                  .redColor,
-                                              size: 25,
-                                            ),
-                                          ),
-                                        )
+                                        Image.asset("assets/myicons/company_icon.png",width: 18,height: 18,),
+                                        const SizedBox(width: 5,),
+                                        Text(timeMotionListModel.data![index].companyName!.toString(),overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.blue),),
                                       ],
                                     ),
                                     const SizedBox(
                                       height: 5,
                                     ),
-                                    Text("City: ${timeMotionList[index].cityName!}",overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.primaryColor),),
+                                    Row(
+                                      children: [
+                                        Image.asset("assets/myicons/channel_icon.png",width: 18,height: 18,),
+                                        const SizedBox(width: 5,),
+                                        Text(timeMotionListModel.data![index].channelName!.toString(),overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.blue),),
+                                      ],
+                                    ),
                                     const SizedBox(
                                       height: 5,
                                     ),
-                                    Text("Channel: ${timeMotionList[index].channelName!}",overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.primaryColor),),
+                                    Row(
+                                      children: [
+                                        Image.asset("assets/myicons/city_icon.png",width: 18,height: 18,),
+                                        const SizedBox(width: 5,),
+                                        Text(timeMotionListModel.data![index].cityName!.toString(),overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.primaryColor),),
+                                      ],
+                                    ),
                                     const SizedBox(
                                       height: 5,
                                     ),
-                                    Text("Time: ${timeMotionList[index].noMinutes!} min",maxLines: 1,overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.primaryColor),),
-                                    const SizedBox(
-                                      height: 5,
+                                    Row(
+                                      children: [
+                                        Image.asset("assets/myicons/store_icon.png",width: 18,height: 18,),
+                                        const SizedBox(width: 5,),
+                                        Text(timeMotionListModel.data![index].storeName!.toString(),overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.primaryColor),),
+                                      ],
                                     ),
+                                    Align(
+                                      alignment: Alignment.bottomRight,
+                                      child: ExpandChild(
+                                        indicatorIconSize: 30,
+                                        indicatorAlignment:
+                                        Alignment.bottomRight,
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            const  SizedBox(height: 10,),
+                                            const Text("Categories",overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 20,color: AppColors.primaryColor),),
+                                            ListView.builder(
+                                              padding: const EdgeInsets.all(10),
+                                              shrinkWrap: true,
+                                                physics: const NeverScrollableScrollPhysics(),
+                                                itemCount: timeMotionListModel.data![index].categories!.length,
+                                                itemBuilder: (context,index1) {
+                                                  return  Column(
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(timeMotionListModel.data![index].categories![index1].categoryName!),
+                                                      Container(
+                                                        // height: 130,
+                                                          margin: const EdgeInsets
+                                                              .symmetric(vertical: 10),
+                                                          child:
+                                                          MinutesTextField(initialValue: timeMotionListModel.data![index].categories![index1].noMinutes!.toString(), onChangeValue: (value) {
+                                                            setState(() {
+                                                              timeMotionListModel.data![index].categories![index1].noMinutes = value;
+                                                            });
+                                                          })
+                                                      ),
+                                                    ],
+                                                  );
+                                                }),
+                                          ],
+                                        )
+                                      ),
+                                    )
                                   ],
                                 ),
                               ),
@@ -271,12 +243,36 @@ class _TimeMotionScreenState extends State<TimeMotionScreen> {
                         ),
                       )
                   ],
-                ))
+                )),
+            LargeButtonInFooter(
+              buttonTitle: "Update Categories",
+              onTap: (){
+                updateTimeMotionStudy();
+              },
+            )
           ],
         ));
   }
+  updateTimeMotionStudy() {
+    setState(() {
+      isLoadingLocation = true;
+    });
 
-  deleteTimeMotion(int index,TimeMotion timeMotion) {
+    HTTPManager().updateTimeMotion(timeMotionListModel).then((value) {
+      setState(() {
+        isLoadingLocation = false;
+      });
+
+      showToastMessage(true, "Time motion updated successfully");
+    }).catchError((e) {
+      setState(() {
+        isLoadingLocation = false;
+      });
+      showToastMessage(false, e.toString());
+    });
+
+  }
+  deleteTimeMotion(int index,TimeMotionItem timeMotion) {
     setState(() {
       isLoadingLocation = true;
     });

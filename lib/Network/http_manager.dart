@@ -41,6 +41,7 @@ import '../Model/response_model/check_in_response/check_in_response.dart';
 import '../Model/response_model/check_in_response/check_in_status_response_details.dart';
 import '../Model/response_model/checklist_responses/check_list_response_list_model.dart';
 import '../Model/response_model/common_list/comon_list_response_model.dart';
+import '../Model/response_model/dashboard_model_response.dart';
 import '../Model/response_model/journey_responses_plan/journey_plan_response_list.dart';
 import '../Model/response_model/login_responses/login_response_model.dart';
 import '../Model/response_model/my_coverage_response/uploaded_store_images_list_response.dart';
@@ -69,6 +70,22 @@ class HTTPManager {
         IpcLocationResponseModel.fromJson(response);
 
     return ipcLocationResponseModel;
+  }
+
+  //Dasboard Data Detail
+  Future<DashboardResponseData> dashboardDataDetails(
+      JourneyPlanRequestModel journeyPlanRequestModel) async {
+    // var url = ApplicationURLs.API_JP;
+    var url = LicenseProvider.basepath + ApplicationURLs.API_DASHBOARD_DATA;
+    // ignore: avoid_print
+    print(url);
+
+    final response =
+    await _handler.post(Uri.parse(url), journeyPlanRequestModel.toJson());
+    DashboardResponseData dashboardResponseData =
+    DashboardResponseData.fromJson(response);
+
+    return dashboardResponseData;
   }
 
   //Save USer Current Location
@@ -552,6 +569,17 @@ class HTTPManager {
     return feedbackListResponseModel;
   }
 
+  //Productivity Feedback dropdown list
+  Future<FeedbackListResponseModel> getProductivityFeedBackList() async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_GET_PRODUCTIVITY_DROPDOWN_LIST;
+
+    final response = await _handler.get(
+        Uri.parse(url));
+    FeedbackListResponseModel feedbackListResponseModel =
+    FeedbackListResponseModel.fromJson(response);
+    return feedbackListResponseModel;
+  }
+
   //update Feedback in KPI
   Future<dynamic> updateFeedBackInKpi(
       UpdateEfficiencyFeedbackRequestModel updateEfficiencyFeedbackRequestModel) async {
@@ -563,6 +591,16 @@ class HTTPManager {
     return response;
   }
 
+  //update Productivity Feedback in KPI
+  Future<dynamic> updateProductivityFeedBackInKpi(
+      UpdateProductivityFeedbackRequestModel updateProductivityFeedbackRequestModel) async {
+    var url = LicenseProvider.basepath + ApplicationURLs.API_UPDATE_PRODUCTIVITY_FEEDBACK;
+    print(url);
+    final response = await _handler.post(
+        Uri.parse(url), updateProductivityFeedbackRequestModel.toJson());
+
+    return response;
+  }
 
   //Save Device Info
   Future<dynamic> saveDeviceInfo(
@@ -654,11 +692,11 @@ class HTTPManager {
     return response;
   }
 
-  Future<dynamic> updateTimeMotion(UpdateTimeMotionRequestModel updateTimeMotionRequestModel) async {
+  Future<dynamic> updateTimeMotion(TimeMotionListModel updateTimeMotionRequestModel) async {
     var url = LicenseProvider.basepath + ApplicationURLs.API_UPDATE_TIME_MOTION;
     print(url);
 
-    final response = await _handler.post(
+    final response = await _handler.postWithJsonRequest(
         Uri.parse(url), updateTimeMotionRequestModel.toJson());
 
     return response;

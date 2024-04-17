@@ -9,7 +9,7 @@
 
 
     <application
-        android:label="C-Supervisor"
+        android:label="EE Leaders"
         android:name="${applicationName}"
         android:allowBackup="false"
         android:fullBackupContent="false"

@@ -169,7 +169,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
                           ),
                           const SizedBox(width: 3),
                           // Text("Sep 25, 2022 11:00 AM")
-                          Text(widget.checkInTime)
+                          Text(widget.checkInTime.isEmpty ? "Absent" : widget.checkInTime)
                         ],
                       )
                     ],

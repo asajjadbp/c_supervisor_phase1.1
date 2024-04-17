@@ -38,19 +38,24 @@ class MyJpCardForDetail extends StatelessWidget {
                 const SizedBox(width: 5,),
                 const Text("|",style: TextStyle(color: AppColors.greyColor),),
                 const SizedBox(width: 5,),
-                visitStatus == "0" ? const Row(
-                  children: [
-                    Icon(Icons.cancel,color: AppColors.redColor,size: 20,),
-                    SizedBox(width: 5,),
-                    Text("Pending",style: TextStyle(color: AppColors.redColor),)
-                  ],
-                ) : visitStatus == "2" ? const Row(
+               //  if(visitStatus == "0")
+               // const Row(
+               //    children: [
+               //      Icon(Icons.cancel,color: AppColors.redColor,size: 20,),
+               //      SizedBox(width: 5,),
+               //      Text("Pending",style: TextStyle(color: AppColors.redColor),)
+               //    ],
+               //  ),
+                if(visitStatus == "2")
+                 const Row(
                   children: [
                     Icon(Icons.check_circle,color: AppColors.green,size: 20,),
                     SizedBox(width: 5,),
                     Text("Finished",style: TextStyle(color: AppColors.green),)
                   ],
-                ) : const Row(
+                ),
+                if(visitStatus == "1")
+                const Row(
                   children: [
                     Icon(Icons.pending,color: AppColors.primaryColor,size: 20,),
                     SizedBox(width: 5,),

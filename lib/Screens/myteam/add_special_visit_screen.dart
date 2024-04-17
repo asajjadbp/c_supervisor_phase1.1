@@ -295,7 +295,7 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
                                         })),
                               ),
                               const SizedBox(height: 5,),
-                              const Text("  Select Store",style: TextStyle(color: AppColors.primaryColor),),
+                              const Text("  Select City",style: TextStyle(color: AppColors.primaryColor),),
                               Container(
                                 margin:const EdgeInsets.symmetric(horizontal: 5),
                                 child: TextFormField(
@@ -311,7 +311,7 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
                                   controller: storeController,
                                   validator: (value) {
                                     if(value!.isEmpty) {
-                                      return "Store field required";
+                                      return "City field required";
                                     } else {
                                       return null;
                                     }

@@ -1,12 +1,12 @@
 // ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:c_supervisor/Model/request_model/save_user_location_request.dart';
 import 'package:c_supervisor/Network/http_manager.dart';
 import 'package:c_supervisor/Screens/attendence/attendence_home.dart';
+import 'package:c_supervisor/Screens/clients/client_screen.dart';
 import 'package:c_supervisor/Screens/dashboard/widgets/main_dashboard_card_item.dart';
 import 'package:c_supervisor/Screens/knowledge/knowledge_share.dart';
 import 'package:c_supervisor/Screens/recruite_suggest/recruit_suggest_screen.dart';
@@ -14,8 +14,8 @@ import 'package:c_supervisor/Screens/time_motion/time_motion_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:geolocator/geolocator.dart';
+
 import 'package:image_picker/image_picker.dart';
 import 'package:new_version_plus/new_version_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -505,23 +505,23 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                                             // "assets/dashboard/my_coverage.png"
                                             "assets/myicons/knowledge.png",
                                         cardName: "Knowledge Share"),
-                                    // MainDashboardItemCard(
-                                    //     onTap: () {
-                                    //       if (isCheckedIn) {
-                                    //         showToastMessage(false,
-                                    //             "Please check out first and try again");
-                                    //       } else {
-                                    //         Navigator.of(context).push(
-                                    //             MaterialPageRoute(
-                                    //                 builder: (context) =>
-                                    //                 const KnowledgeShare()));
-                                    //       }
-                                    //       // showToastMessage(false,"Coming Soon...");
-                                    //     },
-                                    //     imageUrl:
-                                    //     // "assets/dashboard/my_coverage.png"
-                                    //     "assets/myicons/client.png",
-                                    //     cardName: "Clients"),
+                                    MainDashboardItemCard(
+                                        onTap: () {
+                                          if (isCheckedIn) {
+                                            showToastMessage(false,
+                                                "Please check out first and try again");
+                                          } else {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                    const ClientScreen()));
+                                          }
+                                          // showToastMessage(false,"Coming Soon...");
+                                        },
+                                        imageUrl:
+                                        // "assets/dashboard/my_coverage.png"
+                                        "assets/myicons/client.png",
+                                        cardName: "Clients"),
                                     MainDashboardItemCard(
                                         onTap: () {
                                           if (isCheckedIn) {
@@ -556,23 +556,23 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                                         // "assets/dashboard/my_coverage.png"
                                         "assets/myicons/business_trip.png",
                                         cardName: "Business Trips"),
-                                    // MainDashboardItemCard(
-                                    //     onTap: () {
-                                    //       if (isCheckedIn) {
-                                    //         showToastMessage(false,
-                                    //             "Please check out first and try again");
-                                    //       } else {
-                                    //         Navigator.of(context).push(
-                                    //             MaterialPageRoute(
-                                    //                 builder: (context) =>
-                                    //                 const TimeMotionScreen()));
-                                    //       }
-                                    //       // showToastMessage(false,"Coming Soon...");
-                                    //     },
-                                    //     imageUrl:
-                                    //     // "assets/dashboard/my_coverage.png"
-                                    //     "assets/myicons/time_motion.png",
-                                    //     cardName: "Time Motion Study"),
+                                    MainDashboardItemCard(
+                                        onTap: () {
+                                          if (isCheckedIn) {
+                                            showToastMessage(false,
+                                                "Please check out first and try again");
+                                          } else {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                    const TimeMotionScreen()));
+                                          }
+                                          // showToastMessage(false,"Coming Soon...");
+                                        },
+                                        imageUrl:
+                                        // "assets/dashboard/my_coverage.png"
+                                        "assets/myicons/time_motion.png",
+                                        cardName: "Time Motion Study"),
 
 
                                     // MainDashboardItemCard(onTap:(){

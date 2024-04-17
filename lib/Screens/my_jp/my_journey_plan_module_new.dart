@@ -213,6 +213,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
               isDrawerButton: true,
             ),
             Expanded(
+
               child: Stack(
                 children: [
                   isLoading
@@ -408,6 +409,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
                                     // );
                                     selfieOptionForJpBottomSheet(context,false,selfieWithTmr,selfieWithTmrWorking,selfieWithTmrCompleted,(value){
                                       print(value);
+                                      Navigator.of(context).pop();
                                       pickedImage(widget.journeyResponseListItem,"Y",value);
                                       // _getCurrentPosition1(true,"Y",value);
 
@@ -431,8 +433,47 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
             ),
             LargeButtonInFooter(
               buttonTitle: "Finish Visit",
-              onTap: () {
-                _getCurrentPosition();
+              onTap: () async {
+                await showDialog<bool>(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text(
+                          'Are you sure you want to finish this visit ?'),
+                      actions: [
+                        TextButton(
+                          onPressed:
+                              () {
+                            Navigator.pop(
+                                context,
+                                false);
+                          },
+                          child:
+                          const Text(
+                            'No',
+                            style: TextStyle(
+                                color:
+                                AppColors.primaryColor),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed:
+                              () {
+                                Navigator.of(context).pop();
+                                _getCurrentPosition();
+                          },
+                          child:
+                          const Text(
+                            'Yes',
+                            style: TextStyle(
+                                color:
+                                AppColors.primaryColor),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
             )
           ],

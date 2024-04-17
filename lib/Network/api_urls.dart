@@ -30,6 +30,10 @@ class ApplicationURLs {
   // static const API_IPC_LOCATIONS = "${BASE_URL_APP}checkInIPCLocations";
   static const API_IPC_LOCATIONS = "checkInIPCLocations";
 
+  //Dashboard Screen
+  static const API_DASHBOARD_DATA = "getElDashboard";
+
+
   //Save Location After 20 min
   // static const API_SAVE_USER_LOCATION = "${BASE_URL_APP}saveLocation";
   static const API_SAVE_USER_LOCATION = "saveLocation";
@@ -120,8 +124,14 @@ class ApplicationURLs {
   //Feed back drop down List
   static const API_GET_FEEDBACK_DROPDOWN_LIST = "getFeedBackReason";
 
+  //Poductivity Reason Drop down list
+  static const API_GET_PRODUCTIVITY_DROPDOWN_LIST = "getProdFeedBackReason";
+
   //Update efficiency feedback
   static const API_UPDATE_EFFICIENCY_FEEDBACK = "updateEffFeedback";
+
+  //Update Productivity efficiency feedback
+  static const API_UPDATE_PRODUCTIVITY_FEEDBACK = "updateProdFeedback";
 
   //Delete Store Image
   // static const API_DELETE_PHOTO_STORE =

@@ -149,7 +149,7 @@ class _VisitHistoryState extends State<VisitHistory> {
                                 children: [
                                   Container(
                                     alignment: Alignment.centerLeft,
-                                    margin:const EdgeInsets.only(left: 25,bottom: 5,top: 5),
+                                    margin:const EdgeInsets.only(left: 10,bottom: 5,top: 5),
                                     child: Column(
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,96 +180,99 @@ class _VisitHistoryState extends State<VisitHistory> {
                                       ],
                                     ),
                                   ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            Image.asset("assets/myicons/check_in_icon.png",width: 18,height: 18,),
-                                            const SizedBox(width: 5,),
-                                            Text(visitHistorySearchList[index].checkInTime!,style: const TextStyle(color: AppColors.primaryColor),),
-                                          ],
+                                  Container(
+                                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Row(
+                                            children: [
+                                              Image.asset("assets/myicons/check_in_icon.png",width: 18,height: 18,),
+                                              const SizedBox(width: 5,),
+                                              Text(visitHistorySearchList[index].checkInTime!,style: const TextStyle(color: AppColors.primaryColor),),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                      const Text("|",style:  TextStyle(color: AppColors.greyColor)),
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            Image.asset("assets/myicons/check_out_icon.png",width: 18,height: 18,),
-                                            const SizedBox(width: 5,),
-                                            Text(visitHistorySearchList[index].checkOutTime!,style: const TextStyle(color: AppColors.primaryColor),),
-                                          ],
+                                        const Text("|",style:  TextStyle(color: AppColors.greyColor)),
+                                        Expanded(
+                                          child: Row(
+                                            children: [
+                                              Image.asset("assets/myicons/check_out_icon.png",width: 18,height: 18,),
+                                              const SizedBox(width: 5,),
+                                              Text(visitHistorySearchList[index].checkOutTime!,style: const TextStyle(color: AppColors.primaryColor),),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                      const Text("|",style:  TextStyle(color: AppColors.greyColor)),
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            const Icon(Icons.watch_later_outlined,color: AppColors.primaryColor,size: 18,),
-                                            const SizedBox(width: 5,),
-                                            Text(visitHistorySearchList[index].workingHours!,style: const TextStyle(color: AppColors.primaryColor),),
-                                          ],
+                                        const Text("|",style:  TextStyle(color: AppColors.greyColor)),
+                                        Expanded(
+                                          child: Row(
+                                            children: [
+                                              const Icon(Icons.watch_later_outlined,color: AppColors.primaryColor,size: 18,),
+                                              const SizedBox(width: 5,),
+                                              Text(visitHistorySearchList[index].workingHours!,style: const TextStyle(color: AppColors.primaryColor),),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                  const SizedBox(height: 5,),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                color: visitHistorySearchList[index].isAvailability == 1 ? AppColors.blue : AppColors.white,
-                                                border: Border.all(color: AppColors.blue),
-                                                borderRadius: BorderRadius.circular(5)
-                                            ),
-                                            padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
-                                            child:   Center(child: Text("AVL",style: TextStyle(color: visitHistorySearchList[index].isAvailability == 1 ? AppColors.white : AppColors.blue),)),
-                                          )),
-                                      const SizedBox(width: 3,),
-                                      Expanded(child: Container(
-                                        decoration: BoxDecoration(
-                                            color: visitHistorySearchList[index].isFreshness == 1 ? AppColors.blue : AppColors.white,
-                                            border: Border.all(color: AppColors.blue),
-                                            borderRadius: BorderRadius.circular(5)
-                                        ),
-                                        padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
-                                        child:   Center(child: Text("FRES",style: TextStyle(color: visitHistorySearchList[index].isFreshness == 1 ? AppColors.white : AppColors.blue),)),
-                                      )),
-                                      const SizedBox(width: 3,),
-                                      Expanded(child: Container(
-                                        decoration: BoxDecoration(
-                                            color: visitHistorySearchList[index].isPlanogram == 1 ? AppColors.blue : AppColors.white,
-                                            border: Border.all(color: AppColors.blue),
-                                            borderRadius: BorderRadius.circular(5)
-                                        ),
-                                        padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
-                                        child:   Center(child: Text("PLANO",style: TextStyle(color: visitHistorySearchList[index].isPlanogram == 1 ? AppColors.white : AppColors.blue),)),
-                                      )),
-                                      const SizedBox(width: 3,),
-                                      Expanded(
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                color: visitHistorySearchList[index].isSos == 1 ? AppColors.blue : AppColors.white,
-                                                border: Border.all(color: AppColors.blue),
-                                                borderRadius: BorderRadius.circular(5)
-                                            ),
-                                            padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
-                                            child:  Center(child: Text("SOS",style: TextStyle(color: visitHistorySearchList[index].isSos == 1 ? AppColors.white : AppColors.blue),)),
-                                          )),
-                                      const SizedBox(width: 3,),
-                                      Expanded(child: Container(
-                                        decoration: BoxDecoration(
-                                            color: visitHistorySearchList[index].isRtv == 1 ? AppColors.blue : AppColors.white,
-                                            border: Border.all(color: AppColors.blue),
-                                            borderRadius: BorderRadius.circular(5)
-                                        ),
-                                        padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
-                                        child:  Center(child: Text("RTV",style: TextStyle(color: visitHistorySearchList[index].isRtv == 1 ? AppColors.white : AppColors.blue),)),
-                                      )),
-
-                                    ],
-                                  ),
+                                  // const SizedBox(height: 5,),
+                                  // Row(
+                                  //   children: [
+                                  //     Expanded(
+                                  //         child: Container(
+                                  //           decoration: BoxDecoration(
+                                  //               color: visitHistorySearchList[index].isAvailability == 1 ? AppColors.blue : AppColors.white,
+                                  //               border: Border.all(color: AppColors.blue),
+                                  //               borderRadius: BorderRadius.circular(5)
+                                  //           ),
+                                  //           padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
+                                  //           child:   Center(child: Text("AVL",style: TextStyle(color: visitHistorySearchList[index].isAvailability == 1 ? AppColors.white : AppColors.blue),)),
+                                  //         )),
+                                  //     const SizedBox(width: 3,),
+                                  //     Expanded(child: Container(
+                                  //       decoration: BoxDecoration(
+                                  //           color: visitHistorySearchList[index].isFreshness == 1 ? AppColors.blue : AppColors.white,
+                                  //           border: Border.all(color: AppColors.blue),
+                                  //           borderRadius: BorderRadius.circular(5)
+                                  //       ),
+                                  //       padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
+                                  //       child:   Center(child: Text("FRES",style: TextStyle(color: visitHistorySearchList[index].isFreshness == 1 ? AppColors.white : AppColors.blue),)),
+                                  //     )),
+                                  //     const SizedBox(width: 3,),
+                                  //     Expanded(child: Container(
+                                  //       decoration: BoxDecoration(
+                                  //           color: visitHistorySearchList[index].isPlanogram == 1 ? AppColors.blue : AppColors.white,
+                                  //           border: Border.all(color: AppColors.blue),
+                                  //           borderRadius: BorderRadius.circular(5)
+                                  //       ),
+                                  //       padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
+                                  //       child:   Center(child: Text("PLANO",style: TextStyle(color: visitHistorySearchList[index].isPlanogram == 1 ? AppColors.white : AppColors.blue),)),
+                                  //     )),
+                                  //     const SizedBox(width: 3,),
+                                  //     Expanded(
+                                  //         child: Container(
+                                  //           decoration: BoxDecoration(
+                                  //               color: visitHistorySearchList[index].isSos == 1 ? AppColors.blue : AppColors.white,
+                                  //               border: Border.all(color: AppColors.blue),
+                                  //               borderRadius: BorderRadius.circular(5)
+                                  //           ),
+                                  //           padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
+                                  //           child:  Center(child: Text("SOS",style: TextStyle(color: visitHistorySearchList[index].isSos == 1 ? AppColors.white : AppColors.blue),)),
+                                  //         )),
+                                  //     const SizedBox(width: 3,),
+                                  //     Expanded(child: Container(
+                                  //       decoration: BoxDecoration(
+                                  //           color: visitHistorySearchList[index].isRtv == 1 ? AppColors.blue : AppColors.white,
+                                  //           border: Border.all(color: AppColors.blue),
+                                  //           borderRadius: BorderRadius.circular(5)
+                                  //       ),
+                                  //       padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
+                                  //       child:  Center(child: Text("RTV",style: TextStyle(color: visitHistorySearchList[index].isRtv == 1 ? AppColors.white : AppColors.blue),)),
+                                  //     )),
+                                  //
+                                  //   ],
+                                  // ),
                                   const SizedBox(height: 5,),
                                   // IgnorePointer(
                                   //   ignoring: false,
@@ -311,7 +314,7 @@ class _VisitHistoryState extends State<VisitHistory> {
                                       children: [
                                         Container(
                                           alignment: Alignment.centerLeft,
-                                          margin:const EdgeInsets.only(left: 25,bottom: 5,top: 5),
+                                          margin:const EdgeInsets.only(left: 10,bottom: 5,top: 5),
                                           child: Column(
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -342,96 +345,99 @@ class _VisitHistoryState extends State<VisitHistory> {
                                             ],
                                           ),
                                         ),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: Row(
-                                                children: [
-                                                  Image.asset("assets/myicons/check_in_icon.png",width: 18,height: 18,),
-                                                  const SizedBox(width: 5,),
-                                                  Expanded(child: Text(visitHistoryList[index].checkInTime!,style: const TextStyle(color: AppColors.primaryColor),)),
-                                                ],
+                                        Container(
+                                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Row(
+                                                  children: [
+                                                    Image.asset("assets/myicons/check_in_icon.png",width: 18,height: 18,),
+                                                    const SizedBox(width: 5,),
+                                                    Expanded(child: Text(visitHistoryList[index].checkInTime!,style: const TextStyle(color: AppColors.primaryColor),)),
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                            const Text("|",style:  TextStyle(color: AppColors.greyColor)),
-                                            Expanded(
-                                              child: Row(
-                                                children: [
-                                                  Image.asset("assets/myicons/check_out_icon.png",width: 18,height: 18,),
-                                                  const SizedBox(width: 5,),
-                                                  Expanded(child: Text(visitHistoryList[index].checkOutTime!,style: const TextStyle(color: AppColors.primaryColor),)),
-                                                ],
+                                              const Text("|",style:  TextStyle(color: AppColors.greyColor)),
+                                              Expanded(
+                                                child: Row(
+                                                  children: [
+                                                    Image.asset("assets/myicons/check_out_icon.png",width: 18,height: 18,),
+                                                    const SizedBox(width: 5,),
+                                                    Expanded(child: Text(visitHistoryList[index].checkOutTime!,style: const TextStyle(color: AppColors.primaryColor),)),
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                            const Text("|",style:  TextStyle(color: AppColors.greyColor)),
-                                            Expanded(
-                                              child: Row(
-                                                children: [
-                                                 const Icon(Icons.watch_later_outlined,color: AppColors.primaryColor,size: 18,),
-                                                  const SizedBox(width: 5,),
-                                                  Expanded(child: Text(visitHistoryList[index].workingHours!,style: const TextStyle(color: AppColors.primaryColor),)),
-                                                ],
+                                              const Text("|",style:  TextStyle(color: AppColors.greyColor)),
+                                              Expanded(
+                                                child: Row(
+                                                  children: [
+                                                   const Icon(Icons.watch_later_outlined,color: AppColors.primaryColor,size: 18,),
+                                                    const SizedBox(width: 5,),
+                                                    Expanded(child: Text(visitHistoryList[index].workingHours!,style: const TextStyle(color: AppColors.primaryColor),)),
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                        const SizedBox(height: 5,),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                                child: Container(
-                                              decoration: BoxDecoration(
-                                                color: visitHistoryList[index].isAvailability == 1 ? AppColors.blue : AppColors.white,
-                                                border: Border.all(color: AppColors.blue),
-                                                borderRadius: BorderRadius.circular(5)
-                                              ),
-                                              padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
-                                              child:   Center(child: Text("AVL",style: TextStyle(color: visitHistoryList[index].isAvailability == 1 ? AppColors.white : AppColors.blue),)),
-                                            )),
-                                            const SizedBox(width: 3,),
-                                            Expanded(child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: visitHistoryList[index].isFreshness == 1 ? AppColors.blue : AppColors.white,
-                                                  border: Border.all(color: AppColors.blue),
-                                                  borderRadius: BorderRadius.circular(5)
-                                              ),
-                                              padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
-                                              child:   Center(child: Text("FRES",style: TextStyle(color: visitHistoryList[index].isFreshness == 1 ? AppColors.white : AppColors.blue),)),
-                                            )),
-                                            const SizedBox(width: 3,),
-                                            Expanded(child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: visitHistoryList[index].isPlanogram == 1 ? AppColors.blue : AppColors.white,
-                                                  border: Border.all(color: AppColors.blue),
-                                                  borderRadius: BorderRadius.circular(5)
-                                              ),
-                                              padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
-                                              child:   Center(child: Text("PLANO",style: TextStyle(color: visitHistoryList[index].isPlanogram == 1 ? AppColors.white : AppColors.blue),)),
-                                            )),
-                                            const SizedBox(width: 3,),
-                                            Expanded(
-                                                child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: visitHistoryList[index].isSos == 1 ? AppColors.blue : AppColors.white,
-                                                  border: Border.all(color: AppColors.blue),
-                                                  borderRadius: BorderRadius.circular(5)
-                                              ),
-                                              padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
-                                              child:  Center(child: Text("SOS",style: TextStyle(color: visitHistoryList[index].isSos == 1 ? AppColors.white : AppColors.blue),)),
-                                            )),
-                                            const SizedBox(width: 3,),
-                                            Expanded(child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: visitHistoryList[index].isRtv == 1 ? AppColors.blue : AppColors.white,
-                                                  border: Border.all(color: AppColors.blue),
-                                                  borderRadius: BorderRadius.circular(5)
-                                              ),
-                                              padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
-                                              child:  Center(child: Text("RTV",style: TextStyle(color: visitHistoryList[index].isRtv == 1 ? AppColors.white : AppColors.blue),)),
-                                            )),
-
-                                          ],
-                                        ),
+                                        // const SizedBox(height: 5,),
+                                        // Row(
+                                        //   children: [
+                                        //     Expanded(
+                                        //         child: Container(
+                                        //       decoration: BoxDecoration(
+                                        //         color: visitHistoryList[index].isAvailability == 1 ? AppColors.blue : AppColors.white,
+                                        //         border: Border.all(color: AppColors.blue),
+                                        //         borderRadius: BorderRadius.circular(5)
+                                        //       ),
+                                        //       padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
+                                        //       child:   Center(child: Text("AVL",style: TextStyle(color: visitHistoryList[index].isAvailability == 1 ? AppColors.white : AppColors.blue),)),
+                                        //     )),
+                                        //     const SizedBox(width: 3,),
+                                        //     Expanded(child: Container(
+                                        //       decoration: BoxDecoration(
+                                        //           color: visitHistoryList[index].isFreshness == 1 ? AppColors.blue : AppColors.white,
+                                        //           border: Border.all(color: AppColors.blue),
+                                        //           borderRadius: BorderRadius.circular(5)
+                                        //       ),
+                                        //       padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
+                                        //       child:   Center(child: Text("FRES",style: TextStyle(color: visitHistoryList[index].isFreshness == 1 ? AppColors.white : AppColors.blue),)),
+                                        //     )),
+                                        //     const SizedBox(width: 3,),
+                                        //     Expanded(child: Container(
+                                        //       decoration: BoxDecoration(
+                                        //           color: visitHistoryList[index].isPlanogram == 1 ? AppColors.blue : AppColors.white,
+                                        //           border: Border.all(color: AppColors.blue),
+                                        //           borderRadius: BorderRadius.circular(5)
+                                        //       ),
+                                        //       padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
+                                        //       child:   Center(child: Text("PLANO",style: TextStyle(color: visitHistoryList[index].isPlanogram == 1 ? AppColors.white : AppColors.blue),)),
+                                        //     )),
+                                        //     const SizedBox(width: 3,),
+                                        //     Expanded(
+                                        //         child: Container(
+                                        //       decoration: BoxDecoration(
+                                        //           color: visitHistoryList[index].isSos == 1 ? AppColors.blue : AppColors.white,
+                                        //           border: Border.all(color: AppColors.blue),
+                                        //           borderRadius: BorderRadius.circular(5)
+                                        //       ),
+                                        //       padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
+                                        //       child:  Center(child: Text("SOS",style: TextStyle(color: visitHistoryList[index].isSos == 1 ? AppColors.white : AppColors.blue),)),
+                                        //     )),
+                                        //     const SizedBox(width: 3,),
+                                        //     Expanded(child: Container(
+                                        //       decoration: BoxDecoration(
+                                        //           color: visitHistoryList[index].isRtv == 1 ? AppColors.blue : AppColors.white,
+                                        //           border: Border.all(color: AppColors.blue),
+                                        //           borderRadius: BorderRadius.circular(5)
+                                        //       ),
+                                        //       padding: const EdgeInsets.symmetric(horizontal: 2,vertical: 5),
+                                        //       child:  Center(child: Text("RTV",style: TextStyle(color: visitHistoryList[index].isRtv == 1 ? AppColors.white : AppColors.blue),)),
+                                        //     )),
+                                        //
+                                        //   ],
+                                        // ),
                                         const SizedBox(height: 5,),
                                         // IgnorePointer(
                                         //   ignoring: false,

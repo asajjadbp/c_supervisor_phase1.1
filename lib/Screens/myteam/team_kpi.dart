@@ -35,6 +35,9 @@ class _TeamKpiScreenState extends State<TeamKpiScreen> {
   List<FeedbackListItem> feedbackList = <FeedbackListItem>[];
   late FeedbackListItem feedbackListItem;
 
+  List<FeedbackListItem> productivityFeedbackList = <FeedbackListItem>[];
+  late FeedbackListItem productivityFeedbackListItem;
+
   TextEditingController searchController = TextEditingController();
   List<TeamKpiResponseItem> teamKpiSearchList =
   <TeamKpiResponseItem>[];
@@ -59,21 +62,42 @@ class _TeamKpiScreenState extends State<TeamKpiScreen> {
     });
 
     getTeamKpiList(true);
-    getfeedbackListItem(true);
+    getFeedBackListItem(true);
+    getProductivityFeedBackListItem(true);
   }
 
-  getfeedbackListItem(bool isLoader) {
+  getFeedBackListItem(bool isLoader) {
     setState(() {
       isLoading = isLoader;
     });
-
-
     HTTPManager()
         .getFeedBackList()
         .then((value) {
       setState(() {
         feedbackList = value.data!;
         feedbackListItem = feedbackList[0];
+        isLoading = false;
+        isError = false;
+      });
+    }).catchError((e) {
+      setState(() {
+        isError = true;
+        errorText = e.toString();
+        isLoading = false;
+      });
+    });
+  }
+
+  getProductivityFeedBackListItem(bool isLoader) {
+    setState(() {
+      isLoading = isLoader;
+    });
+    HTTPManager()
+        .getFeedBackList()
+        .then((value) {
+      setState(() {
+        productivityFeedbackList = value.data!;
+        productivityFeedbackListItem = productivityFeedbackList[0];
         isLoading = false;
         isError = false;
       });
@@ -176,7 +200,7 @@ class _TeamKpiScreenState extends State<TeamKpiScreen> {
                                 children: [
                                   Container(
                                     alignment: Alignment.centerLeft,
-                                    margin:const EdgeInsets.only(left: 25,bottom: 5,top: 5),
+                                    margin:const EdgeInsets.only(left: 10,bottom: 5,top: 5),
                                     child: Column(
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,7 +218,7 @@ class _TeamKpiScreenState extends State<TeamKpiScreen> {
                                   const SizedBox(height: 3,),
                                   Container(
                                     alignment: Alignment.centerLeft,
-                                    margin:const EdgeInsets.only(left: 20,bottom: 5,top: 5),
+                                    margin:const EdgeInsets.only(left: 10,bottom: 5,top: 5,right: 10),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
@@ -210,76 +234,125 @@ class _TeamKpiScreenState extends State<TeamKpiScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: 3,),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Image.asset("assets/myicons/journey_plan_compliance_icon.png",width: 18,height: 18,),
-                                          const SizedBox(width: 5,),
-                                          Text("${teamKpiSearchList[index].compliance} %",style:  const TextStyle(color: AppColors.blue)),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Image.asset("assets/myicons/productivity_icon.png",width: 18,height: 18,),
-                                          const SizedBox(width: 5,),
-                                          Text("${teamKpiSearchList[index].productivity} %",style:  const TextStyle(color: AppColors.blue)),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Image.asset("assets/myicons/efficiency_icon.png",width: 18,height: 18,),
-                                          const SizedBox(width: 5,),
-                                          Text("${teamKpiSearchList[index].efficiencyN} %",style:  const TextStyle(color: AppColors.blue)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 5,),
-                                  if(int.parse(teamKpiSearchList[index].efficiencyN.toString()) < 80)
-                                  IgnorePointer(
-                                    ignoring: false,
-                                    child: Container(
-                                      margin: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.2),
-                                      child: InkWell(
-                                        onTap: () {
-                                          feedbackDropdownBottomSheet(context,feedbackListItem,feedbackList,
-                                                  (value){
-                                                setState(() {
-                                                  feedbackListItem = value;
-                                                });
-                                              },
-                                                  (){
-                                                print(feedbackListItem.name);
-                                                Navigator.of(context).pop();
-                                                updateFeedbackTeamKpi(index);
-                                              }
-                                          );
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.all(10),
-                                          decoration:  BoxDecoration(
-                                              borderRadius: BorderRadius.circular(10),
-                                              gradient: const LinearGradient(
-                                                colors: [
-                                                  Color(0xFF0F408D),
-                                                  Color(0xFF6A82A9),
-                                                ],
-                                              )
-                                          ),
-                                          child: const Row(
-                                            mainAxisAlignment: MainAxisAlignment.end,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Expanded(child: Text("   Select Your Feedback",style: TextStyle(color: AppColors.white),)),
-                                              Icon(Icons.keyboard_arrow_down_outlined,color: AppColors.white,)
-                                            ],
-                                          ),
+                                  Container(
+                                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Image.asset("assets/myicons/journey_plan_compliance_icon.png",width: 18,height: 18,),
+                                            const SizedBox(width: 5,),
+                                            Text("${teamKpiSearchList[index].compliance} %",style:  const TextStyle(color: AppColors.blue)),
+                                          ],
                                         ),
-                                      ),
+                                        Row(
+                                          children: [
+                                            Image.asset("assets/myicons/productivity_icon.png",width: 18,height: 18,),
+                                            const SizedBox(width: 5,),
+                                            Text("${teamKpiSearchList[index].productivity} %",style:  const TextStyle(color: AppColors.blue)),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Image.asset("assets/myicons/efficiency_icon.png",width: 18,height: 18,),
+                                            const SizedBox(width: 5,),
+                                            Text("${teamKpiSearchList[index].efficiencyN} %",style:  const TextStyle(color: AppColors.blue)),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
+                                  const SizedBox(height: 5,),
+                                  Row(
+                                    children: [
+                                      if(double.parse(teamKpiSearchList[index].productivity.toString()) < 80.0)
+                                        Expanded(
+                                          child: IgnorePointer(
+                                            ignoring: false,
+                                            child: InkWell(
+                                              onTap: () {
+                                                feedbackDropdownBottomSheet(context,productivityFeedbackListItem,productivityFeedbackList,
+                                                        (value){
+                                                      setState(() {
+                                                        productivityFeedbackListItem = value;
+                                                      });
+                                                    },
+                                                        (){
+                                                      print(productivityFeedbackListItem.name);
+                                                      Navigator.of(context).pop();
+                                                      updateProductivityFeedbackTeamKpi(teamKpiSearchList[index]);
+                                                    }
+                                                );
+                                              },
+                                              child: Container(
+                                                padding: const EdgeInsets.all(10),
+                                                decoration:  BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    gradient: const LinearGradient(
+                                                      colors: [
+                                                        Color(0xFF0F408D),
+                                                        Color(0xFF6A82A9),
+                                                      ],
+                                                    )
+                                                ),
+                                                child: const Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    Text("Productivity Feedback",style: TextStyle(color: AppColors.white),),
+                                                    Icon(Icons.keyboard_arrow_down_outlined,color: AppColors.white,)
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      const SizedBox(width: 5,),
+                                      if(int.parse(teamKpiSearchList[index].efficiencyN.toString()) < 80)
+                                        Expanded(
+                                          child: IgnorePointer(
+                                            ignoring: false,
+                                            child: InkWell(
+                                              onTap: () {
+                                                feedbackDropdownBottomSheet(context,feedbackListItem,feedbackList,
+                                                        (value){
+                                                      setState(() {
+                                                        feedbackListItem = value;
+                                                      });
+                                                    },
+                                                        (){
+                                                      print(feedbackListItem.name);
+                                                      Navigator.of(context).pop();
+                                                      updateFeedbackTeamKpi(teamKpiSearchList[index]);
+                                                    }
+                                                );
+                                              },
+                                              child: Container(
+                                                padding: const EdgeInsets.all(10),
+                                                decoration:  BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    gradient: const LinearGradient(
+                                                      colors: [
+                                                        Color(0xFF0F408D),
+                                                        Color(0xFF6A82A9),
+                                                      ],
+                                                    )
+                                                ),
+                                                child: const Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    Text("Efficiency Feedback",style: TextStyle(color: AppColors.white),),
+                                                    Icon(Icons.keyboard_arrow_down_outlined,color: AppColors.white,)
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  )
                                 ],
                               ),
                             ),
@@ -303,7 +376,7 @@ class _TeamKpiScreenState extends State<TeamKpiScreen> {
                                       children: [
                                         Container(
                                           alignment: Alignment.centerLeft,
-                                          margin:const EdgeInsets.only(left: 25,bottom: 5,top: 5),
+                                          margin:const EdgeInsets.only(left: 10,bottom: 5,top: 5,right: 10),
                                           child: Row(
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -317,7 +390,7 @@ class _TeamKpiScreenState extends State<TeamKpiScreen> {
                                         const SizedBox(height: 3,),
                                         Container(
                                           alignment: Alignment.centerLeft,
-                                          margin:const EdgeInsets.only(left: 20,bottom: 5,top: 5),
+                                          margin:const EdgeInsets.only(left: 10,bottom: 5,top: 5,right: 10),
                                           child: Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
@@ -333,76 +406,125 @@ class _TeamKpiScreenState extends State<TeamKpiScreen> {
                                           ),
                                         ),
                                         const SizedBox(height: 3,),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Image.asset("assets/myicons/journey_plan_compliance_icon.png",width: 18,height: 18,),
-                                                const SizedBox(width: 5,),
-                                                Text("${teamKpiList[index].compliance} %",style:  const TextStyle(color: AppColors.blue)),
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Image.asset("assets/myicons/productivity_icon.png",width: 18,height: 18,),
-                                                const SizedBox(width: 5,),
-                                                Text("${teamKpiList[index].productivity} %",style:  const TextStyle(color: AppColors.blue)),
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Image.asset("assets/myicons/efficiency_icon.png",width: 18,height: 18,),
-                                                const SizedBox(width: 5,),
-                                                Text("${teamKpiList[index].efficiencyN} %",style:  const TextStyle(color: AppColors.blue)),
-                                              ],
-                                            ),
-                                          ],
+                                        Container(
+                                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Image.asset("assets/myicons/journey_plan_compliance_icon.png",width: 18,height: 18,),
+                                                  const SizedBox(width: 5,),
+                                                  Text("${teamKpiList[index].compliance} %",style:  const TextStyle(color: AppColors.blue)),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Image.asset("assets/myicons/productivity_icon.png",width: 18,height: 18,),
+                                                  const SizedBox(width: 5,),
+                                                  Text("${teamKpiList[index].productivity} %",style:  const TextStyle(color: AppColors.blue)),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Image.asset("assets/myicons/efficiency_icon.png",width: 18,height: 18,),
+                                                  const SizedBox(width: 5,),
+                                                  Text("${teamKpiList[index].efficiencyN} %",style:  const TextStyle(color: AppColors.blue)),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                         const SizedBox(height: 5,),
-                                        if(int.parse(teamKpiList[index].efficiencyN.toString()) < 80)
-                                        IgnorePointer(
-                                          ignoring: false,
-                                          child: Container(
-                                            margin: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.2),
-                                            child: InkWell(
-                                              onTap: () {
-                                                feedbackDropdownBottomSheet(context,feedbackListItem,feedbackList,
-                                                        (value){
+                                        Row(
+                                          children: [
+                                            if(double.parse(teamKpiList[index].productivity.toString()) < 80.0)
+                                              Expanded(
+                                                child: IgnorePointer(
+                                                  ignoring: false,
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      feedbackDropdownBottomSheet(context,productivityFeedbackListItem,productivityFeedbackList,
+                                                              (value){
+                                                            setState(() {
+                                                              productivityFeedbackListItem = value;
+                                                            });
+                                                          },
+                                                              (){
+                                                            print(productivityFeedbackListItem.name);
+                                                            Navigator.of(context).pop();
+                                                            updateProductivityFeedbackTeamKpi(teamKpiList[index]);
+                                                          }
+                                                      );
+                                                    },
+                                                    child: Container(
+                                                      padding: const EdgeInsets.all(10),
+                                                      decoration:  BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(10),
+                                                          gradient: const LinearGradient(
+                                                            colors: [
+                                                              Color(0xFF0F408D),
+                                                              Color(0xFF6A82A9),
+                                                            ],
+                                                          )
+                                                      ),
+                                                      child: const Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                                        children: [
+                                                          Text("Productivity Feedback",style: TextStyle(color: AppColors.white),),
+                                                          Icon(Icons.keyboard_arrow_down_outlined,color: AppColors.white,)
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            const SizedBox(width: 5,),
+                                            if(int.parse(teamKpiList[index].efficiencyN.toString()) < 80)
+                                              Expanded(
+                                                child: IgnorePointer(
+                                                  ignoring: false,
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      feedbackDropdownBottomSheet(context,feedbackListItem,feedbackList,
+                                                              (value){
                                                             setState(() {
                                                               feedbackListItem = value;
                                                             });
-                                                        },
-                                                        (){
-                                                  print(feedbackListItem.name);
+                                                          },
+                                                              (){
+                                                            print(feedbackListItem.name);
                                                             Navigator.of(context).pop();
-                                                  updateFeedbackTeamKpi(index);
-                                                        }
-                                                );
-                                              },
-                                              child: Container(
-                                                padding: const EdgeInsets.all(10),
-                                                decoration:  BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(10),
-                                                    gradient: const LinearGradient(
-                                                      colors: [
-                                                        Color(0xFF0F408D),
-                                                        Color(0xFF6A82A9),
-                                                      ],
-                                                    )
-                                                ),
-                                                child: const Row(
-                                                  mainAxisAlignment: MainAxisAlignment.end,
-                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                  children: [
-                                                    Expanded(child: Text("   Select Your Feedback",style: TextStyle(color: AppColors.white),)),
-                                                    Icon(Icons.keyboard_arrow_down_outlined,color: AppColors.white,)
-                                                  ],
+                                                            updateFeedbackTeamKpi(teamKpiList[index]);
+                                                          }
+                                                      );
+                                                    },
+                                                    child: Container(
+                                                      padding: const EdgeInsets.all(10),
+                                                      decoration:  BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(10),
+                                                          gradient: const LinearGradient(
+                                                            colors: [
+                                                              Color(0xFF0F408D),
+                                                              Color(0xFF6A82A9),
+                                                            ],
+                                                          )
+                                                      ),
+                                                      child: const Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                                        children: [
+                                                          Text("Efficiency Feedback",style: TextStyle(color: AppColors.white),),
+                                                          Icon(Icons.keyboard_arrow_down_outlined,color: AppColors.white,)
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
-                                        ),
+                                          ],
+                                        )
                                       ],
                                     ),
                                   ),
@@ -443,15 +565,38 @@ class _TeamKpiScreenState extends State<TeamKpiScreen> {
     setState(() {});
   }
 
-  updateFeedbackTeamKpi (int index) {
+  updateProductivityFeedbackTeamKpi (TeamKpiResponseItem teamKpiResponseItem) {
+    print(productivityFeedbackListItem.name);
+    setState(() {
+      isLoadingLocation = true;
+    });
+    HTTPManager().updateProductivityFeedBackInKpi(UpdateProductivityFeedbackRequestModel(
+        userId: teamKpiResponseItem.userId.toString(),
+        proComment: productivityFeedbackListItem.name,
+        id:teamKpiResponseItem.id
+    )).then((value) {
+      setState(() {
+        isLoadingLocation = false;
+      });
+      getTeamKpiList(false);
+      showToastMessage(true, "Productivity Feedback added successfully");
+    }).catchError((e) {
+      setState(() {
+        isLoadingLocation = false;
+      });
+      showToastMessage(false, e.toString());
+    });
+  }
+
+  updateFeedbackTeamKpi (TeamKpiResponseItem teamKpiResponseItem) {
     print(feedbackListItem.name);
     setState(() {
       isLoadingLocation = true;
     });
       HTTPManager().updateFeedBackInKpi(UpdateEfficiencyFeedbackRequestModel(
-        userId: teamKpiList[index].userId.toString(),
+        userId: teamKpiResponseItem.userId.toString(),
         effComment: feedbackListItem.name,
-        id:teamKpiList[index].id
+        id:teamKpiResponseItem.id
       )).then((value) {
         setState(() {
           isLoadingLocation = false;

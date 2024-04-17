@@ -84,7 +84,7 @@ class LogInResponseModel {
 class LoginData {
   int? id;
   String? email;
-  int? name;
+  String? name;
   String? welcomeMsg;
   String? fullName;
   int geoFence = 0;
@@ -100,7 +100,7 @@ class LoginData {
   LoginData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     email = json['email'];
-    name = json['name'];
+    name = json['name'].toString();
     welcomeMsg = json['welcome_msg'];
     fullName = json['full_name'];
     geoFence = json['geofenc'] ?? 0;

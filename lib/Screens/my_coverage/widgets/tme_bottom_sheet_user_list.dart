@@ -30,11 +30,12 @@ selfieOptionForJpBottomSheet(BuildContext context,bool isLoadingLocation,bool is
                             children: [
                               InkWell(
                                 onTap: () {
-                                  if(isSelfieWithTmr) {
+                                  print("Tap");
+                                  // if(isSelfieWithTmr) {
                                     menuState(() {
                                       selectedOption("1");
                                     });
-                                  }
+                                  // }
                                 },
                                 child:  Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 5),
@@ -49,11 +50,11 @@ selfieOptionForJpBottomSheet(BuildContext context,bool isLoadingLocation,bool is
                               const Divider(color: AppColors.primaryColor,),
                               InkWell(
                                 onTap: () {
-                                  if(isSelfieWithTmrWorking) {
+                                  // if(isSelfieWithTmrWorking) {
                                     menuState(() {
                                       selectedOption("2");
                                     });
-                                  }
+                                  // }
                                 },
                                 child:  Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 5),
@@ -68,11 +69,11 @@ selfieOptionForJpBottomSheet(BuildContext context,bool isLoadingLocation,bool is
                               const Divider(color: AppColors.primaryColor,),
                               InkWell(
                                 onTap: () {
-                                  if(isSelfieWithTmrCompleted) {
+                                  // if(isSelfieWithTmrCompleted) {
                                     menuState(() {
                                       selectedOption("3");
                                     });
-                                  }
+                                  // }
                                 },
                                 child:  Padding(
                                     padding:const EdgeInsets.symmetric(vertical: 10,horizontal: 5),

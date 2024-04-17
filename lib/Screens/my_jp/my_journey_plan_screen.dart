@@ -100,7 +100,6 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
       searchController.clear();
       FocusScope.of(context).unfocus();
     }
-
     HTTPManager()
         .userJourneyPlanList(JourneyPlanRequestModel(elId: userId))
         .then((value) {

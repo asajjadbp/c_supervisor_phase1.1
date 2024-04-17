@@ -286,8 +286,47 @@ class _MyCoveragePhotoGalleryOptionsState
             ),
             LargeButtonInFooter(
               buttonTitle: "Finish Visit",
-              onTap: () {
-                _getCurrentPosition(false);
+              onTap: () async {
+                await showDialog<bool>(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text(
+                          'Are you sure you want to finish this visit ?'),
+                      actions: [
+                        TextButton(
+                          onPressed:
+                              () {
+                            Navigator.pop(
+                                context,
+                                false);
+                          },
+                          child:
+                          const Text(
+                            'No',
+                            style: TextStyle(
+                                color:
+                                AppColors.primaryColor),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed:
+                              () {
+                            Navigator.of(context).pop();
+                                _getCurrentPosition(false);
+                          },
+                          child:
+                          const Text(
+                            'Yes',
+                            style: TextStyle(
+                                color:
+                                AppColors.primaryColor),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
             )
           ],

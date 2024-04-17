@@ -3,11 +3,22 @@ import 'package:flutter/material.dart';
 class AppColors {
   static const red = Colors.red;
   static const white = Colors.white;
+  static const whiteBackground = Color(0xFFF2F2F2);
   static const blue = Color(0xFF3C51A1);
   static const paleYellow = Color(0xFFFDCC53);
   static const black = Color(0xFF000000);
   static const paleyellow = Color(0xFFFDCC53);
   static const green = Color(0xFF01CB05);
+
+  static const graphGreen = Color(0xFF28A745);
+  static const graphYellow = Color(0xFFFFD700);
+  static const graphBlue = Color(0xFF007BFF);
+  static const graphGrey = Color(0xFF6C757D);
+  static const graphPurple = Color(0xFF0F408D);
+  static const graphLightPurple = Color(0xFF435DB9);
+  static const graphInActiveColor = Color(0xFFF2F2F2);
+  static const graphBackground = Color(0xFF6A82A9);
+  static const graphButtonColor = Color(0xFF0F408D);
 
   static const lightgray_2 = Color.fromARGB(241, 231, 231, 230);
 

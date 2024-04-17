@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../authentication/login_screen.dart';
+import '../dashboard/main_dashboard_graphs.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -31,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ? Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const MainDashboardNew()))
+                    builder: (context) => const DashboardGraphScreen()))
             : Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) => const LoginScreen())));
 
@@ -54,33 +55,20 @@ class _SplashScreenState extends State<SplashScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      body: Container(
-        width: size.width,
-        height: size.height,
-        decoration: const BoxDecoration(color: AppColors.primaryColor
-            // image: DecorationImage(
-            //   image: AssetImage('assets/backgrounds/splash_bg.png'),
-            //   fit: BoxFit.cover,
-            // ),
-            ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                // 'assets/icons/supervisor_logo.png',
-                'assets/myicons/supervisor.png',
-                height: 165,
-                width: 250,
-              ),
-              const Text(
-                "Welcome To CSupervisor",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold),
-              )
-            ],
+      backgroundColor: AppColors.primaryColor,
+      body: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          padding: const EdgeInsets.only(top: 15),
+          height: MediaQuery.of(context).size.height/1.3,
+          decoration: const BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.only(topRight: Radius.circular(40),topLeft:Radius.circular(40) ),
+          ),
+          alignment: Alignment.topCenter,
+          child: Image.asset(
+            // 'assets/icons/supervisor_logo.png',
+            'assets/backgrounds/splash_logo.png',
           ),
         ),
       ),
