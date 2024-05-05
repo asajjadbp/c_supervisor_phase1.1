@@ -31,11 +31,15 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
   late TmrUserItem initialTmrUserList;
   late ClientListItem initialClientList;
    late StoresListItem initialStoresList;
+  late StoresListItem initialCitiesList;
+  late StoresListItem initialChainList;
    late ReasonListItem initialReasonsList;
 
-  late TmrUserList tmrUserList;
+  List <TmrUserItem> tmrUserList = <TmrUserItem>[TmrUserItem(id: 0,fullName: "Select Tmr",email: "")];
   late ClientListResponseModel clientList;
   late StoresListResponseModel storesList;
+  late StoresListResponseModel citiesList;
+  late StoresListResponseModel chainList;
   late CompaniesListResponseModel companiesList;
   late ReasonListResponseModel reasonsList;
 
@@ -50,6 +54,8 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
   bool isLoading3 = false;
   bool isLoading4 = true;
   bool isLoading5 = true;
+  bool isLoading6 = false;
+  bool isLoading7 = false;
 
   TextEditingController storeController = TextEditingController();
   TextEditingController timeController = TextEditingController();
@@ -95,9 +101,13 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
       geoFence = sharedPreferences.getInt(UserConstants().userGeoFence)!;
     });
 
+    initialTmrUserList = tmrUserList[0];
+
+
     getTmrUserList(true);
     getClientList(true);
-    // getStoresList(true);
+    getCitiesList(true);
+    getChainList(true);
     getCompaniesList(true);
     getReasonList(true);
 
@@ -111,13 +121,13 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
 
     HTTPManager()
         .tmrUserList(JourneyPlanRequestModel(
-      elId: userId,))
+      elId: userId))
         .then((value) {
       setState(() {
 
-        tmrUserList = value;
+        tmrUserList = value.data!;
 
-        initialTmrUserList = tmrUserList.data![0];
+        initialTmrUserList = tmrUserList[0];
         isLoading1 = false;
         isError = false;
       });
@@ -126,7 +136,7 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
       setState(() {
         isError = true;
         errorText = e.toString();
-        isLoading1 = false;
+        isLoading = false;
       });
     });
   }
@@ -146,6 +156,7 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
         clientList = value;
 
         initialClientList = clientList.data![0];
+
         isLoading2 = false;
         isError = false;
       });
@@ -159,33 +170,90 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
     });
   }
 
-  // getStoresList(bool loader) {
-  //
-  //   setState(() {
-  //     isLoading3 = loader;
-  //   });
-  //
-  //   HTTPManager()
-  //       .storeList(JourneyPlanRequestModel(
-  //     elId: userId,))
-  //       .then((value) {
-  //     setState(() {
-  //
-  //       storesList = value;
-  //
-  //       initialStoresList = storesList.data![0];
-  //       isLoading3 = false;
-  //       isError = false;
-  //     });
-  //
-  //   }).catchError((e) {
-  //     setState(() {
-  //       isError = true;
-  //       errorText = e.toString();
-  //       isLoading3 = false;
-  //     });
-  //   });
-  // }
+  getStoresList(bool loader) {
+    print(userId);
+    print(initialCitiesList.id!);
+    print(initialChainList.id!);
+    setState(() {
+      isLoading = loader;
+    });
+
+    HTTPManager()
+        .storeList(TmrUserListRequestModel(
+      elId: userId,
+        cityId: initialCitiesList.id!.toString(),
+      chainId: initialChainList.id!.toString()
+    ))
+        .then((value) {
+      setState(() {
+
+        storesList = value;
+
+        initialStoresList = storesList.data![0];
+        isLoading = false;
+        isError = false;
+      });
+
+    }).catchError((e) {
+      setState(() {
+        isError = true;
+        errorText = e.toString();
+        isLoading = false;
+      });
+    });
+  }
+
+  getCitiesList(bool loader) {
+
+    setState(() {
+      isLoading6 = loader;
+    });
+
+    HTTPManager().citiesList().then((value) {
+      setState(() {
+
+        citiesList = value;
+
+        initialCitiesList = citiesList.data![0];
+        isLoading6 = false;
+        getStoresList(true);
+        isError = false;
+      });
+
+    }).catchError((e) {
+      setState(() {
+        isError = true;
+        errorText = e.toString();
+        isLoading6 = false;
+      });
+    });
+  }
+
+  getChainList(bool loader) {
+
+    setState(() {
+      isLoading7 = loader;
+    });
+
+    HTTPManager().chainList(JourneyPlanRequestModel(elId: userId)).then((value) {
+      setState(() {
+
+        chainList = value;
+
+        initialChainList = chainList.data![0];
+        isLoading7 = false;
+        getStoresList(true);
+        isError = false;
+      });
+
+    }).catchError((e) {
+      setState(() {
+        isError = true;
+        errorText = e.toString();
+        isLoading7 = false;
+      });
+    });
+  }
 
   getCompaniesList(bool loader) {
 
@@ -225,7 +293,8 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
       setState(() {
 
         reasonsList = value;
-
+        print("REASON LIST");
+        print(reasonsList.data!.length);
         initialReasonsList = reasonsList.data![0];
         isLoading5 = false;
         isError = false;
@@ -251,7 +320,7 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
             isDrawerButton: true,
           ),
           Expanded(
-              child: isLoading1 || isLoading2 || isLoading3 || isLoading4 || isLoading5 ? const Center(
+              child: isLoading1 || isLoading2 || isLoading3 || isLoading4 || isLoading5 || isLoading6 || isLoading7? const Center(
                 child: CircularProgressIndicator(
                   color: AppColors.primaryColor,
                 ),
@@ -263,13 +332,68 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
                     Form(
                       key: _formKey,
                       child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 5),
+                        alignment: Alignment.topCenter,
+                        decoration: const BoxDecoration(color: AppColors.white),
+                        margin: const EdgeInsets.symmetric(horizontal: 5,vertical: 5),
                         child: SingleChildScrollView(
                           scrollDirection: Axis.vertical,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               const SizedBox(height: 50,),
+                              const Text("  Select Chain",style: TextStyle(color: AppColors.primaryColor),),
+                              Container(
+                                width: MediaQuery.of(context).size.width,
+                                padding: const EdgeInsets.symmetric(horizontal: 5),
+                                margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: AppColors.primaryColor)
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<StoresListItem>(
+                                        value: initialChainList,
+                                        isExpanded: true,
+                                        items: chainList.data!.map((StoresListItem items) {
+                                          return DropdownMenuItem(
+                                            value: items,
+                                            child: Text(items.name!,overflow: TextOverflow.ellipsis,),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) {
+                                          setState((){
+                                            initialChainList = value!;
+                                            storeController.clear();
+                                            getStoresList(true);
+                                          });
+                                        })),
+                              ),
+                              const Text("  Select City",style: TextStyle(color: AppColors.primaryColor),),
+                              Container(
+                                width: MediaQuery.of(context).size.width,
+                                padding: const EdgeInsets.symmetric(horizontal: 5),
+                                margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: AppColors.primaryColor)
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<StoresListItem>(
+                                        value: initialCitiesList,
+                                        isExpanded: true,
+                                        items: citiesList.data!.map((StoresListItem items) {
+                                          return DropdownMenuItem(
+                                            value: items,
+                                            child: Text(items.name!,overflow: TextOverflow.ellipsis,),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) {
+                                          setState((){
+                                            initialCitiesList = value!;
+                                            storeController.clear();
+                                            getStoresList(true);
+                                          });
+                                        })),
+                              ),
+                              const SizedBox(height: 5,),
                               const Text("  Select Client",style: TextStyle(color: AppColors.primaryColor),),
                               Container(
                                 width: MediaQuery.of(context).size.width,
@@ -295,23 +419,23 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
                                         })),
                               ),
                               const SizedBox(height: 5,),
-                              const Text("  Select City",style: TextStyle(color: AppColors.primaryColor),),
+                              const Text("  Select Store",style: TextStyle(color: AppColors.primaryColor),),
                               Container(
                                 margin:const EdgeInsets.symmetric(horizontal: 5),
                                 child: TextFormField(
                                   readOnly: true,
                                   onTap: () {
-                                    commonSuggestBottomSheet(context, "store","query","", (value) {
+                                    storeListBottomSheet(context,storesList.data!,(value) {
                                       setState(() {
-                                        storeController.text = value.text!;
-                                        initialCommonListItem = value;
+                                        storeController.text = value.name!;
+                                        initialStoresList = value;
                                       });
                                     });
                                   },
                                   controller: storeController,
                                   validator: (value) {
                                     if(value!.isEmpty) {
-                                      return "City field required";
+                                      return "Store field required";
                                     } else {
                                       return null;
                                     }
@@ -331,7 +455,7 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
                                         borderSide: BorderSide(
                                             color: AppColors.primaryColor, width: 1.0)),
                                     labelStyle: TextStyle(color: AppColors.black),
-                                    hintText: 'City',
+                                    hintText: 'Store',
                                     hintStyle: TextStyle(color: AppColors.greyColor),
                                     contentPadding: EdgeInsets.symmetric(vertical: 5,horizontal: 5),),
                                   keyboardType: TextInputType.text,
@@ -374,7 +498,8 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
                                     child: DropdownButton<TmrUserItem>(
                                         value: initialTmrUserList,
                                         isExpanded: true,
-                                        items: tmrUserList.data!.map((TmrUserItem items) {
+                                        hint:const Text("Select Tmr"),
+                                        items: tmrUserList.map((TmrUserItem items) {
                                           return DropdownMenuItem(
                                             value: items,
                                             child: Text(items.fullName!,overflow: TextOverflow.ellipsis,),
@@ -532,6 +657,10 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
   }
   addSpecialVisit() {
     if (_formKey.currentState!.validate()) {
+      if(tmrUserList.isEmpty) {
+        showToastMessage(false, "Pleas Select Tmr");
+        return;
+      }
       setState(() {
         isLoading = true;
       });

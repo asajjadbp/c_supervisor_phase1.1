@@ -17,7 +17,6 @@ class MainDashboardItemCard extends StatelessWidget {
         onTap();
       },
       child: Card(
-
         semanticContainer: true,
         clipBehavior: Clip.antiAliasWithSaveLayer,
         shadowColor: Colors.black12,
@@ -32,13 +31,13 @@ class MainDashboardItemCard extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 5,),
-                Image.asset(imageUrl,fit: BoxFit.contain,),
+                const SizedBox(height: 30,),
+                Image.asset(imageUrl,fit: BoxFit.contain,height: 50,width: 50,),
                 Padding(
-                  padding: const EdgeInsets.only(top: 15),
+                  padding: const EdgeInsets.only(top: 10),
                   child: Text(cardName),
                 ),
-                const SizedBox(height: 5,),
+                const SizedBox(height: 30,),
               ],
             ),
           ],

@@ -117,7 +117,7 @@ class _ClientScreenState extends State<ClientScreen> {
                       shadowColor: Colors.black12,
                       elevation: 10,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,21 +126,26 @@ class _ClientScreenState extends State<ClientScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Row(
-                                  children: [
-                                    Image.asset("assets/myicons/company_icon.png",width: 18,height: 18,),
-                                    const Text(" Company:", style: TextStyle(color: AppColors.blue),),
-                                    const SizedBox(width: 5,),
-                                    Text(clientLists[index].companyName!,overflow: TextOverflow.ellipsis,maxLines: 1, style: const TextStyle(color: AppColors.blue),),
-                                  ],
+                                Expanded(
+                                  flex: 2,
+                                  child: Row(
+                                    children: [
+                                      Image.asset("assets/myicons/company_icon.png",width: 18,height: 18,),
+                                      const Text(" Company:", style: TextStyle(color: AppColors.blue),),
+                                      const SizedBox(width: 1,),
+                                      Expanded(child: Text(clientLists[index].companyName!,overflow: TextOverflow.ellipsis,maxLines: 1, style: const TextStyle(color: AppColors.blue),)),
+                                    ],
+                                  ),
                                 ),
-                                Row(
-                                  children: [
-                                    Image.asset("assets/myicons/store_icon.png",width: 18,height: 18,),
-                                    const Text(" Stores:", style: TextStyle(color: AppColors.blue),),
-                                    const SizedBox(width: 5,),
-                                    Text(clientLists[index].uniqueStores!.toString(),overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.blue),),
-                                  ],
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      Image.asset("assets/myicons/store_icon.png",width: 18,height: 18,),
+                                      const Text(" Stores:", style: TextStyle(color: AppColors.blue),),
+                                      const SizedBox(width: 1,),
+                                      Text(clientLists[index].uniqueStores!.toString(),overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.blue),),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),

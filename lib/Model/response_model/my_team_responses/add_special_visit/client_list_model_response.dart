@@ -50,8 +50,8 @@ class ClientListItem {
         this.categroyCount});
 
   ClientListItem.fromJson(Map<String, dynamic> json) {
-    companyName = json['company_name'];
-    businessModel = json['business_model'];
+    companyName = json['company_name'].toString();
+    businessModel = json['business_model'].toString();
     companyId = json['company_id'];
     freqWeek = json['freq_week'];
     uniqueStores = json['unique_stores'];

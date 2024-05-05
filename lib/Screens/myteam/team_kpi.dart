@@ -472,7 +472,7 @@ class _TeamKpiScreenState extends State<TeamKpiScreen> {
                                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                         crossAxisAlignment: CrossAxisAlignment.center,
                                                         children: [
-                                                          Text("Productivity Feedback",style: TextStyle(color: AppColors.white),),
+                                                          Expanded(child: Text("Productivity Feedback",style: TextStyle(color: AppColors.white,fontSize: 12),)),
                                                           Icon(Icons.keyboard_arrow_down_outlined,color: AppColors.white,)
                                                         ],
                                                       ),
@@ -515,7 +515,7 @@ class _TeamKpiScreenState extends State<TeamKpiScreen> {
                                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                         crossAxisAlignment: CrossAxisAlignment.center,
                                                         children: [
-                                                          Text("Efficiency Feedback",style: TextStyle(color: AppColors.white),),
+                                                          Expanded(child: Text("Efficiency Feedback",style: TextStyle(color: AppColors.white,fontSize: 12),)),
                                                           Icon(Icons.keyboard_arrow_down_outlined,color: AppColors.white,)
                                                         ],
                                                       ),

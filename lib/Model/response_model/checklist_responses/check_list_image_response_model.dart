@@ -37,7 +37,7 @@ class CheckListImageResponse {
   CheckListImageResponse.fromJson(Map<String, dynamic> json) {
     elId = json['el_id'];
     id = json['id'];
-    imageName = json['image_name'];
+    imageName = json['image_name'].toString();
   }
 
   Map<String, dynamic> toJson() {

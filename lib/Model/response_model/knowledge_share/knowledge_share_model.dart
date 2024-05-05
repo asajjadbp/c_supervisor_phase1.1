@@ -54,12 +54,12 @@ class KnowledgeList {
   });
 
   factory KnowledgeList.fromJson(Map<String, dynamic> json) => KnowledgeList(
-        type: json["type"],
+        type: json["type"].toString(),
         clientId: json["client_id"],
-        title: json["title"],
-        description: json["description"],
-        fileName: json["file_name"],
-        companyName: json["company_name"],
+        title: json["title"].toString(),
+        description: json["description"].toString(),
+        fileName: json["file_name"].toString(),
+        companyName: json["company_name"].toString(),
       );
 
   Map<String, dynamic> toJson() => {

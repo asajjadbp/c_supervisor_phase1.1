@@ -25,7 +25,9 @@ import 'package:intl/intl.dart';
 import 'package:new_version_plus/new_version_plus.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../Model/chart_data_Model.dart';
 import '../../Model/request_model/check_in_status_request.dart';
@@ -76,6 +78,8 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
   location.Position? _currentPosition;
   late DashboardResponseData dashboardResponseData;
 
+  final RefreshController refreshController = RefreshController(initialRefresh: false);
+
   bool isLoading1 = true;
   bool isLoading3 = true;
   bool isLoading2 = false;
@@ -102,18 +106,22 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
 
   int _selectedTab = 0;
 
-  final List _pages = [
-    const Center(
-      child: Text("My KPIs"),
-    ),
-    const Center(
-      child: Text("My Team KPI"),
-    ),
-    const Center(
-      child: Text("Other"),
-    ),
+  void onRefresh() async{
+    // monitor network fetch
+    getCheckInStatus();
+    getDashboardData();
+    // if failed,use refreshFailed()
+    refreshController.refreshCompleted();
+  }
 
-  ];
+  void onLoading() async{
+    // monitor network fetch
+    getCheckInStatus();
+    getDashboardData();
+    // if failed,use loadFailed(),if no data return,use LoadNodata()
+
+    refreshController.loadComplete();
+  }
 
   _changeTab(int index) {
     setState(() {
@@ -326,25 +334,31 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            InkWell(
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const SettingScreenNew()));
-              },
-              child: SvgPicture.asset(
-                'assets/icons/menu_ic.svg',
-              ),
-            ),
-            const SizedBox(
-              width: 15,
-            ),
-            Column(
+            Row(
               children: [
-                Text("Welcome $userName",style: const TextStyle(color:AppColors.white,fontSize: 12,fontWeight: FontWeight.w400),),
-                Text(DateFormat.yMMMd().format(DateTime.now()),style:const TextStyle(fontSize: 12,fontWeight: FontWeight.w400),),
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const SettingScreenNew()));
+                  },
+                  child: SvgPicture.asset(
+                    'assets/icons/menu_ic.svg',
+                  ),
+                ),
+                const SizedBox(
+                  width: 15,
+                ),
+                Column(
+                  children: [
+                    Text("Welcome $userName",style: const TextStyle(color:AppColors.white,fontSize: 12,fontWeight: FontWeight.w400),),
+                    Text(DateFormat.yMMMd().format(DateTime.now()),style:const TextStyle(fontSize: 12,fontWeight: FontWeight.w400),),
+                  ],
+                )
               ],
-            )
+            ),
+            const Text("Version:1.19",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400),)
           ],
         ),
       ),
@@ -363,10 +377,10 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
             BottomNavigationBarItem(
                 icon: ImageIcon(
                     AssetImage("assets/myicons/my_kpi_white_icon.png")),
-                label: "My KPIs"),
+                label: "KPIs"),
             BottomNavigationBarItem(icon: ImageIcon(
                 AssetImage("assets/myicons/my_team_kpi_white_icon.png")),
-                label: "My Team KPIs"),
+                label: "Team KPIs"),
             BottomNavigationBarItem(icon: ImageIcon(
                 AssetImage("assets/myicons/other_white_icon.png")),
                 label: "Other"),
@@ -406,221 +420,515 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
           );
           return shouldPop!;
         },
-        child: IgnorePointer(
-          ignoring: isLoading2,
-          child: HeaderBackgroundNew(
-              childWidgets: [
-            Expanded(child: isLoading1 || isLoading3
-                ? const Center(
-              child: CircularProgressIndicator(
-                color: AppColors.primaryColor,
-              ),
-            )
-                : isError
-                ? ErrorTextAndButton(
-                onTap: () {
-                  // getIpcLocations();
-                  getCheckInStatus();
-                  getDashboardData();
-                },
-                errorText: errorText1)
-                : Stack(
-                children: [
-                    Container(
-                      decoration: const BoxDecoration(
-                          color: AppColors.white
-                      ),
-                      width: MediaQuery.of(context).size.width,
-                      child: Column(
-                        children: [
-                          if(_selectedTab == 0)
-                          Expanded(
-                            child: SingleChildScrollView(
-                              physics:const NeverScrollableScrollPhysics(),
-                              child: ContainerBackground(
-                                childWidget: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // const Text("My KPIs",style: TextStyle(fontSize: 13,fontWeight: FontWeight.w500,color: AppColors.primaryColor),),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      children: [
-                                        CircularPercentIndicatorWidget(
-                                            title: "JPC",
-                                            imageStringIcon: "",
-                                            percentColor: AppColors.graphPurple,
-                                            percentText: dashboardResponseData.data![0].mykpi!.totalJpc!/100),
-                                        Expanded(
-                                          child: HalfScreenEfficiency(percentValue: dashboardResponseData.data![0].mykpi!.totalEffeciency!))
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                            child: Column(
-                                              children: [
-                                                Card(
-                                                  child: Column(
-                                                    children: [
-                                                      const Text("TMRs"),
-                                                      ColumnGraphWidget(
-                                                        firstColor: AppColors.graphPurple,
-                                                        firstChartData: [ChartData("Covered", dashboardResponseData.data![0].mykpi!.totalPlanned!.toDouble())],
-                                                        secondColor: AppColors.graphLightPurple,
-                                                        secondChartData: [ChartData("Covered", dashboardResponseData.data![0].mykpi!.planned!.toDouble())],
-                                                      ),
-                                                      const GraphDetailsWidget(
-                                                        firstTitle: "Covered",
-                                                        firstColor: AppColors.graphPurple,
-                                                        secondTitle: "Planned",
-                                                        secondColor: AppColors.graphLightPurple,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                TimeGauge(
-                                                  timeGauge: dashboardResponseData.data![0].mykpi!.plannedTime!,
-                                                )
-                                              ],
-                                            )),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Expanded(
-                                            child: Column(
-                                          children: [
-                                            Card(
+        child: SmartRefresher(
+          enablePullDown: true,
+          header: const WaterDropHeader(
+            waterDropColor: AppColors.primaryColor,
+            complete: Row(crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.center,children: [
+              Icon(Icons.check),Text(" Success")
+            ],),
+          ),
+          controller: refreshController,
+          onRefresh: onRefresh,
+          onLoading: onLoading,
+          child: IgnorePointer(
+            ignoring: isLoading2,
+            child: HeaderBackgroundNew(
+                childWidgets: [
+              Expanded(child: isLoading1 || isLoading3
+                  ? const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                ),
+              )
+                  : isError
+                  ? ErrorTextAndButton(
+                  onTap: () {
+                    // getIpcLocations();
+                    getCheckInStatus();
+                    getDashboardData();
+                  },
+                  errorText: errorText1)
+                  : Stack(
+                  children: [
+                      Container(
+                        decoration: const BoxDecoration(
+                            color: AppColors.white
+                        ),
+                        width: MediaQuery.of(context).size.width,
+                        child: Column(
+                          children: [
+                            if(_selectedTab == 0)
+                            Expanded(
+                              child: SingleChildScrollView(
+                                physics:const NeverScrollableScrollPhysics(),
+                                child: ContainerBackground(
+                                  childWidget: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      // const Text("My KPIs",style: TextStyle(fontSize: 13,fontWeight: FontWeight.w500,color: AppColors.primaryColor),),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          CircularPercentIndicatorWidget(
+                                              title: "JPC",
+                                              imageStringIcon: "",
+                                              percentColor: AppColors.graphPurple,
+                                              percentText: dashboardResponseData.data![0].mykpi!.totalJpc!/100),
+                                          Expanded(
+                                            child: HalfScreenEfficiency(percentValue: dashboardResponseData.data![0].mykpi!.totalEffeciency!))
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Expanded(
                                               child: Column(
                                                 children: [
-                                                  const Text("Stores"),
-                                                  ColumnGraphWidget(
-                                                    firstColor: AppColors.graphPurple,
-                                                    firstChartData: [ChartData("Covered", dashboardResponseData.data![0].mykpi!.totalCoverage!.toDouble())],
-                                                    secondColor: AppColors.graphLightPurple,
-                                                    secondChartData: [ChartData("Covered", dashboardResponseData.data![0].mykpi!.special!.toDouble())],
+                                                  Card(
+                                                    child: Column(
+                                                      children: [
+                                                        const Text("TMRs"),
+                                                        ColumnGraphWidget(
+                                                          firstColor: AppColors.graphPurple,
+                                                          firstChartData: [ChartData("Covered", dashboardResponseData.data![0].mykpi!.totalPlanned!)],
+                                                          secondColor: AppColors.graphLightPurple,
+                                                          secondChartData: [ChartData("Covered", dashboardResponseData.data![0].mykpi!.planned!)],
+                                                        ),
+                                                        const GraphDetailsWidget(
+                                                          firstTitle: "Covered",
+                                                          firstColor: AppColors.graphPurple,
+                                                          secondTitle: "Planned",
+                                                          secondColor: AppColors.graphLightPurple,
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
-                                                  const GraphDetailsWidget(
-                                                    firstTitle: "Total",
-                                                    firstColor: AppColors.graphPurple,
-                                                    secondTitle: "Special",
-                                                    secondColor: AppColors.graphLightPurple,
+                                                  TimeGauge(
+                                                    timeGauge: dashboardResponseData.data![0].mykpi!.plannedTime!,
+                                                    timeValue: dashboardResponseData.data![0].myKpiHr!.plannedHours!,
+                                                  )
+                                                ],
+                                              )),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          Expanded(
+                                              child: Column(
+                                            children: [
+                                              Card(
+                                                child: Column(
+                                                  children: [
+                                                    const Text("Stores"),
+                                                    SizedBox(
+                                                      height: MediaQuery.of(context).size.height/7,
+                                                      child: SfCircularChart(
+                                                        palette: const [AppColors.graphLightPurple,AppColors.graphPurple],
+                                                          series: <CircularSeries>[
+                                                            DoughnutSeries<ChartData, String>(
+                                                                dataSource: [ChartData("CheckIn", dashboardResponseData.data![0].mykpi!.special!),ChartData("CheckIn", dashboardResponseData.data![0].mykpi!.totalPlanned!)],
+                                                                xValueMapper: (ChartData data, _) => data.x,
+                                                                yValueMapper: (ChartData data, _) => data.y,
+
+                                                                dataLabelSettings: const DataLabelSettings(
+                                                                  isVisible: true,
+                                                                 showCumulativeValues: true,
+                                                                 labelPosition: ChartDataLabelPosition.inside,
+                                                                  color: AppColors.graphLightPurple
+                                                                )
+                                                                // Starting angle of doughnut
+                                                            ),
+                                                          ]
+                                                      ),
+                                                    ),
+                                                    const GraphDetailsWidget(
+                                                      firstTitle: "Planned",
+                                                      firstColor: AppColors.graphPurple,
+                                                      secondTitle: "Special",
+                                                      secondColor: AppColors.graphLightPurple,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              TimeGauge(
+                                                timeGauge: dashboardResponseData.data![0].mykpi!.specialTime!,
+                                                timeValue: dashboardResponseData.data![0].myKpiHr!.specialHours!,
+                                              ),
+                                            ],
+                                          )),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          Expanded(
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                children: [
+                                                  Card(
+                                                    child: Column(
+                                                      children: [
+                                                        const Text("Activities"),
+                                                        ColumnGraphWidget(
+                                                          firstColor: AppColors.graphPurple,
+                                                          firstChartData: [ChartData("CheckIn", dashboardResponseData.data![0].mykpi!.checkins!)],
+                                                          secondColor: AppColors.graphLightPurple,
+                                                          secondChartData: [],
+                                                        ),
+                                                        const GraphDetailsWidget(
+                                                          firstTitle: "Check-ins",
+                                                          firstColor: AppColors.graphPurple,
+                                                          secondTitle: "",
+                                                          secondColor: AppColors.lightgray_2,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  TimeGauge(
+                                                    timeGauge: dashboardResponseData.data![0].mykpi!.checkinTime!,
+                                                    timeValue: dashboardResponseData.data![0].myKpiHr!.checkInHours!,
                                                   ),
                                                 ],
-                                              ),
-                                            ),
-                                            TimeGauge(
-                                              timeGauge: dashboardResponseData.data![0].mykpi!.specialTime!,
-                                            ),
-                                          ],
-                                        )),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Expanded(
+                                              )),
+                                        ],
+                                      ),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Expanded(
+                                            child: MainDashboardItemCard(
+                                                onTap: () {
+                                                  if (isCheckedIn) {
+                                                    showToastMessage(false,
+                                                        "Please check out first and try again");
+                                                  } else {
+                                                    Navigator.of(context).push(
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                            const MyJourneyPlanScreenNew()));
+                                                  }
+                                                },
+                                                imageUrl:
+                                                // "assets/dashboard/my_journey_plan.png",
+                                                "assets/myicons/jp.png",
+                                                cardName: "Jp"),
+                                          ),
+                                          Expanded(
+                                            child: MainDashboardItemCard(
+                                                onTap: () {
+                                                  if (isCheckedIn) {
+                                                    showToastMessage(false,
+                                                        "Please check out first and try again");
+                                                  } else {
+                                                    Navigator.of(context).push(
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                            const MyCoveragePlanScreenNew()));
+                                                  }
+                                                  // showToastMessage(false,"Coming Soon...");
+                                                },
+                                                imageUrl:
+                                                // "assets/dashboard/my_coverage.png"
+                                                "assets/myicons/coverage.png",
+                                                cardName: "Coverage"),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 5,),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Expanded(
                                             child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.start,
                                               children: [
-                                                Card(
-                                                  child: Column(
-                                                    children: [
-                                                      const Text("Activities"),
-                                                      ColumnGraphWidget(
-                                                        firstColor: AppColors.graphPurple,
-                                                        firstChartData: [ChartData("CheckIn", dashboardResponseData.data![0].mykpi!.totalCheckins!.toDouble())],
-                                                        secondColor: AppColors.graphLightPurple,
-                                                        secondChartData: [ChartData("CheckIn", dashboardResponseData.data![0].mykpi!.checkins!.toDouble())],
-                                                      ),
-                                                      const GraphDetailsWidget(
-                                                        firstTitle: "Total",
-                                                        firstColor: AppColors.graphPurple,
-                                                        secondTitle: "CheckIn",
-                                                        secondColor: AppColors.graphLightPurple,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                TimeGauge(
-                                                  timeGauge: dashboardResponseData.data![0].mykpi!.checkinTime!,
-                                                ),
+                                                Text(isCheckedIn
+                                                    ? checkInTime != ""
+                                                    ? DateFormat.jm()
+                                                    .format(DateTime.parse(checkInTime))
+                                                    : ""
+                                                    : ""),
+                                                CheckInButton(isCheckedIn: isCheckedIn, isLoading2: isLoading2, onTap: (){_getCurrentPosition(true);}),
                                               ],
-                                            )),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Expanded(
-                                          child: MainDashboardItemCard(
+                                            )
+
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              children: [
+                                                Text(!isCheckedIn
+                                                    ? checkOutTime != ""
+                                                    ? DateFormat.jm().format(
+                                                    DateTime.parse(checkOutTime))
+                                                    : ""
+                                                    : ""),
+                                                CheckOutButton(isCheckedIn: isCheckedIn, isLoading2: isLoading2, onTap: (){
+                                                  _getCurrentPosition(true);
+                                                }),
+                                              ],
+                                            )
+
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            if(_selectedTab == 1)
+                            Expanded(
+                              child: SingleChildScrollView(
+                                physics: const NeverScrollableScrollPhysics(),
+                                child: ContainerBackground(
+                                  childWidget: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      // const Text("My Team KPIs",style: TextStyle(fontSize: 13,fontWeight: FontWeight.w500,color: AppColors.primaryColor),),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: CircularPercentIndicatorWidget(
+                                          title: "Attendance",
+                                          imageStringIcon: "assets/myicons/attendance_graph_icon.png",
+                                          percentColor: AppColors.graphPurple,
+                                          percentText: dashboardResponseData.data![0].teamkpi!.totalUsers! == 0 ? 0.0 : double.parse((dashboardResponseData.data![0].teamkpi!.totalPresent!/dashboardResponseData.data![0].teamkpi!.totalUsers!).toString()))),
+                                          Expanded(
+                                            child: CircularPercentIndicatorWidget(
+                                                title: "JPC",
+                                                imageStringIcon: "assets/myicons/jpc_graph_icon.png",
+                                                percentColor: AppColors.graphPurple,
+                                                percentText: dashboardResponseData.data![0].teamkpi!.totalJpc!/100)
+                                          ),
+                                          Expanded(
+                                            child: CircularPercentIndicatorWidget(
+                                                title: "Productivity",
+                                                imageStringIcon: "assets/myicons/productivity_graph_icon.png",
+                                                percentColor: AppColors.graphPurple,
+                                                percentText:  dashboardResponseData.data![0].teamkpi!.totalProductivity!/100)
+                                          ),
+                                        ],
+                                      ),
+                                      FullEfficiencyBar(
+                                        percentValue: dashboardResponseData.data![0].teamkpi!.totalEffeciency!,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Expanded(child: MainDashboardItemCard(
                                               onTap: () {
                                                 if (isCheckedIn) {
-                                                  showToastMessage(false,
-                                                      "Please check out first and try again");
+                                                  showToastMessage(
+                                                      false, "Please check out first and try again");
                                                 } else {
-                                                  Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                          const MyJourneyPlanScreenNew()));
+                                                Navigator.of(context).push(MaterialPageRoute(
+                                                    builder: (context) => const TeamAttendence()));
                                                 }
+                                                // showToastMessage(false,"Coming Soon...");
+                                              },
+                                              imageUrl: "assets/myicons/attendance.png",
+                                              cardName: "Attendance"),),
+                                          Expanded(child:  MainDashboardItemCard(
+                                              onTap: () {
+                                                if (isCheckedIn) {
+                                                  showToastMessage(
+                                                      false, "Please check out first and try again");
+                                                } else {
+                                                  Navigator.of(context).push(MaterialPageRoute(
+                                                      builder: (context) =>
+                                                      const VisitHistory()));
+                                                }
+
+                                                // showToastMessage(false,"Coming Soon...");
                                               },
                                               imageUrl:
-                                              // "assets/dashboard/my_journey_plan.png",
-                                              "assets/myicons/jp.png",
-                                              cardName: "My Jp"),
-                                        ),
-                                        Expanded(
-                                          child: MainDashboardItemCard(
+                                              // "assets/dashboard/my_coverage.png"
+                                              "assets/myicons/visithistory.png",
+                                              cardName: "Visits History"),)
+                                        ],
+                                      ),
+
+                                      Row(
+                                        children: [
+                                          Expanded(child: MainDashboardItemCard(
                                               onTap: () {
                                                 if (isCheckedIn) {
-                                                  showToastMessage(false,
-                                                      "Please check out first and try again");
+                                                  showToastMessage(
+                                                      false, "Please check out first and try again");
                                                 } else {
                                                   Navigator.of(context).push(
                                                       MaterialPageRoute(
                                                           builder: (context) =>
-                                                          const MyCoveragePlanScreenNew()));
+                                                          const TeamKpiScreen()));
                                                 }
                                                 // showToastMessage(false,"Coming Soon...");
                                               },
                                               imageUrl:
                                               // "assets/dashboard/my_coverage.png"
-                                              "assets/myicons/coverage.png",
-                                              cardName: "My Coverage"),
+                                              "assets/myicons/teamkpi.png",
+                                              cardName: "KPIS"),),
+                                          Expanded(child: MainDashboardItemCard(
+                                              onTap: () {
+                                                if (isCheckedIn) {
+                                                  showToastMessage(
+                                                      false, "Please check out first and try again");
+                                                } else {
+                                                  Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                          const SpecialVisitScreen()));
+                                                }
+                                                // showToastMessage(false,"Coming Soon...");
+                                              },
+                                              imageUrl:
+                                              // "assets/dashboard/my_coverage.png"
+                                              "assets/myicons/specialvisit.png",
+                                              cardName: "Special Visits"),)
+                                        ],
+                                      ),
+
+                                      // InkWell(
+                                      //   onTap: () {
+                                      //     if (isCheckedIn) {
+                                      //       showToastMessage(false,
+                                      //           "Please check out first and try again");
+                                      //     } else {
+                                      //       Navigator.of(context).push(
+                                      //           MaterialPageRoute(
+                                      //               builder: (context) =>
+                                      //               const AttendenceHome()));
+                                      //     }
+                                      //     // showToastMessage(false,"Coming Soon...");
+                                      //   },
+                                      //   child: Card(
+                                      //     child: Container(
+                                      //       margin: const EdgeInsets.symmetric(vertical: 10),
+                                      //       padding: const EdgeInsets.all(5),
+                                      //       child: Row(
+                                      //         crossAxisAlignment: CrossAxisAlignment.center,
+                                      //         mainAxisAlignment: MainAxisAlignment.center,
+                                      //         children: [
+                                      //           Image.asset("assets/myicons/my_team_graph_icon.png",width: 23,height: 23,),
+                                      //           const SizedBox(width:15),
+                                      //           const Text("My Team",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400),)
+                                      //         ],
+                                      //       ),
+                                      //     ),
+                                      //   ),
+                                      // )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            if(_selectedTab == 2)
+                            Expanded(
+                              child: ContainerBackground(
+                                childWidget: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: MainDashboardItemCard(
+                                              onTap: () {
+                                                if (isCheckedIn) {
+                                                  showToastMessage(false,
+                                                      "Please check out first and try again");
+                                                } else {
+                                                  Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                          const KnowledgeShare()));
+                                                }
+                                                // showToastMessage(false,"Coming Soon...");
+                                              },
+                                              imageUrl:
+                                              // "assets/dashboard/my_coverage.png"
+                                              "assets/myicons/knowledge.png",
+                                              cardName: "Knowledge Share"),
+                                        ),
+                                        Expanded(
+                                          child: MainDashboardItemCard(
+                                              onTap: () {
+                                                if (isCheckedIn) {
+                                                  showToastMessage(false,
+                                                      "Please check out first and try again");
+                                                } else {
+                                                  Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                          const ClientScreen()));
+                                                }
+                                                // showToastMessage(false,"Coming Soon...");
+                                              },
+                                              imageUrl:
+                                              // "assets/dashboard/my_coverage.png"
+                                              "assets/myicons/client.png",
+                                              cardName: "Clients"),
                                         ),
                                       ],
                                     ),
                                     const SizedBox(height: 5,),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                                       children: [
                                         Expanded(
-                                          child: Column(
-                                            children: [
-                                              Text(isCheckedIn
-                                                  ? checkInTime != ""
-                                                  ? DateFormat.jm()
-                                                  .format(DateTime.parse(checkInTime))
-                                                  : ""
-                                                  : ""),
-                                              CheckInButton(isCheckedIn: isCheckedIn, isLoading2: isLoading2, onTap: (){_getCurrentPosition(true);}),
-                                            ],
-                                          )
-
+                                          child: MainDashboardItemCard(
+                                              onTap: () {
+                                                if (isCheckedIn) {
+                                                  showToastMessage(false,
+                                                      "Please check out first and try again");
+                                                } else {
+                                                  Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                          const RecruitSuggestScreen()));
+                                                }
+                                                // showToastMessage(false,"Coming Soon...");
+                                              },
+                                              imageUrl:
+                                              // "assets/dashboard/my_coverage.png"
+                                              "assets/myicons/recruit_suggest.png",
+                                              cardName: "Recruit Suggest"),
                                         ),
                                         Expanded(
-                                          child: Column(
-                                            children: [
-                                              Text(!isCheckedIn
-                                                  ? checkOutTime != ""
-                                                  ? DateFormat.jm().format(
-                                                  DateTime.parse(checkOutTime))
-                                                  : ""
-                                                  : ""),
-                                              CheckOutButton(isCheckedIn: isCheckedIn, isLoading2: isLoading2, onTap: (){
-                                                _getCurrentPosition(true);
-                                              }),
-                                            ],
-                                          )
-
+                                          child: MainDashboardItemCard(
+                                              onTap: () {
+                                                if (isCheckedIn) {
+                                                  showToastMessage(false,
+                                                      "Please check out first and try again");
+                                                } else {
+                                                  Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                          const BusinessTripsScreen()));
+                                                }
+                                                // showToastMessage(false,"Coming Soon...");
+                                              },
+                                              imageUrl:
+                                              // "assets/dashboard/my_coverage.png"
+                                              "assets/myicons/business_trip.png",
+                                              cardName: "Business Trips"),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 5,),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: MainDashboardItemCard(
+                                              onTap: () {
+                                                if (isCheckedIn) {
+                                                  showToastMessage(false,
+                                                      "Please check out first and try again");
+                                                } else {
+                                                  Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                          const TimeMotionScreen()));
+                                                }
+                                                // showToastMessage(false,"Coming Soon...");
+                                              },
+                                              imageUrl:
+                                              // "assets/dashboard/my_coverage.png"
+                                              "assets/myicons/time_motion.png",
+                                              cardName: "Time Motion Study"),
                                         ),
                                       ],
                                     ),
@@ -628,277 +936,19 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                 ),
                               ),
                             ),
-                          ),
-                          if(_selectedTab == 1)
-                          Expanded(
-                            child: SingleChildScrollView(
-                              physics: const NeverScrollableScrollPhysics(),
-                              child: ContainerBackground(
-                                childWidget: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // const Text("My Team KPIs",style: TextStyle(fontSize: 13,fontWeight: FontWeight.w500,color: AppColors.primaryColor),),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: CircularPercentIndicatorWidget(
-                                        title: "Attendance",
-                                        imageStringIcon: "assets/myicons/attendance_graph_icon.png",
-                                        percentColor: AppColors.graphPurple,
-                                        percentText: dashboardResponseData.data![0].teamkpi!.totalUsers! == 0 ? 0.0 : double.parse((dashboardResponseData.data![0].teamkpi!.totalPresent!/dashboardResponseData.data![0].teamkpi!.totalUsers!).toString()))),
-                                        Expanded(
-                                          child: CircularPercentIndicatorWidget(
-                                              title: "JPC",
-                                              imageStringIcon: "assets/myicons/jpc_graph_icon.png",
-                                              percentColor: AppColors.graphPurple,
-                                              percentText: dashboardResponseData.data![0].teamkpi!.totalJpc!/100)
-                                        ),
-                                        Expanded(
-                                          child: CircularPercentIndicatorWidget(
-                                              title: "Productivity",
-                                              imageStringIcon: "assets/myicons/productivity_graph_icon.png",
-                                              percentColor: AppColors.graphPurple,
-                                              percentText:  dashboardResponseData.data![0].teamkpi!.totalProductivity!/100)
-                                        ),
-                                      ],
-                                    ),
-                                    FullEfficiencyBar(
-                                      percentValue: dashboardResponseData.data![0].teamkpi!.totalEffeciency!,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Expanded(child: MainDashboardItemCard(
-                                            onTap: () {
-                                              if (isCheckedIn) {
-                                                showToastMessage(
-                                                    false, "Please check out first and try again");
-                                              } else {
-                                              Navigator.of(context).push(MaterialPageRoute(
-                                                  builder: (context) => const TeamAttendence()));
-                                              }
-                                              // showToastMessage(false,"Coming Soon...");
-                                            },
-                                            imageUrl: "assets/myicons/attendance.png",
-                                            cardName: "Team Attendance"),),
-                                        Expanded(child:  MainDashboardItemCard(
-                                            onTap: () {
-                                              if (isCheckedIn) {
-                                                showToastMessage(
-                                                    false, "Please check out first and try again");
-                                              } else {
-                                                Navigator.of(context).push(MaterialPageRoute(
-                                                    builder: (context) =>
-                                                    const VisitHistory()));
-                                              }
-
-                                              // showToastMessage(false,"Coming Soon...");
-                                            },
-                                            imageUrl:
-                                            // "assets/dashboard/my_coverage.png"
-                                            "assets/myicons/visithistory.png",
-                                            cardName: "Visits History"),)
-                                      ],
-                                    ),
-
-                                    Row(
-                                      children: [
-                                        Expanded(child: MainDashboardItemCard(
-                                            onTap: () {
-                                              if (isCheckedIn) {
-                                                showToastMessage(
-                                                    false, "Please check out first and try again");
-                                              } else {
-                                                Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                        const TeamKpiScreen()));
-                                              }
-                                              // showToastMessage(false,"Coming Soon...");
-                                            },
-                                            imageUrl:
-                                            // "assets/dashboard/my_coverage.png"
-                                            "assets/myicons/teamkpi.png",
-                                            cardName: "Team KPIS"),),
-                                        Expanded(child: MainDashboardItemCard(
-                                            onTap: () {
-                                              if (isCheckedIn) {
-                                                showToastMessage(
-                                                    false, "Please check out first and try again");
-                                              } else {
-                                                Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                        const SpecialVisitScreen()));
-                                              }
-                                              // showToastMessage(false,"Coming Soon...");
-                                            },
-                                            imageUrl:
-                                            // "assets/dashboard/my_coverage.png"
-                                            "assets/myicons/specialvisit.png",
-                                            cardName: "Special Visits"),)
-                                      ],
-                                    ),
-
-                                    // InkWell(
-                                    //   onTap: () {
-                                    //     if (isCheckedIn) {
-                                    //       showToastMessage(false,
-                                    //           "Please check out first and try again");
-                                    //     } else {
-                                    //       Navigator.of(context).push(
-                                    //           MaterialPageRoute(
-                                    //               builder: (context) =>
-                                    //               const AttendenceHome()));
-                                    //     }
-                                    //     // showToastMessage(false,"Coming Soon...");
-                                    //   },
-                                    //   child: Card(
-                                    //     child: Container(
-                                    //       margin: const EdgeInsets.symmetric(vertical: 10),
-                                    //       padding: const EdgeInsets.all(5),
-                                    //       child: Row(
-                                    //         crossAxisAlignment: CrossAxisAlignment.center,
-                                    //         mainAxisAlignment: MainAxisAlignment.center,
-                                    //         children: [
-                                    //           Image.asset("assets/myicons/my_team_graph_icon.png",width: 23,height: 23,),
-                                    //           const SizedBox(width:15),
-                                    //           const Text("My Team",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400),)
-                                    //         ],
-                                    //       ),
-                                    //     ),
-                                    //   ),
-                                    // )
-                                  ],
+                            if (isLoading2)
+                              const Center(
+                                child: CircularProgressIndicator(
+                                  color: AppColors.primaryColor,
                                 ),
-                              ),
-                            ),
-                          ),
-                          if(_selectedTab == 2)
-                          Expanded(
-                            child: ContainerBackground(
-                              childWidget: GridView(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10),
-                                shrinkWrap: true,
-                                scrollDirection: Axis.vertical,
-                                gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  childAspectRatio: (163.5 / 135),
-                                  crossAxisCount: 2,
-                                ),
-                                children: [
-                                  MainDashboardItemCard(
-                                      onTap: () {
-                                        if (isCheckedIn) {
-                                          showToastMessage(false,
-                                              "Please check out first and try again");
-                                        } else {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                  const KnowledgeShare()));
-                                        }
-                                        // showToastMessage(false,"Coming Soon...");
-                                      },
-                                      imageUrl:
-                                      // "assets/dashboard/my_coverage.png"
-                                      "assets/myicons/knowledge.png",
-                                      cardName: "Knowledge Share"),
-                                  MainDashboardItemCard(
-                                      onTap: () {
-                                        if (isCheckedIn) {
-                                          showToastMessage(false,
-                                              "Please check out first and try again");
-                                        } else {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                  const ClientScreen()));
-                                        }
-                                        // showToastMessage(false,"Coming Soon...");
-                                      },
-                                      imageUrl:
-                                      // "assets/dashboard/my_coverage.png"
-                                      "assets/myicons/client.png",
-                                      cardName: "Clients"),
-                                  MainDashboardItemCard(
-                                      onTap: () {
-                                        if (isCheckedIn) {
-                                          showToastMessage(false,
-                                              "Please check out first and try again");
-                                        } else {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                  const RecruitSuggestScreen()));
-                                        }
-                                        // showToastMessage(false,"Coming Soon...");
-                                      },
-                                      imageUrl:
-                                      // "assets/dashboard/my_coverage.png"
-                                      "assets/myicons/recruit_suggest.png",
-                                      cardName: "Recruit Suggest"),
-                                  MainDashboardItemCard(
-                                      onTap: () {
-                                        if (isCheckedIn) {
-                                          showToastMessage(false,
-                                              "Please check out first and try again");
-                                        } else {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                  const BusinessTripsScreen()));
-                                        }
-                                        // showToastMessage(false,"Coming Soon...");
-                                      },
-                                      imageUrl:
-                                      // "assets/dashboard/my_coverage.png"
-                                      "assets/myicons/business_trip.png",
-                                      cardName: "Business Trips"),
-                                  MainDashboardItemCard(
-                                      onTap: () {
-                                        if (isCheckedIn) {
-                                          showToastMessage(false,
-                                              "Please check out first and try again");
-                                        } else {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                  const TimeMotionScreen()));
-                                        }
-                                        // showToastMessage(false,"Coming Soon...");
-                                      },
-                                      imageUrl:
-                                      // "assets/dashboard/my_coverage.png"
-                                      "assets/myicons/time_motion.png",
-                                      cardName: "Time Motion Study"),
-
-
-                                  // MainDashboardItemCard(onTap:(){
-                                  //
-                                  // },imageUrl:"assets/dashboard/my_team.png", cardName:"My Team"),
-                                  // MainDashboardItemCard(onTap:(){
-                                  //   showToastMessage(false,"Coming Soon...");
-                                  // },imageUrl:"assets/dashboard/knowledge_share.png",cardName: "Knowledge Share"),
-                                  // MainDashboardItemCard(onTap:(){
-                                  //   showToastMessage(false,"Coming Soon...");
-                                  // },imageUrl:"assets/dashboard/clients.png",cardName: "My Clients"),
-                                ],
-                              ),
-                            ),
-                          ),
-                          if (isLoading2)
-                            const Center(
-                              child: CircularProgressIndicator(
-                                color: AppColors.primaryColor,
-                              ),
-                            )
-                        ],
+                              )
+                          ],
+                        ),
                       ),
-                    ),
-                ],
-            ))
-          ])
+                  ],
+              ))
+            ])
+          ),
         ),
       ),
     );

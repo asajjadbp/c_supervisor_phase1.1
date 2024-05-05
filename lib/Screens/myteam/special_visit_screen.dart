@@ -101,134 +101,134 @@ class _SpecialVisitScreenState extends State<SpecialVisitScreen> {
     });
   }
 
-  getTmrUserList(bool loader) {
-
-    setState(() {
-      isLoading = loader;
-    });
-
-    HTTPManager()
-        .tmrUserList(JourneyPlanRequestModel(
-      elId: userId,))
-        .then((value) {
-      setState(() {
-
-        tmrUserList = value;
-        isLoading = false;
-        isError = false;
-      });
-
-    }).catchError((e) {
-      setState(() {
-        isError = true;
-        errorText = e.toString();
-        isLoading = false;
-      });
-    });
-  }
-
-  getClientList(bool loader) {
-
-    setState(() {
-      isLoading = loader;
-    });
-
-    HTTPManager()
-        .clientList(JourneyPlanRequestModel(
-      elId: userId,))
-        .then((value) {
-      setState(() {
-
-        clientList = value;
-        isLoading = false;
-        isError = false;
-      });
-
-    }).catchError((e) {
-      setState(() {
-        isError = true;
-        errorText = e.toString();
-        isLoading = false;
-      });
-    });
-  }
-
-  getStoresList(bool loader) {
-
-    setState(() {
-      isLoading = loader;
-    });
-
-    HTTPManager()
-        .storeList(JourneyPlanRequestModel(
-      elId: userId,))
-        .then((value) {
-      setState(() {
-
-        storesList = value;
-        isLoading = false;
-        isError = false;
-      });
-
-    }).catchError((e) {
-      setState(() {
-        isError = true;
-        errorText = e.toString();
-        isLoading = false;
-      });
-    });
-  }
-
-  getCompaniesList(bool loader) {
-
-    setState(() {
-      isLoading = loader;
-    });
-
-    HTTPManager()
-        .companyList(JourneyPlanRequestModel(
-      elId: userId,))
-        .then((value) {
-      setState(() {
-
-        companiesList = value;
-        isLoading = false;
-        isError = false;
-      });
-
-    }).catchError((e) {
-      setState(() {
-        isError = true;
-        errorText = e.toString();
-        isLoading = false;
-      });
-    });
-  }
-
-  getReasonList(bool loader) {
-
-    setState(() {
-      isLoading = loader;
-    });
-
-    HTTPManager()
-        .reasonList()
-        .then((value) {
-      setState(() {
-
-        reasonsList = value;
-        isLoading = false;
-        isError = false;
-      });
-
-    }).catchError((e) {
-      setState(() {
-        isError = true;
-        errorText = e.toString();
-        isLoading = false;
-      });
-    });
-  }
+  // getTmrUserList(bool loader) {
+  //
+  //   setState(() {
+  //     isLoading = loader;
+  //   });
+  //
+  //   HTTPManager()
+  //       .tmrUserList(JourneyPlanRequestModel(
+  //     elId: userId,))
+  //       .then((value) {
+  //     setState(() {
+  //
+  //       tmrUserList = value;
+  //       isLoading = false;
+  //       isError = false;
+  //     });
+  //
+  //   }).catchError((e) {
+  //     setState(() {
+  //       isError = true;
+  //       errorText = e.toString();
+  //       isLoading = false;
+  //     });
+  //   });
+  // }
+  //
+  // getClientList(bool loader) {
+  //
+  //   setState(() {
+  //     isLoading = loader;
+  //   });
+  //
+  //   HTTPManager()
+  //       .clientList(JourneyPlanRequestModel(
+  //     elId: userId,))
+  //       .then((value) {
+  //     setState(() {
+  //
+  //       clientList = value;
+  //       isLoading = false;
+  //       isError = false;
+  //     });
+  //
+  //   }).catchError((e) {
+  //     setState(() {
+  //       isError = true;
+  //       errorText = e.toString();
+  //       isLoading = false;
+  //     });
+  //   });
+  // }
+  //
+  // getStoresList(bool loader) {
+  //
+  //   setState(() {
+  //     isLoading = loader;
+  //   });
+  //
+  //   HTTPManager()
+  //       .storeList(JourneyPlanRequestModel(
+  //     elId: userId,))
+  //       .then((value) {
+  //     setState(() {
+  //
+  //       storesList = value;
+  //       isLoading = false;
+  //       isError = false;
+  //     });
+  //
+  //   }).catchError((e) {
+  //     setState(() {
+  //       isError = true;
+  //       errorText = e.toString();
+  //       isLoading = false;
+  //     });
+  //   });
+  // }
+  //
+  // getCompaniesList(bool loader) {
+  //
+  //   setState(() {
+  //     isLoading = loader;
+  //   });
+  //
+  //   HTTPManager()
+  //       .companyList(JourneyPlanRequestModel(
+  //     elId: userId,))
+  //       .then((value) {
+  //     setState(() {
+  //
+  //       companiesList = value;
+  //       isLoading = false;
+  //       isError = false;
+  //     });
+  //
+  //   }).catchError((e) {
+  //     setState(() {
+  //       isError = true;
+  //       errorText = e.toString();
+  //       isLoading = false;
+  //     });
+  //   });
+  // }
+  //
+  // getReasonList(bool loader) {
+  //
+  //   setState(() {
+  //     isLoading = loader;
+  //   });
+  //
+  //   HTTPManager()
+  //       .reasonList()
+  //       .then((value) {
+  //     setState(() {
+  //
+  //       reasonsList = value;
+  //       isLoading = false;
+  //       isError = false;
+  //     });
+  //
+  //   }).catchError((e) {
+  //     setState(() {
+  //       isError = true;
+  //       errorText = e.toString();
+  //       isLoading = false;
+  //     });
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

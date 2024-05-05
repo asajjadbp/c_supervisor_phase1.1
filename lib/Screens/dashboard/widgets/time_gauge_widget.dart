@@ -4,9 +4,10 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../../utills/app_colors_new.dart';
 
 class TimeGauge extends StatelessWidget {
-  const TimeGauge({super.key,required this.timeGauge});
+  const TimeGauge({super.key,required this.timeGauge,required this.timeValue});
 
   final int timeGauge;
+  final String timeValue;
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +19,12 @@ class TimeGauge extends StatelessWidget {
           animationDuration: 2500,
           axes: <RadialAxis>[RadialAxis(
               showTicks: false,
+              maximum: 480,
               annotations: <GaugeAnnotation>[
                 GaugeAnnotation(widget: Padding(padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
                   child: Container(
                     alignment: Alignment.center,
-                    child:  Text(timeGauge > 59 ? "${(timeGauge/60).toStringAsFixed(2)} hr" : "$timeGauge min"),
+                    child:  Text(timeValue),
                   ),), angle: 270, positionFactor: 0.1)
               ],
               showLabels: false,

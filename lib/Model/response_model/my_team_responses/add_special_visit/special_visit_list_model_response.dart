@@ -62,19 +62,19 @@ class SpecialVisitListItem {
         this.storeId});
 
   SpecialVisitListItem.fromJson(Map<String, dynamic> json) {
-    companyName = json['company_name'];
+    companyName = json['company_name'].toString();
     id = json['id'].toString();
     companyId = json['company_id'];
-    region = json['region'];
-    store = json['store'];
-    city = json['city'];
-    chain = json['chain'];
-    channel = json['channel'];
-    visitDate = json['visit-date'];
-    visitTime = json['visit-time'];
-    addedBy = json['added-by'];
-    reason = json['reason'];
-    tmr = json['tmr'];
+    region = json['region'].toString();
+    store = json['store'].toString();
+    city = json['city'].toString();
+    chain = json['chain'].toString();
+    channel = json['channel'].toString();
+    visitDate = json['visit-date'].toString();
+    visitTime = json['visit-time'].toString();
+    addedBy = json['added-by'].toString();
+    reason = json['reason'].toString();
+    tmr = json['tmr'].toString();
     tmrId = json['tmr_id'];
     storeId = json['store_id'];
   }

@@ -10,6 +10,7 @@ class DeviceInfoRequestModel {
   String? simNumber;
   String? mobileDataUsage;
   String? wifiDataUsage;
+  String? latLong;
 
   DeviceInfoRequestModel({
     this.elId,
@@ -23,6 +24,7 @@ class DeviceInfoRequestModel {
     this.simNumber,
     this.mobileDataUsage,
     this.wifiDataUsage,
+    this.latLong,
   });
 
   DeviceInfoRequestModel.fromJson(Map<String, dynamic> json) {
@@ -37,6 +39,7 @@ class DeviceInfoRequestModel {
     simNumber = json['sim_number'];
     mobileDataUsage = json['mobile_data_usage'];
     wifiDataUsage = json['wifi_data_usage'];
+    latLong = json['login_gps'];
   }
 
   Map<String, dynamic> toJson() {
@@ -52,6 +55,7 @@ class DeviceInfoRequestModel {
     data['sim_number'] = simNumber;
     data['mobile_data_usage'] = mobileDataUsage;
     data['wifi_data_usage'] = wifiDataUsage;
+    data['login_gps'] = latLong;
     return data;
   }
 }

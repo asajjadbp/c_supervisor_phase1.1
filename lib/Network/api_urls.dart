@@ -48,8 +48,14 @@ class ApplicationURLs {
   //Clients LIST
   static const API_CLIENT_LIST = "elClients";
 
+  //Chain LIST
+  static const API_CHAIN_LIST = "getChains";
+
   //Stores LIST
   static const API_STORES_LIST = "elStores";
+
+  //City LIST
+  static const API_CITIES_LIST = "elCities";
 
   //Companies LIST
   static const API_COMPANIES_LIST = "elCompanies";

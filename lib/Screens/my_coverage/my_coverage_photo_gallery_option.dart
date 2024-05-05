@@ -148,7 +148,7 @@ class _MyCoveragePhotoGalleryOptionsState
 
     HTTPManager()
         .tmrUserList(JourneyPlanRequestModel(
-        elId: userId,))
+        elId: userId))
         .then((value) {
       setState(() {
         

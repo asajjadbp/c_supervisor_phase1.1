@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:c_supervisor/Model/request_model/business_trips.dart';
+import 'package:c_supervisor/Model/response_model/my_team_responses/add_special_visit/store_list_model_response.dart';
 import 'package:c_supervisor/Network/http_manager.dart';
 import 'package:c_supervisor/Screens/widgets/toast_message_show.dart';
 import 'package:flutter/material.dart';
@@ -32,11 +33,11 @@ class AddBusinessTripScreen extends StatefulWidget {
 
 class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
 
-  late CommonListItem initialFromCityItem;
-  late CommonListItem initialToCityItem;
+  late StoresListItem initialFromCityItem;
+  late StoresListItem initialToCityItem;
 
-  List<CommonListItem> fromCityCommonListModel = <CommonListItem>[];
-  List<CommonListItem> toCityCommonListModel = <CommonListItem>[];
+  List<StoresListItem> fromCityCommonListModel = <StoresListItem>[];
+  List<StoresListItem> toCityCommonListModel = <StoresListItem>[];
 
   final GlobalKey<FormState> _formKey = GlobalKey();
 
@@ -52,8 +53,8 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
 
   List<File> files = [];
 
-  bool isLoading1 = false;
-  bool isLoading2 = false;
+  bool isLoading1 = true;
+  bool isLoading2 = true;
 
   bool isLoading = false;
   bool isError = false;
@@ -85,13 +86,15 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
     });
 
     if(widget.isEdit) {
-
-      isLoading1 = true;
-      isLoading2 = true;
-
-      getFromCityList(true, "city", "query", widget.businessTrips.fromCity!.trim());
+      getFromCityList(
+          true, "city", "query", widget.businessTrips.fromCity!.trim());
 
       getToCityList(true, "city", "query", widget.businessTrips.toCity!.trim());
+    } else {
+      getFromCityList(
+          true, "city", "query", "");
+
+      getToCityList(true, "city", "query", "");
     }
   }
 
@@ -101,17 +104,13 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
       isLoading2 = loader;
     });
 
-    HTTPManager().commonApiCallForList(CommonApiCallRequestModel(
-      searchBy: searchBy,
-      termTerm: termTerm,
-      termType: termType,
-    ))
-        .then((value) {
+    HTTPManager().citiesList().then((value) {
       setState(() {
-        fromCityCommonListModel = value.results!;
+        fromCityCommonListModel = value.data!;
+        initialFromCityItem = fromCityCommonListModel[0];
         if(widget.isEdit) {
           for(int i = 0; i < fromCityCommonListModel.length; i++ ) {
-            if(widget.businessTrips.fromCity!.trim() == fromCityCommonListModel[i].text!.trim()) {
+            if(widget.businessTrips.fromCity!.trim() == fromCityCommonListModel[i].name!.trim()) {
               initialFromCityItem = fromCityCommonListModel[i];
             }
           }
@@ -137,17 +136,13 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
       isLoading1 = loader;
     });
 
-    HTTPManager().commonApiCallForList(CommonApiCallRequestModel(
-      searchBy: searchBy,
-      termTerm: termTerm,
-      termType: termType,
-    ))
-        .then((value) {
+    HTTPManager().citiesList().then((value) {
       setState(() {
-        toCityCommonListModel = value.results!;
+        toCityCommonListModel = value.data!;
+        initialToCityItem = toCityCommonListModel[0];
         if(widget.isEdit) {
           for(int i = 0; i < toCityCommonListModel.length; i++ ) {
-            if(widget.businessTrips.toCity!.trim() == toCityCommonListModel[i].text!.trim()) {
+            if(widget.businessTrips.toCity!.trim() == toCityCommonListModel[i].name!.trim()) {
               initialToCityItem = toCityCommonListModel[i];
             }
           }
@@ -198,48 +193,29 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              const Text("  From",style: TextStyle(color: AppColors.primaryColor),),
+                              const Text("  From City",style: TextStyle(color: AppColors.primaryColor),),
                               Container(
-                                margin:const EdgeInsets.symmetric(horizontal: 5),
-                                child: TextFormField(
-                                  readOnly: true,
-                                  onTap: () {
-                                    commonSuggestBottomSheet(context, "city","query","", (value) {
-                                      setState(() {
-                                        fromCityController.text = value.text!;
-                                        initialFromCityItem = value;
-                                      });
-                                    });
-                                  },
-                                  controller: fromCityController,
-                                  validator: (value) {
-                                    if(value!.isEmpty) {
-                                      return "City field required";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  decoration: const InputDecoration(
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: AppColors.primaryColor,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: AppColors.primaryColor,
-                                        )),
-                                    border: OutlineInputBorder(
-
-                                        borderSide: BorderSide(
-                                            color: AppColors.primaryColor, width: 1.0)),
-                                    labelStyle: TextStyle(color: AppColors.black),
-                                    hintText: 'City',
-                                    hintStyle: TextStyle(color: AppColors.greyColor),
-                                    contentPadding: EdgeInsets.symmetric(vertical: 5,horizontal: 5),),
-                                  keyboardType: TextInputType.text,
-                                  style: const TextStyle(color: AppColors.primaryColor),
+                                width: MediaQuery.of(context).size.width,
+                                padding: const EdgeInsets.symmetric(horizontal: 5),
+                                margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: AppColors.primaryColor)
                                 ),
+                                child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<StoresListItem>(
+                                        value: initialFromCityItem,
+                                        isExpanded: true,
+                                        items: fromCityCommonListModel.map((StoresListItem items) {
+                                          return DropdownMenuItem(
+                                            value: items,
+                                            child: Text(items.name!,overflow: TextOverflow.ellipsis,),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) {
+                                          setState((){
+                                            initialFromCityItem = value!;
+                                          });
+                                        })),
                               ),
                               // Container(
                               //   width: MediaQuery.of(context).size.width,
@@ -265,48 +241,29 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
                               //           })),
                               // ),
                               const SizedBox(height: 5,),
-                              const Text("  To",style: TextStyle(color: AppColors.primaryColor),),
+                              const Text("  To City",style: TextStyle(color: AppColors.primaryColor),),
                               Container(
-                                margin:const EdgeInsets.symmetric(horizontal: 5),
-                                child: TextFormField(
-                                  readOnly: true,
-                                  onTap: () {
-                                    commonSuggestBottomSheet(context, "city","query","", (value) {
-                                      setState(() {
-                                        toCityController.text = value.text!;
-                                        initialToCityItem = value;
-                                      });
-                                    });
-                                  },
-                                  controller: toCityController,
-                                  validator: (value) {
-                                    if(value!.isEmpty) {
-                                      return "City field required";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  decoration: const InputDecoration(
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: AppColors.primaryColor,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: AppColors.primaryColor,
-                                        )),
-                                    border: OutlineInputBorder(
-
-                                        borderSide: BorderSide(
-                                            color: AppColors.primaryColor, width: 1.0)),
-                                    labelStyle: TextStyle(color: AppColors.black),
-                                    hintText: 'City',
-                                    hintStyle: TextStyle(color: AppColors.greyColor),
-                                    contentPadding: EdgeInsets.symmetric(vertical: 5,horizontal: 5),),
-                                  keyboardType: TextInputType.text,
-                                  style: const TextStyle(color: AppColors.primaryColor),
+                                width: MediaQuery.of(context).size.width,
+                                padding: const EdgeInsets.symmetric(horizontal: 5),
+                                margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: AppColors.primaryColor)
                                 ),
+                                child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<StoresListItem>(
+                                        value: initialToCityItem,
+                                        isExpanded: true,
+                                        items: toCityCommonListModel.map((StoresListItem items) {
+                                          return DropdownMenuItem(
+                                            value: items,
+                                            child: Text(items.name!,overflow: TextOverflow.ellipsis,),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) {
+                                          setState((){
+                                            initialToCityItem = value!;
+                                          });
+                                        })),
                               ),
                               // Container(
                               //   width: MediaQuery.of(context).size.width,
@@ -459,8 +416,8 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
             .addBusinessTrips(
                 AddBusinessTripsRequestModel(
                     elId: userId,
-                    fromCity: initialFromCityItem.id,
-                    toCity: initialToCityItem.id,
+                    fromCity: initialFromCityItem.id.toString(),
+                    toCity: initialToCityItem.id.toString(),
                     reason: commentController.text),
                 files)
             .then((value) {
@@ -496,8 +453,8 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
           UpdateBusinessTripsRequestModel(
               elId: userId,
               id: widget.businessTrips.id.toString(),
-              fromCity: initialFromCityItem.id,
-              toCity: initialToCityItem.id,
+              fromCity: initialFromCityItem.id.toString(),
+              toCity: initialToCityItem.id.toString(),
               reason: commentController.text
           )).then((value) {
         print(value);
@@ -519,8 +476,8 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
           UpdateBusinessTripsRequestModel(
               elId: userId,
               id: widget.businessTrips.id.toString(),
-              fromCity: initialFromCityItem.id,
-              toCity: initialToCityItem.id,
+              fromCity: initialFromCityItem.id.toString(),
+              toCity: initialToCityItem.id.toString(),
               reason: commentController.text
           ), files).then((value) {
         print(value);

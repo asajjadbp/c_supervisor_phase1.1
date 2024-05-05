@@ -97,12 +97,12 @@ class MyTeamJpResponseItem {
 
   MyTeamJpResponseItem.fromJson(Map<String, dynamic> json) {
     companyId = json['company_id'];
-    client = json['CLIENT'];
-    region = json['region'];
-    city = json['city'];
-    chain = json['chain'];
-    channel = json['channel'];
-    store = json['store'];
+    client = json['CLIENT'].toString();
+    region = json['region'].toString();
+    city = json['city'].toString();
+    chain = json['chain'].toString();
+    channel = json['channel'].toString();
+    store = json['store'].toString();
     storeId = json['store_id'];
     odoo = json['odoo'];
     tmrPhone = json['tmr_phone'];
@@ -113,21 +113,21 @@ class MyTeamJpResponseItem {
     wed = json['wed'];
     thu = json['thu'];
     fri = json['fri'];
-    username = json['username'];
-    fullName = json['full_name'];
+    username = json['username'].toString();
+    fullName = json['full_name'].toString();
     userId = json['user_id'];
     tmr = json['tmr'];
     id = json['id'];
     sumOfDays = json['sum_of_days'];
-    stp = json['stp'];
-    salesman = json['salesman'];
-    salesmanCode = json['salesman_code'];
-    segment = json['segment'];
-    locationId = json['location_id'];
-    subChannel = json['sub_channel'];
-    route = json['route'];
-    salesSupervisor = json['sales_supervisor'];
-    salesManager = json['sales_manager'];
+    stp = json['stp'].toString();
+    salesman = json['salesman'].toString();
+    salesmanCode = json['salesman_code'].toString();
+    segment = json['segment'].toString();
+    locationId = json['location_id'].toString();
+    subChannel = json['sub_channel'].toString();
+    route = json['route'].toString();
+    salesSupervisor = json['sales_supervisor'].toString();
+    salesManager = json['sales_manager'].toString();
   }
 
   Map<String, dynamic> toJson() {

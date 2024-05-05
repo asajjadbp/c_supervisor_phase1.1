@@ -36,9 +36,9 @@ class ResponseHandler {
       if(responseJson['status']!= true) throw FetchDataException(responseJson['msg'].toString());
       return responseJson;
     } on TimeoutException {
-      throw FetchDataException("Slow internet connection");
+      throw FetchDataException("There is something wrong with your internet connection");
     } on SocketException {
-      throw FetchDataException('No Internet connection');
+      throw FetchDataException('Please turn on your data or connect wifi network');
     }
   }
 
@@ -58,9 +58,9 @@ class ResponseHandler {
       if(responseJson['status']!= true) throw FetchDataException(responseJson['msg'].toString());
       return responseJson;
     } on TimeoutException {
-      throw FetchDataException("Slow internet connection");
+      throw FetchDataException("There is something wrong with your internet connection");
     } on SocketException {
-      throw FetchDataException('No Internet connection');
+      throw FetchDataException('Please turn on your data or connect wifi network');
     }
   }
 
@@ -81,9 +81,9 @@ class ResponseHandler {
       if(responseJson['status']!= true) throw FetchDataException(responseJson['msg'].toString());
       return responseJson;
     } on TimeoutException {
-      throw FetchDataException("Slow internet connection");
+      throw FetchDataException("There is something wrong with your internet connection");
     } on SocketException {
-      throw FetchDataException('No Internet connection');
+      throw FetchDataException('Please turn on your data or connect wifi network');
     }
   }
 
@@ -143,7 +143,7 @@ class ResponseHandler {
       // if(res['status']!= true) throw FetchDataException(res['msg'].toString());
       return jsonData;
     } on SocketException {
-      throw FetchDataException('No Internet connection');
+      throw FetchDataException('Please turn on your data or connect wifi network');
     }
   }
 
@@ -178,7 +178,7 @@ class ResponseHandler {
       // if(res['status']!= true) throw FetchDataException(res['msg'].toString());
       return jsonData;
     } on SocketException {
-      throw FetchDataException('No Internet connection');
+      throw FetchDataException('Please turn on your data or connect wifi network');
     }
   }
 
@@ -212,7 +212,7 @@ class ResponseHandler {
       // if(res['status']!= true) throw FetchDataException(res['msg'].toString());
       return jsonData;
     } on SocketException {
-      throw FetchDataException('No Internet connection');
+      throw FetchDataException('Please turn on your data or connect wifi network');
     }
   }
 
@@ -231,9 +231,9 @@ class ResponseHandler {
       if(responseJson['status']!= true) throw FetchDataException(responseJson['msg'].toString());
       return responseJson;
     } on TimeoutException {
-      throw FetchDataException("Slow internet connection");
+      throw FetchDataException("There is something wrong with your internet connection");
     } on SocketException {
-      throw FetchDataException('No Internet connection');
+      throw FetchDataException('Please turn on your data or connect wifi network');
     }
   }
 

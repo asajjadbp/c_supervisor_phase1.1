@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Model/request_model/common_api_call_request.dart';
 import '../../Model/response_model/common_list/comon_list_response_model.dart';
+import '../../Model/response_model/my_team_responses/add_special_visit/store_list_model_response.dart';
 import '../utills/app_colors_new.dart';
 import '../utills/user_constants.dart';
 import '../widgets/header_background_new.dart';
@@ -31,9 +32,9 @@ class AddRecruitSuggestScreen extends StatefulWidget {
 
 class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
 
-  late CommonListItem initialCityItem;
+  late StoresListItem initialCityItem;
 
-  List<CommonListItem> cityCommonListModel = <CommonListItem>[];
+  List<StoresListItem> cityCommonListModel = <StoresListItem>[];
 
   final GlobalKey<FormState> _formKey = GlobalKey();
 
@@ -51,7 +52,7 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
 
   File? file;
 
-  bool isLoading2 = false;
+  bool isLoading2 = true;
 
   bool isLoading = false;
   bool isError = false;
@@ -84,8 +85,11 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
       userId = sharedPreferences.getString(UserConstants().userId)!;
       geoFence = sharedPreferences.getInt(UserConstants().userGeoFence)!;
     });
+
     if(widget.isEdit) {
       getCityList(true, "city", "query", widget.recruitSuggest.cityName!);
+    } else {
+      getCityList(true, "city", "query", "");
     }
   }
 
@@ -95,17 +99,14 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
       isLoading2 = loader;
     });
 
-    HTTPManager().commonApiCallForList(CommonApiCallRequestModel(
-      searchBy: searchBy,
-      termTerm: termTerm,
-      termType: termType,
-    ))
+    HTTPManager().citiesList()
         .then((value) {
       setState(() {
-        cityCommonListModel = value.results!;
+        cityCommonListModel = value.data!;
+        initialCityItem = cityCommonListModel[0];
         if(widget.isEdit) {
           for(int i=0;i<cityCommonListModel.length; i++) {
-            if(widget.recruitSuggest.cityName!.trim() == cityCommonListModel[i].text!.trim()) {
+            if(widget.recruitSuggest.cityName!.trim() == cityCommonListModel[i].name!.trim()) {
               initialCityItem = cityCommonListModel[i];
             }
           }
@@ -193,46 +194,27 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
                               const SizedBox(height: 5,),
                               const Text("  Select City",style: TextStyle(color: AppColors.primaryColor),),
                               Container(
-                                margin:const EdgeInsets.symmetric(horizontal: 5),
-                                child: TextFormField(
-                                  readOnly: true,
-                                  onTap: () {
-                                    commonSuggestBottomSheet(context, "city","query","", (value) {
-                                      setState(() {
-                                        cityController.text = value.text!;
-                                        initialCityItem = value!;
-                                      });
-                                    });
-                                  },
-                                  controller: cityController,
-                                  validator: (value) {
-                                    if(value!.isEmpty) {
-                                      return "City field required";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  decoration: const InputDecoration(
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: AppColors.primaryColor,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: AppColors.primaryColor,
-                                        )),
-                                    border: OutlineInputBorder(
-
-                                        borderSide: BorderSide(
-                                            color: AppColors.primaryColor, width: 1.0)),
-                                    labelStyle: TextStyle(color: AppColors.black),
-                                    hintText: 'City',
-                                    hintStyle: TextStyle(color: AppColors.greyColor),
-                                    contentPadding: EdgeInsets.symmetric(vertical: 5,horizontal: 5),),
-                                  keyboardType: TextInputType.text,
-                                  style: const TextStyle(color: AppColors.primaryColor),
+                                width: MediaQuery.of(context).size.width,
+                                padding: const EdgeInsets.symmetric(horizontal: 5),
+                                margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: AppColors.primaryColor)
                                 ),
+                                child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<StoresListItem>(
+                                        value: initialCityItem,
+                                        isExpanded: true,
+                                        items: cityCommonListModel.map((StoresListItem items) {
+                                          return DropdownMenuItem(
+                                            value: items,
+                                            child: Text(items.name!,overflow: TextOverflow.ellipsis,),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) {
+                                          setState((){
+                                            initialCityItem = value!;
+                                          });
+                                        })),
                               ),
                               const SizedBox(height: 5,),
                               const Text("  Add Iqama No",style: TextStyle(color: AppColors.primaryColor),),
@@ -467,7 +449,7 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
        });
        HTTPManager().addRecruitSuggest(AddRecruitSuggestRequestModel(
            elId: userId,
-           cityId: initialCityItem.id,
+           cityId: initialCityItem.id.toString(),
            name: nameController.text,
            iqama: iqamaController.text,
            yearOfExperience: yearExpController.text,
@@ -506,7 +488,7 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
               UpdateRecruitSuggestRequestModel(
                   elId: userId,
                   id: widget.recruitSuggest.id.toString(),
-                  cityId: initialCityItem.id,
+                  cityId: initialCityItem.id.toString(),
                   name: nameController.text,
                   iqama: iqamaController.text,
                   yearOfExperience: yearExpController.text,
@@ -534,7 +516,7 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
               UpdateRecruitSuggestRequestModel(
                   elId: userId,
                   id: widget.recruitSuggest.id.toString(),
-                  cityId: initialCityItem.id,
+                  cityId: initialCityItem.id.toString(),
                   name: nameController.text,
                   iqama: iqamaController.text,
                   yearOfExperience: yearExpController.text,

@@ -35,7 +35,7 @@ class IpcLocationResponseItem {
 
   IpcLocationResponseItem.fromJson(Map<String, dynamic> json) {
     id = json['id'].toString();
-    gps = json['gps'];
+    gps = json['gps'].toString();
   }
 
   Map<String, dynamic> toJson() {

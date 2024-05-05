@@ -82,9 +82,9 @@ class GetAttendenceList {
   factory GetAttendenceList.fromJson(Map<String, dynamic> json) =>
       GetAttendenceList(
         userRecordId: json["user_record_id"],
-        fullName: json["full_name"],
-        firstName: json["first_name"],
-        lastName: json["last_name"],
+        fullName: json["full_name"].toString(),
+        firstName: json["first_name"].toString(),
+        lastName: json["last_name"].toString(),
         id: json["id"],
         tmrPic: json["tmr_pic"],
         checkInTime: json["check_in_time"] ?? "",
@@ -98,8 +98,8 @@ class GetAttendenceList {
         "first_name": firstName,
         "last_name": lastName,
         "id": id,
-        "tmr_pic": tmrPic,
-        "check_in_time": checkInTime,
+        "tmr_pic": tmrPic.toString(),
+        "check_in_time": checkInTime.toString(),
         "is_present": isPresent,
         "updated_by_el": updatedByEl,
       };

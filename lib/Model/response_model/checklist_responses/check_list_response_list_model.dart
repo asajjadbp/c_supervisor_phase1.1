@@ -110,12 +110,12 @@ class CheckListItem {
 
   CheckListItem.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    checkList = json['check_list'];
+    checkList = json['check_list'].toString();
     checklistResultId = json['checklist_result_id'];
     score = json['score'];
-    comment = json['comment'];
-    imageName = json['image_name'];
-    isApplicable = json['applicable'];
+    comment = json['comment'].toString();
+    imageName = json['image_name'].toString();
+    isApplicable = json['applicable'].toString();
   }
 
   Map<String, dynamic> toJson() {

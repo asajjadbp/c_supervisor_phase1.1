@@ -52,8 +52,8 @@ class BusinessTrips {
     elId = json['el_id'];
     fromCity = json['from_city'] ?? "";
     toCity = json['to_city'] ?? "";
-    reason = json['reason'] ?? "";
-    voucher = json['voucher'];
+    reason = json['reason'].toString() ?? "";
+    voucher = json['voucher'].toString();
     isApproved = json['is_approved'];
     approvedBy = json['approved_by'];
   }

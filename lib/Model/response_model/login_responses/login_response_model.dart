@@ -99,10 +99,10 @@ class LoginData {
 
   LoginData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    email = json['email'];
+    email = json['email'].toString();
     name = json['name'].toString();
-    welcomeMsg = json['welcome_msg'];
-    fullName = json['full_name'];
+    welcomeMsg = json['welcome_msg'].toString();
+    fullName = json['full_name'].toString();
     geoFence = json['geofenc'] ?? 0;
   }
 

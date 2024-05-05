@@ -40,7 +40,7 @@ class GraphDetailsWidget extends StatelessWidget {
                 height: 15,
                 margin: const EdgeInsets.only(left: 10,bottom: 5),
                 decoration: BoxDecoration(
-                    color: secondColor,
+                    color: secondTitle!="" ? secondColor : null,
                     borderRadius: BorderRadius.circular(100)
                 ),
               ),

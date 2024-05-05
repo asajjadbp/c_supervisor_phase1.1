@@ -36,8 +36,8 @@ class TmrUserItem {
 
   TmrUserItem.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    fullName = json['full_name'];
-    email = json['email'];
+    fullName = json['full_name'].toString();
+    email = json['email'].toString();
   }
 
   Map<String, dynamic> toJson() {

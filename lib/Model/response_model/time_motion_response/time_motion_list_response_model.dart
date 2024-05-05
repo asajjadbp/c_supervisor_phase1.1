@@ -108,7 +108,7 @@ class Categories {
 
   Categories.fromJson(Map<String, dynamic> json) {
     categoryId = json['category_id'];
-    categoryName = json['category_name'];
+    categoryName = json['category_name'].toString();
     noMinutes = json['no_minutes'].toString() == "null" ? "" : json['no_minutes'].toString();
   }
 

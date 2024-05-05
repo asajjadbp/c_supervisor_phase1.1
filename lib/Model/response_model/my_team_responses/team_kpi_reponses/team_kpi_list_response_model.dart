@@ -59,7 +59,7 @@ class TeamKpiResponseItem {
     userId = json['user_id'].toString();
     id = json['id'].toString();
     isPresent = json['is_present'].toString();
-    userName = json['full_name'];
+    userName = json['full_name'].toString();
     totalPlanned = json['total_planned'].toString();
     compliance = json['compliance'].toString();
     productivity = json['productivity'].toString();

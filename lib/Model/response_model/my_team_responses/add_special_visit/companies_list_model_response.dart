@@ -37,7 +37,7 @@ class CompaniesListItem {
   CompaniesListItem.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     companyId = json['company_id'];
-    companyName = json['company_name'];
+    companyName = json['company_name'].toString();
   }
 
   Map<String, dynamic> toJson() {

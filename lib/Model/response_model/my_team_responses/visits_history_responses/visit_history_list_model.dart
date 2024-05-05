@@ -64,13 +64,13 @@ class VisitsHistoryResponseItem {
         this.isPhoto});
 
   VisitsHistoryResponseItem.fromJson(Map<String, dynamic> json) {
-    storeName = json['store_name'];
-    companyName = json['company_name'];
-    fullName = json['full_name'];
+    storeName = json['store_name'].toString();
+    companyName = json['company_name'].toString();
+    fullName = json['full_name'].toString();
     id = json['id'];
-    checkInTime = json['check_in_time'];
-    checkOutTime = json['check_out_time'];
-    workingHours = json['working_hours'];
+    checkInTime = json['check_in_time'].toString();
+    checkOutTime = json['check_out_time'].toString();
+    workingHours = json['working_hours'].toString();
     workingId = json['working_id'];
     isAvailability = json['is_availability'];
     isPrice = json['is_price'];

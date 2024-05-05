@@ -20,15 +20,14 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   bool userLoggedIn = false;
+  String userTimeStamp = "";
 
   @override
   void initState() {
     // TODO: implement initState
     getUserData();
 
-    Timer(
-        const Duration(seconds: 5),
-        () => userLoggedIn
+    Timer(const Duration(seconds: 5), () => userLoggedIn
             ? Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -42,10 +41,35 @@ class _SplashScreenState extends State<SplashScreen> {
   getUserData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    setState(() {
-      userLoggedIn = sharedPreferences.getBool(UserConstants().userLoggedIn)!;
-    });
+    final currentTime = DateTime.now().toIso8601String().substring(0, 10);
+    print(currentTime);
 
+    if(sharedPreferences.containsKey(UserConstants().userLoggedIn) && sharedPreferences.containsKey(UserConstants().userTimeStamp)) {
+      print("Check Response is true");
+      setState(() {
+        userLoggedIn = sharedPreferences.getBool(UserConstants().userLoggedIn)!;
+        userTimeStamp = sharedPreferences.getString(UserConstants().userTimeStamp)!;
+      });
+      
+      if(currentTime == userTimeStamp) {
+        
+        print(userTimeStamp);
+        print(currentTime);
+        
+        setState(() {
+          userLoggedIn = true;
+        });
+      } else {
+        setState(() {
+          userLoggedIn = false;
+        });
+      }
+      
+    } else {
+      
+      print("Check Response is false");
+      userLoggedIn = false;
+    }
     print("UserLoggedIn");
     print(userLoggedIn);
   }

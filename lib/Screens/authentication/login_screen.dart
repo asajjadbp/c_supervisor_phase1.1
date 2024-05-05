@@ -7,6 +7,9 @@ import 'package:c_supervisor/Screens/utills/user_session.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:c_supervisor/Screens/utills/location_permission_handle.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 
 import '../../Model/request_model/device_info_request.dart';
 import '../../Model/request_model/login_request.dart';
@@ -28,6 +31,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
   bool isPasswordVisible = true;
+  bool isLoadingLocation = false;
+  Position? _currentPosition;
+  String currentPosition = "";
 
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   Map<String, dynamic> _deviceData = <String, dynamic>{};
@@ -106,17 +112,17 @@ class _LoginScreenState extends State<LoginScreen> {
             _readIosDeviceInfo((await deviceInfoPlugin.iosInfo));
       }
 
-      print("Android Info");
-      print(deviceData);
-
-      print("+++++++DEVICE INFO++++++");
-      log(deviceData['version.release'].toString());
-      log(deviceData['id'].toString());
-      log(deviceData['serialNumber'].toString());
-      log(deviceData['manufacturer'].toString());
-      log(deviceData['model'].toString());
-      log(deviceData['brand'].toString());
-      log(deviceData['version.sdkInt'].toString());
+      // print("Android Info");
+      // print(deviceData);
+      //
+      // print("+++++++DEVICE INFO++++++");
+      // log(deviceData['version.release'].toString());
+      // log(deviceData['id'].toString());
+      // log(deviceData['serialNumber'].toString());
+      // log(deviceData['manufacturer'].toString());
+      // log(deviceData['model'].toString());
+      // log(deviceData['brand'].toString());
+      // log(deviceData['version.sdkInt'].toString());
 
     } on PlatformException {
       deviceData = <String, dynamic>{
@@ -383,7 +389,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 10,),
                     const Align(
                         alignment: Alignment.center,
-                        child: Text("Version 1.0.14",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400),)),
+                        child: Text("Version 1.19",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400),)),
                   ],
                 ),
               ),
@@ -394,42 +400,75 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _validateLoginForm() {
-    if (_formKey.currentState?.validate() ?? false) {
-      setState(() {
-        isLoading = true;
-      });
-      HTTPManager()
-          .loginUser(LoginRequestModel(
-        userName: emailController.text,
-        password: passwordController.text,
-      ))
-          .then((value) async {
-        LogInResponseModel logInResponseModel = value;
+  void _validateLoginForm() async {
+    final hasPermission = await handleLocationPermission();
+    if (!hasPermission) return;
+    setState(() {
+      isLoading = true;
+    });
+    await Geolocator.getCurrentPosition().then((Position position) async {
+      setState(() => _currentPosition = position);
 
-        print(logInResponseModel.data![0].id);
-        UserSessionState().setUserSession(
-            true,
-            logInResponseModel.data![0].geoFence,
-            logInResponseModel.data![0].id!.toString(),
-            logInResponseModel.data![0].fullName!,
-            logInResponseModel.data![0].email!);
-        if(Platform.isAndroid) {
-          _saveDeviceInfo(logInResponseModel.data![0].id!.toString());
-        } else {
-          _saveIosDeviceInfo(logInResponseModel.data![0].id!.toString());
-        }
-      }).catchError((e) {
-        showToastMessage(false, e.toString());
-        setState(() {
-          isLoading = false;
-        });
+      print("Current Position");
+      print(_currentPosition);
+
+      currentPosition =
+          "${_currentPosition!.latitude},${_currentPosition!.longitude}";
+
+      setState(() {
+        isLoading = false;
       });
-    }
+    }).catchError((e) {
+      setState(() {
+        isLoading = false;
+      });
+      debugPrint(e);
+    });
+if(currentPosition != "")
+    {
+      if (_formKey.currentState?.validate() ?? false) {
+        setState(() {
+          isLoading = true;
+        });
+        HTTPManager()
+            .loginUser(LoginRequestModel(
+          userName: emailController.text,
+          password: passwordController.text,
+        ))
+            .then((value) async {
+          LogInResponseModel logInResponseModel = value;
+
+          final currentTime = DateTime.now().toIso8601String().substring(0, 10);
+          print(currentTime);
+
+          print(logInResponseModel.data![0].id);
+          UserSessionState().setUserSession(
+              true,
+              logInResponseModel.data![0].geoFence,
+              logInResponseModel.data![0].id!.toString(),
+              logInResponseModel.data![0].fullName!,
+              logInResponseModel.data![0].email!,
+              currentTime
+          );
+          if (Platform.isAndroid) {
+            _saveDeviceInfo(logInResponseModel.data![0].id!.toString());
+          } else {
+            _saveIosDeviceInfo(logInResponseModel.data![0].id!.toString());
+          }
+        }).catchError((e) {
+          showToastMessage(false, e.toString());
+          setState(() {
+            isLoading = false;
+          });
+        });
+      }
+    } else {
+  showToastMessage(false, "Please allow this to access you location");
+}
   }
 
   _saveDeviceInfo(String elId) {
-
+    print("${_currentPosition!.latitude},${_currentPosition!.longitude}");
     setState(() {
       isLoading = true;
     });
@@ -445,7 +484,8 @@ class _LoginScreenState extends State<LoginScreen> {
       osVersion: "${_deviceData['version.release'] ?? ""}",
       simNumber: "",
       mobileDataUsage: "",
-      wifiDataUsage: "",)).then((value) {
+      wifiDataUsage: "",
+      latLong:"${_currentPosition!.latitude},${_currentPosition!.longitude}",)).then((value) {
 
       setState(() {
         isLoading = false;
@@ -466,7 +506,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _saveIosDeviceInfo(String elId) {
-
+    print("${_currentPosition!.latitude},${_currentPosition!.longitude}");
     setState(() {
       isLoading = true;
     });
@@ -482,7 +522,8 @@ class _LoginScreenState extends State<LoginScreen> {
       osVersion: "${_deviceData['utsname.release'] ?? ""}",
       simNumber: "",
       mobileDataUsage: "",
-      wifiDataUsage: "",)).then((value) {
+      wifiDataUsage: "",
+      latLong:"${_currentPosition!.latitude},${_currentPosition!.longitude}",)).then((value) {
 
       setState(() {
         isLoading = false;

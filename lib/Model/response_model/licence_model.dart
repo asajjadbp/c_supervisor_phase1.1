@@ -30,12 +30,12 @@ class LicenseModel {
 
   factory LicenseModel.fromJson(Map<String, dynamic> json) => LicenseModel(
         id: json["id"],
-        licenseKey: json["license_key"],
-        client: json["client"],
+        licenseKey: json["license_key"].toString(),
+        client: json["client"].toString(),
         baseUrl: json["base_url"],
         imageBaseUrl: json["image_base_url"],
-        updatedAt: json["updated_at"],
-        active: json["active"],
+        updatedAt: json["updated_at"].toString(),
+        active: json["active"].toString(),
       );
 
   Map<String, dynamic> toJson() => {

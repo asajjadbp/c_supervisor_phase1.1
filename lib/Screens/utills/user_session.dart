@@ -5,7 +5,7 @@ class UserSessionState {
 
   late SharedPreferences _sharedPreferences;
 
-  setUserSession(bool isLoggedIn,int geoFence,String userId,String userName,String userEmail) async {
+  setUserSession(bool isLoggedIn,int geoFence,String userId,String userName,String userEmail,String timeStamp) async {
     _sharedPreferences = await SharedPreferences.getInstance();
 
     _sharedPreferences.setBool(UserConstants().userLoggedIn,isLoggedIn);
@@ -13,7 +13,7 @@ class UserSessionState {
     _sharedPreferences.setString(UserConstants().userId,userId);
     _sharedPreferences.setString(UserConstants().userName,userName);
     _sharedPreferences.setString(UserConstants().userEmail,userEmail);
-    // _sharedPreferences.setString(UserConstants().userCompanyName,userCompanyName);
+    _sharedPreferences.setString(UserConstants().userTimeStamp,timeStamp);
 
   }
 
@@ -24,7 +24,7 @@ class UserSessionState {
     _sharedPreferences.remove(UserConstants().userId);
     _sharedPreferences.remove(UserConstants().userName);
     _sharedPreferences.remove(UserConstants().userEmail);
-    _sharedPreferences.remove(UserConstants().userCompanyName);
+    _sharedPreferences.remove(UserConstants().userTimeStamp);
 
   }
 }

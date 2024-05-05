@@ -42,7 +42,7 @@ class StoreImageResponseItem {
     elId = json['el_id'];
     workingId = json['working_id'];
     storeId = json['store_id'];
-    imageName = json['image_name'];
+    imageName = json['image_name'].toString();
     selfieType = json['selfie_type'].toString();
   }
 

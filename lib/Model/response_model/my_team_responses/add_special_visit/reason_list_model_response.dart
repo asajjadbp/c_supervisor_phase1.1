@@ -37,9 +37,9 @@ class ReasonListItem {
 
   ReasonListItem.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    reason = json['reason'];
-    isActive = json['is_active'];
-    updatedAt = json['updated_at'];
+    reason = json['reason'].toString();
+    isActive = json['is_active'].toString();
+    updatedAt = json['updated_at'].toString();
   }
 
   Map<String, dynamic> toJson() {

@@ -30,13 +30,14 @@ class DashboardResponseData {
 class Data {
   Mykpi? mykpi;
   Teamkpi? teamkpi;
+  MyKpiHr? myKpiHr;
 
   Data({this.mykpi, this.teamkpi});
 
   Data.fromJson(Map<String, dynamic> json) {
     mykpi = json['mykpi'] != null ? Mykpi.fromJson(json['mykpi']) : null;
-    teamkpi =
-    json['teamkpi'] != null ? Teamkpi.fromJson(json['teamkpi']) : null;
+    teamkpi = json['teamkpi'] != null ? Teamkpi.fromJson(json['teamkpi']) : null;
+    myKpiHr = json['myKpiHrs'] != null ? MyKpiHr.fromJson(json['myKpiHrs']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -46,6 +47,9 @@ class Data {
     }
     if (teamkpi != null) {
       data['teamkpi'] = teamkpi!.toJson();
+    }
+    if (myKpiHr != null) {
+      data['myKpiHrs'] = myKpiHr!.toJson();
     }
     return data;
   }
@@ -137,6 +141,31 @@ class Teamkpi {
     data['total_jpc'] = totalJpc;
     data['total_productivity'] = totalProductivity;
     data['total_efficiency'] = totalEffeciency;
+    return data;
+  }
+}
+
+class MyKpiHr {
+  String? plannedHours;
+  String? specialHours;
+  String? checkInHours;
+
+  MyKpiHr(
+      {this.plannedHours,
+        this.specialHours,
+        this.checkInHours,});
+
+  MyKpiHr.fromJson(Map<String, dynamic> json) {
+    plannedHours = json['planned_hrs'] ?? "";
+    specialHours = json['special_hrs'] ?? "";
+    checkInHours = json['checkin_hrs'] ?? "";
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['planned_hrs'] = plannedHours;
+    data['special_hrs'] = specialHours;
+    data['checkin_hrs'] = checkInHours;
     return data;
   }
 }

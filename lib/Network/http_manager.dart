@@ -186,6 +186,21 @@ class HTTPManager {
     return tmrUserList;
   }
 
+  // Future<TmrUserList> tmrUserListWithCompany(
+  //     TmrUserListRequestModel tmrUserListRequestModel) async {
+  //   // var url = ApplicationURLs.API_JP;
+  //   var url = LicenseProvider.basepath + ApplicationURLs.API_TMR_USER_LIST;
+  //   // ignore: avoid_print
+  //   print(url);
+  //
+  //   final response =
+  //   await _handler.post(Uri.parse(url), tmrUserListRequestModel.toJson());
+  //   TmrUserList tmrUserList =
+  //   TmrUserList.fromJson(response);
+  //
+  //   return tmrUserList;
+  // }
+
   //CLIENTS LIST
   Future<ClientListResponseModel> clientList(
       JourneyPlanRequestModel journeyPlanRequestModel) async {
@@ -204,14 +219,45 @@ class HTTPManager {
 
   //STORE LIST
   Future<StoresListResponseModel> storeList(
-      JourneyPlanRequestModel journeyPlanRequestModel) async {
+      TmrUserListRequestModel tmrUserListRequestModel) async {
     // var url = ApplicationURLs.API_JP;
     var url = LicenseProvider.basepath + ApplicationURLs.API_STORES_LIST;
     // ignore: avoid_print
     print(url);
 
     final response =
-    await _handler.post(Uri.parse(url), journeyPlanRequestModel.toJson());
+    await _handler.post(Uri.parse(url), tmrUserListRequestModel.toJson());
+    StoresListResponseModel storesListResponseModel =
+    StoresListResponseModel.fromJson(response);
+
+    return storesListResponseModel;
+  }
+
+  //Cities LIST
+  Future<StoresListResponseModel> citiesList(
+      ) async {
+    // var url = ApplicationURLs.API_JP;
+    var url = LicenseProvider.basepath + ApplicationURLs.API_CITIES_LIST;
+    // ignore: avoid_print
+    print(url);
+
+    final response =
+    await _handler.get(Uri.parse(url));
+    StoresListResponseModel storesListResponseModel =
+    StoresListResponseModel.fromJson(response);
+
+    return storesListResponseModel;
+  }
+
+  //Chain LIST
+  Future<StoresListResponseModel> chainList(JourneyPlanRequestModel journeyPlanRequestModel) async {
+    // var url = ApplicationURLs.API_JP;
+    var url = LicenseProvider.basepath + ApplicationURLs.API_CHAIN_LIST;
+    // ignore: avoid_print
+    print(url);
+
+    final response =
+    await _handler.post(Uri.parse(url),journeyPlanRequestModel.toJson());
     StoresListResponseModel storesListResponseModel =
     StoresListResponseModel.fromJson(response);
 
