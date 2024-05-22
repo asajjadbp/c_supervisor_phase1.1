@@ -220,6 +220,11 @@ class HTTPManager {
   //STORE LIST
   Future<StoresListResponseModel> storeList(
       TmrUserListRequestModel tmrUserListRequestModel) async {
+
+    print(tmrUserListRequestModel.elId);
+    print(tmrUserListRequestModel.cityId);
+    print(tmrUserListRequestModel.chainId);
+
     // var url = ApplicationURLs.API_JP;
     var url = LicenseProvider.basepath + ApplicationURLs.API_STORES_LIST;
     // ignore: avoid_print
@@ -234,15 +239,14 @@ class HTTPManager {
   }
 
   //Cities LIST
-  Future<StoresListResponseModel> citiesList(
-      ) async {
+  Future<StoresListResponseModel> citiesList(CityListRequestModel cityListRequestModel) async {
     // var url = ApplicationURLs.API_JP;
     var url = LicenseProvider.basepath + ApplicationURLs.API_CITIES_LIST;
     // ignore: avoid_print
     print(url);
 
     final response =
-    await _handler.get(Uri.parse(url));
+    await _handler.post(Uri.parse(url),cityListRequestModel.toJson());
     StoresListResponseModel storesListResponseModel =
     StoresListResponseModel.fromJson(response);
 
@@ -253,6 +257,21 @@ class HTTPManager {
   Future<StoresListResponseModel> chainList(JourneyPlanRequestModel journeyPlanRequestModel) async {
     // var url = ApplicationURLs.API_JP;
     var url = LicenseProvider.basepath + ApplicationURLs.API_CHAIN_LIST;
+    // ignore: avoid_print
+    print(url);
+
+    final response =
+    await _handler.post(Uri.parse(url),journeyPlanRequestModel.toJson());
+    StoresListResponseModel storesListResponseModel =
+    StoresListResponseModel.fromJson(response);
+
+    return storesListResponseModel;
+  }
+
+  //Chain LIST
+  Future<StoresListResponseModel> regionsList(JourneyPlanRequestModel journeyPlanRequestModel) async {
+    // var url = ApplicationURLs.API_JP;
+    var url = LicenseProvider.basepath + ApplicationURLs.API_REGION_LIST;
     // ignore: avoid_print
     print(url);
 

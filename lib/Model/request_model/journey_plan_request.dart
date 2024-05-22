@@ -35,3 +35,22 @@ class TmrUserListRequestModel {
     return data;
   }
 }
+
+class CityListRequestModel {
+  String? elId;
+  String? regionId;
+
+  CityListRequestModel({this.elId,this.regionId,});
+
+  CityListRequestModel.fromJson(Map<String, dynamic> json) {
+    elId = json['el_id'];
+    regionId = json['region_id'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['el_id'] = elId;
+    data['region_id'] = regionId;
+    return data;
+  }
+}

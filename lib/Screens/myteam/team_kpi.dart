@@ -147,7 +147,7 @@ class _TeamKpiScreenState extends State<TeamKpiScreen> {
         child: HeaderBackgroundNew(
           childWidgets: [
             const HeaderWidgetsNew(
-              pageTitle: "Team KPIS",
+              pageTitle: "Team KPIs",
               isBackButton: true,
               isDrawerButton: true,
             ),
@@ -226,7 +226,7 @@ class _TeamKpiScreenState extends State<TeamKpiScreen> {
                                           children: [
                                             Image.asset("assets/myicons/attendance.png",width: 18,height: 18,),
                                             const SizedBox(width: 5,),
-                                            Text(teamKpiSearchList[index].isPresent == "0" ? "Absent" : "Present" ,style: TextStyle(color: AppColors.blue),),
+                                            Text(teamKpiSearchList[index].isPresent == "0" ? "Absent" : "Present" ,style: const TextStyle(color: AppColors.blue),),
                                           ],
                                         ),
                                         Text("User ID:${teamKpiSearchList[index].userId.toString()}",style: const TextStyle(color: AppColors.primaryColor),)
@@ -266,7 +266,7 @@ class _TeamKpiScreenState extends State<TeamKpiScreen> {
                                   const SizedBox(height: 5,),
                                   Row(
                                     children: [
-                                      if(double.parse(teamKpiSearchList[index].productivity.toString()) < 80.0)
+                                      if(double.parse(teamKpiSearchList[index].productivity.toString()) < 100.0)
                                         Expanded(
                                           child: IgnorePointer(
                                             ignoring: false,
@@ -309,7 +309,7 @@ class _TeamKpiScreenState extends State<TeamKpiScreen> {
                                           ),
                                         ),
                                       const SizedBox(width: 5,),
-                                      if(int.parse(teamKpiSearchList[index].efficiencyN.toString()) < 80)
+                                      if(int.parse(teamKpiSearchList[index].efficiencyN.toString()) < 100)
                                         Expanded(
                                           child: IgnorePointer(
                                             ignoring: false,

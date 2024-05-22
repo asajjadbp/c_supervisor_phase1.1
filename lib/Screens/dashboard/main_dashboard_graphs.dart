@@ -93,6 +93,7 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
   String checkOutTime = "";
   var release = "";
 
+
   Timer? timer;
   bool? isVpnConnected;
 
@@ -358,7 +359,7 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                 )
               ],
             ),
-            const Text("Version:1.19",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400),)
+            const Text("Version:1.20",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400),)
           ],
         ),
       ),
@@ -490,9 +491,9 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                         const Text("TMRs"),
                                                         ColumnGraphWidget(
                                                           firstColor: AppColors.graphPurple,
-                                                          firstChartData: [ChartData("Covered", dashboardResponseData.data![0].mykpi!.totalPlanned!)],
+                                                          firstChartData:dashboardResponseData.data![0].mykpi!.totalPlanned! != 0 ? [ChartData("Covered", dashboardResponseData.data![0].mykpi!.totalPlanned!)] : [],
                                                           secondColor: AppColors.graphLightPurple,
-                                                          secondChartData: [ChartData("Covered", dashboardResponseData.data![0].mykpi!.planned!)],
+                                                          secondChartData: dashboardResponseData.data![0].mykpi!.planned! != 0 ? [ChartData("Covered", dashboardResponseData.data![0].mykpi!.planned!)] : [],
                                                         ),
                                                         const GraphDetailsWidget(
                                                           firstTitle: "Covered",
@@ -521,23 +522,26 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                     const Text("Stores"),
                                                     SizedBox(
                                                       height: MediaQuery.of(context).size.height/7,
-                                                      child: SfCircularChart(
-                                                        palette: const [AppColors.graphLightPurple,AppColors.graphPurple],
-                                                          series: <CircularSeries>[
-                                                            DoughnutSeries<ChartData, String>(
-                                                                dataSource: [ChartData("CheckIn", dashboardResponseData.data![0].mykpi!.special!),ChartData("CheckIn", dashboardResponseData.data![0].mykpi!.totalPlanned!)],
-                                                                xValueMapper: (ChartData data, _) => data.x,
-                                                                yValueMapper: (ChartData data, _) => data.y,
+                                                      child: Visibility(
+                                                        visible: dashboardResponseData.data![0].mykpi!.special! != 0 || dashboardResponseData.data![0].mykpi!.planned! != 0,
+                                                        child: SfCircularChart(
+                                                          palette: const [AppColors.graphLightPurple,AppColors.graphPurple],
+                                                            series: <CircularSeries>[
+                                                              DoughnutSeries<ChartData, String>(
+                                                                  dataSource: [ChartData("CheckIn", dashboardResponseData.data![0].mykpi!.special!),ChartData("CheckIn", dashboardResponseData.data![0].mykpi!.planned!)],
+                                                                  xValueMapper: (ChartData data, _) => data.x,
+                                                                  yValueMapper: (ChartData data, _) => data.y,
 
-                                                                dataLabelSettings: const DataLabelSettings(
-                                                                  isVisible: true,
-                                                                 showCumulativeValues: true,
-                                                                 labelPosition: ChartDataLabelPosition.inside,
-                                                                  color: AppColors.graphLightPurple
-                                                                )
-                                                                // Starting angle of doughnut
-                                                            ),
-                                                          ]
+                                                                  dataLabelSettings: const DataLabelSettings(
+                                                                    isVisible: true,
+                                                                   showCumulativeValues: true,
+                                                                   labelPosition: ChartDataLabelPosition.inside,
+                                                                    color: AppColors.graphLightPurple
+                                                                  )
+                                                                  // Starting angle of doughnut
+                                                              ),
+                                                            ]
+                                                        ),
                                                       ),
                                                     ),
                                                     const GraphDetailsWidget(

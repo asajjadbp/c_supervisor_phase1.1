@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:c_supervisor/Model/response_model/common_list/comon_list_response_model.dart';
 import 'package:c_supervisor/Network/http_manager.dart';
 import 'package:c_supervisor/Screens/widgets/toast_message_show.dart';
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,13 +36,20 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
    late StoresListItem initialStoresList;
   late StoresListItem initialCitiesList;
   late StoresListItem initialChainList;
+  late StoresListItem initialRegionList;
    late ReasonListItem initialReasonsList;
+
+  late SingleValueDropDownController _valueDropDownController;
+  late SingleValueDropDownController _chainValueDropDownController;
+  late SingleValueDropDownController _clientValueDropDownController;
+
 
   List <TmrUserItem> tmrUserList = <TmrUserItem>[TmrUserItem(id: 0,fullName: "Select Tmr",email: "")];
   late ClientListResponseModel clientList;
   late StoresListResponseModel storesList;
   late StoresListResponseModel citiesList;
   late StoresListResponseModel chainList;
+  late StoresListResponseModel regionList;
   late CompaniesListResponseModel companiesList;
   late ReasonListResponseModel reasonsList;
 
@@ -56,6 +66,7 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
   bool isLoading5 = true;
   bool isLoading6 = false;
   bool isLoading7 = false;
+  bool isLoading8 = true;
 
   TextEditingController storeController = TextEditingController();
   TextEditingController timeController = TextEditingController();
@@ -84,6 +95,11 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
    @override
   void initState() {
     // TODO: implement initState
+
+     _valueDropDownController = SingleValueDropDownController();
+     _chainValueDropDownController =SingleValueDropDownController();
+     _clientValueDropDownController = SingleValueDropDownController();
+
     getUserData();
     setState(() {
       timeController.text = "--:-- --";
@@ -106,11 +122,38 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
 
     getTmrUserList(true);
     getClientList(true);
-    getCitiesList(true);
     getChainList(true);
     getCompaniesList(true);
     getReasonList(true);
+    getRegionList(true);
 
+  }
+
+
+  getRegionList(bool loader) {
+
+    setState(() {
+      isLoading8 = loader;
+    });
+
+    HTTPManager().regionsList(JourneyPlanRequestModel(elId: userId)).then((value) {
+      setState(() {
+
+        regionList = value;
+
+        initialRegionList = regionList.data![0];
+
+        getCitiesList(true);
+        isError = false;
+      });
+
+    }).catchError((e) {
+      setState(() {
+        isError = true;
+        errorText = e.toString();
+        isLoading8 = false;
+      });
+    });
   }
 
   getTmrUserList(bool loader) {
@@ -156,6 +199,7 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
         clientList = value;
 
         initialClientList = clientList.data![0];
+        _clientValueDropDownController.dropDownValue = DropDownValueModel(name: initialClientList.companyName!, value: initialClientList);
 
         isLoading2 = false;
         isError = false;
@@ -171,9 +215,7 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
   }
 
   getStoresList(bool loader) {
-    print(userId);
-    print(initialCitiesList.id!);
-    print(initialChainList.id!);
+
     setState(() {
       isLoading = loader;
     });
@@ -206,16 +248,18 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
   getCitiesList(bool loader) {
 
     setState(() {
-      isLoading6 = loader;
+      isLoading = loader;
     });
 
-    HTTPManager().citiesList().then((value) {
+    HTTPManager().citiesList(CityListRequestModel(elId: userId,regionId: initialRegionList.id.toString())).then((value) {
       setState(() {
 
         citiesList = value;
 
         initialCitiesList = citiesList.data![0];
-        isLoading6 = false;
+        _valueDropDownController.dropDownValue = DropDownValueModel(name: initialCitiesList.name!, value: initialCitiesList.id);
+        isLoading = false;
+        isLoading8 = false;
         getStoresList(true);
         isError = false;
       });
@@ -224,7 +268,8 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
       setState(() {
         isError = true;
         errorText = e.toString();
-        isLoading6 = false;
+        isLoading = false;
+        isLoading8 = false;
       });
     });
   }
@@ -241,6 +286,7 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
         chainList = value;
 
         initialChainList = chainList.data![0];
+        _chainValueDropDownController.dropDownValue = DropDownValueModel(name: initialChainList.name!, value: initialChainList.id);
         isLoading7 = false;
         getStoresList(true);
         isError = false;
@@ -310,6 +356,15 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    _valueDropDownController.dispose();
+    _chainValueDropDownController.dispose();
+    _clientValueDropDownController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: HeaderBackgroundNew(
@@ -320,7 +375,7 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
             isDrawerButton: true,
           ),
           Expanded(
-              child: isLoading1 || isLoading2 || isLoading3 || isLoading4 || isLoading5 || isLoading6 || isLoading7? const Center(
+              child: isLoading1 || isLoading2 || isLoading3 || isLoading4 || isLoading5 || isLoading6 || isLoading7 || isLoading8 ? const Center(
                 child: CircularProgressIndicator(
                   color: AppColors.primaryColor,
                 ),
@@ -341,7 +396,7 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               const SizedBox(height: 50,),
-                              const Text("  Select Chain",style: TextStyle(color: AppColors.primaryColor),),
+                              const Text("  Select Region",style: TextStyle(color: AppColors.primaryColor),),
                               Container(
                                 width: MediaQuery.of(context).size.width,
                                 padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -351,9 +406,9 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
                                 ),
                                 child: DropdownButtonHideUnderline(
                                     child: DropdownButton<StoresListItem>(
-                                        value: initialChainList,
+                                        value: initialRegionList,
                                         isExpanded: true,
-                                        items: chainList.data!.map((StoresListItem items) {
+                                        items: regionList.data!.map((StoresListItem items) {
                                           return DropdownMenuItem(
                                             value: items,
                                             child: Text(items.name!,overflow: TextOverflow.ellipsis,),
@@ -361,10 +416,10 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
                                         }).toList(),
                                         onChanged: (value) {
                                           setState((){
-                                            initialChainList = value!;
-                                            storeController.clear();
-                                            getStoresList(true);
+                                            initialRegionList = value!;
+                                            _valueDropDownController.clearDropDown();
                                           });
+                                          getCitiesList(true);
                                         })),
                               ),
                               const Text("  Select City",style: TextStyle(color: AppColors.primaryColor),),
@@ -376,22 +431,110 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
                                     border: Border.all(color: AppColors.primaryColor)
                                 ),
                                 child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<StoresListItem>(
-                                        value: initialCitiesList,
-                                        isExpanded: true,
-                                        items: citiesList.data!.map((StoresListItem items) {
-                                          return DropdownMenuItem(
-                                            value: items,
-                                            child: Text(items.name!,overflow: TextOverflow.ellipsis,),
-                                          );
-                                        }).toList(),
-                                        onChanged: (value) {
-                                          setState((){
-                                            initialCitiesList = value!;
-                                            storeController.clear();
-                                            getStoresList(true);
-                                          });
-                                        })),
+                                    child: DropDownTextField(
+                                      textFieldDecoration:const InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: "Select City",
+                                        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 2),
+                                      ),
+                                      listPadding: ListPadding(top: 20),
+                                      enableSearch: true,
+                                      clearOption: false,
+                                      controller: _valueDropDownController,
+                                      dropDownList: citiesList.data!.map<DropDownValueModel>((StoresListItem value) {
+                                        return DropDownValueModel(
+                                            value: value.id,
+                                            name: value.name!
+                                        );
+                                      }).toList(),
+                                      onChanged: (val) {
+                                        //print("Value Selected");
+                                        setState(() {
+                                          initialCitiesList = StoresListItem(id: _valueDropDownController.dropDownValue!.value,name: _valueDropDownController.dropDownValue!.name);
+                                           print(jsonEncode(initialCitiesList));
+                                          storeController.clear();
+                                          getStoresList(true);
+                                        });
+                                      },
+                                    )
+
+                                    // DropdownButton<StoresListItem>(
+                                    //     value: initialCitiesList,
+                                    //     isExpanded: true,
+                                    //     hint: const Text("Select City"),
+                                    //     items: citiesList.data!.map((StoresListItem items) {
+                                    //       return DropdownMenuItem(
+                                    //         value: items,
+                                    //         child: Text(items.name!,overflow: TextOverflow.ellipsis,),
+                                    //       );
+                                    //     }).toList(),
+                                    //     onChanged: (value) {
+                                    //       setState((){
+                                    //         initialCitiesList = value!;
+                                    //         storeController.clear();
+                                    //         getStoresList(true);
+                                    //       });
+                                    //     })
+
+
+                                ),
+                              ),
+                              const Text("  Select Chain",style: TextStyle(color: AppColors.primaryColor),),
+                              Container(
+                                width: MediaQuery.of(context).size.width,
+                                padding: const EdgeInsets.symmetric(horizontal: 5),
+                                margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: AppColors.primaryColor)
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                    child:
+                                    DropDownTextField(
+                                      textFieldDecoration:const InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: "Select Chain",
+                                        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 2),
+                                      ),
+                                      listPadding: ListPadding(top: 20),
+                                      enableSearch: true,
+                                      clearOption: false,
+                                      controller: _chainValueDropDownController,
+                                      dropDownList: chainList.data!.map<DropDownValueModel>((StoresListItem value) {
+                                        return DropDownValueModel(
+                                            value: value.id,
+                                            name: value.name!
+                                        );
+                                      }).toList(),
+                                      onChanged: (val) {
+                                        //print("Value Selected");
+                                        setState(() {
+                                          initialChainList = StoresListItem(id: _chainValueDropDownController.dropDownValue!.value,name: _chainValueDropDownController.dropDownValue!.name);
+                                          print(jsonEncode(initialChainList));
+                                          storeController.clear();
+                                          getStoresList(true);
+                                        });
+                                      },
+                                    )
+
+
+
+                                    // DropdownButton<StoresListItem>(
+                                    //     value: initialChainList,
+                                    //     isExpanded: true,
+                                    //     items: chainList.data!.map((StoresListItem items) {
+                                    //       return DropdownMenuItem(
+                                    //         value: items,
+                                    //         child: Text(items.name!,overflow: TextOverflow.ellipsis,),
+                                    //       );
+                                    //     }).toList(),
+                                    //     onChanged: (value) {
+                                    //       setState((){
+                                    //         initialChainList = value!;
+                                    //         storeController.clear();
+                                    //         getStoresList(true);
+                                    //       });
+                                    //     })
+                              ),
                               ),
                               const SizedBox(height: 5,),
                               const Text("  Select Client",style: TextStyle(color: AppColors.primaryColor),),
@@ -403,20 +546,49 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
                                     border: Border.all(color: AppColors.primaryColor)
                                 ),
                                 child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<ClientListItem>(
-                                        value: initialClientList,
-                                        isExpanded: true,
-                                        items: clientList.data!.map((ClientListItem items) {
-                                          return DropdownMenuItem(
-                                            value: items,
-                                            child: Text(items.companyName!,overflow: TextOverflow.ellipsis,),
-                                          );
-                                        }).toList(),
-                                        onChanged: (value) {
-                                          setState((){
-                                            initialClientList = value!;
-                                          });
-                                        })),
+                                    child: DropDownTextField(
+                                      textFieldDecoration:const InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: "Select Client",
+                                        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 2),
+                                      ),
+                                      listPadding: ListPadding(top: 20),
+                                      enableSearch: true,
+                                      clearOption: false,
+                                      controller: _clientValueDropDownController,
+                                      dropDownList: clientList.data!.map<DropDownValueModel>((ClientListItem value) {
+                                        return DropDownValueModel(
+                                            value: value,
+                                            name: value.companyName!
+                                        );
+                                      }).toList(),
+                                      onChanged: (val) {
+                                        //print("Value Selected");
+                                        setState(() {
+                                          initialClientList = _clientValueDropDownController.dropDownValue!.value;
+                                          print(jsonEncode(initialClientList));
+
+                                        });
+                                      },
+                                    )
+
+
+                                    // DropdownButton<ClientListItem>(
+                                    //     value: initialClientList,
+                                    //     isExpanded: true,
+                                    //     items: clientList.data!.map((ClientListItem items) {
+                                    //       return DropdownMenuItem(
+                                    //         value: items,
+                                    //         child: Text(items.companyName!,overflow: TextOverflow.ellipsis,),
+                                    //       );
+                                    //     }).toList(),
+                                    //     onChanged: (value) {
+                                    //       setState((){
+                                    //         initialClientList = value!;
+                                    //       });
+                                    //     })
+
+                                ),
                               ),
                               const SizedBox(height: 5,),
                               const Text("  Select Store",style: TextStyle(color: AppColors.primaryColor),),
@@ -667,7 +839,7 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
       HTTPManager().saveSpecialVisit(SaveSpecialVisitRequestModel(
         elId: userId,
         companyId: initialClientList.companyId.toString(),
-        storeId: initialCommonListItem.id.toString(),
+        storeId: initialStoresList.id.toString(),
         reason: initialReasonsList.reason,
         userId: initialTmrUserList.id.toString(),
         visitDate: DateFormat('MM/dd/yyyy').format(selectedDate),

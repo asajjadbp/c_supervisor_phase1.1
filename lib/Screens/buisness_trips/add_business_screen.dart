@@ -6,10 +6,12 @@ import 'package:c_supervisor/Model/request_model/business_trips.dart';
 import 'package:c_supervisor/Model/response_model/my_team_responses/add_special_visit/store_list_model_response.dart';
 import 'package:c_supervisor/Network/http_manager.dart';
 import 'package:c_supervisor/Screens/widgets/toast_message_show.dart';
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Model/request_model/common_api_call_request.dart';
+import '../../Model/request_model/journey_plan_request.dart';
 import '../../Model/response_model/business_trips_response/business_trips_list_model.dart';
 import '../../Model/response_model/common_list/comon_list_response_model.dart';
 import '../recruite_suggest/widgets/recruite_suggest_bottom_sheets.dart';
@@ -35,9 +37,11 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
 
   late StoresListItem initialFromCityItem;
   late StoresListItem initialToCityItem;
+  late StoresListItem initialRegionList;
 
   List<StoresListItem> fromCityCommonListModel = <StoresListItem>[];
   List<StoresListItem> toCityCommonListModel = <StoresListItem>[];
+  late StoresListResponseModel regionList;
 
   final GlobalKey<FormState> _formKey = GlobalKey();
 
@@ -60,9 +64,14 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
   bool isError = false;
   String errorText = "";
 
+  late SingleValueDropDownController _valueDropDownController;
+  late SingleValueDropDownController _toCityValueDropDownController;
+
   @override
   void initState() {
     // TODO: implement initState
+    _valueDropDownController = SingleValueDropDownController();
+    _toCityValueDropDownController =SingleValueDropDownController();
     getUserData();
     if(widget.isEdit) {
       setState(() {
@@ -98,13 +107,52 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
     }
   }
 
+  // getRegionList(bool loader) {
+  //
+  //   setState(() {
+  //     isLoading1 = loader;
+  //     isLoading2 = loader;
+  //   });
+  //
+  //   HTTPManager().regionsList(JourneyPlanRequestModel(elId: userId)).then((value) {
+  //     setState(() {
+  //
+  //       regionList = value;
+  //
+  //       initialRegionList = regionList.data![0];
+  //
+  //       if(widget.isEdit) {
+  //         getFromCityList(
+  //             true, "city", "query", widget.businessTrips.fromCity!.trim());
+  //
+  //         getToCityList(true, "city", "query", widget.businessTrips.toCity!.trim());
+  //       } else {
+  //         getFromCityList(
+  //             true, "city", "query", "");
+  //
+  //         getToCityList(true, "city", "query", "");
+  //       }
+  //       isError = false;
+  //     });
+  //
+  //   }).catchError((e) {
+  //     setState(() {
+  //       isError = true;
+  //       errorText = e.toString();
+  //       isLoading1 = false;
+  //       isLoading2 = false;
+  //     });
+  //   });
+  // }
+
+
   getFromCityList(bool loader,String searchBy,String termType,String termTerm) {
 
     setState(() {
       isLoading2 = loader;
     });
 
-    HTTPManager().citiesList().then((value) {
+    HTTPManager().citiesList(CityListRequestModel(elId: userId,regionId: "")).then((value) {
       setState(() {
         fromCityCommonListModel = value.data!;
         initialFromCityItem = fromCityCommonListModel[0];
@@ -115,6 +163,7 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
             }
           }
         }
+        _valueDropDownController.dropDownValue = DropDownValueModel(name: initialFromCityItem.name!, value: initialFromCityItem);
         print(initialFromCityItem.id);
         isLoading2 = false;
         isError = false;
@@ -136,7 +185,7 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
       isLoading1 = loader;
     });
 
-    HTTPManager().citiesList().then((value) {
+    HTTPManager().citiesList(CityListRequestModel(elId: userId,regionId: "")).then((value) {
       setState(() {
         toCityCommonListModel = value.data!;
         initialToCityItem = toCityCommonListModel[0];
@@ -147,6 +196,7 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
             }
           }
         }
+        _toCityValueDropDownController.dropDownValue = DropDownValueModel(name: initialToCityItem.name!, value: initialToCityItem);
         print(initialToCityItem.id);
         isLoading1 = false;
         isError = false;
@@ -163,7 +213,13 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
     });
   }
 
-
+@override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _valueDropDownController.dispose();
+    _toCityValueDropDownController.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -193,6 +249,34 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
+                              // const Text("  Select Region",style: TextStyle(color: AppColors.primaryColor),),
+                              // Container(
+                              //   width: MediaQuery.of(context).size.width,
+                              //   padding: const EdgeInsets.symmetric(horizontal: 5),
+                              //   margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
+                              //   decoration: BoxDecoration(
+                              //       border: Border.all(color: AppColors.primaryColor)
+                              //   ),
+                              //   child: DropdownButtonHideUnderline(
+                              //       child: DropdownButton<StoresListItem>(
+                              //           value: initialRegionList,
+                              //           isExpanded: true,
+                              //           items: regionList.data!.map((StoresListItem items) {
+                              //             return DropdownMenuItem(
+                              //               value: items,
+                              //               child: Text(items.name!,overflow: TextOverflow.ellipsis,),
+                              //             );
+                              //           }).toList(),
+                              //           onChanged: (value) {
+                              //             setState((){
+                              //               initialRegionList = value!;
+                              //             });
+                              //             getFromCityList(
+                              //                 true, "city", "query", "");
+                              //
+                              //             getToCityList(true, "city", "query", "");
+                              //           })),
+                              // ),
                               const Text("  From City",style: TextStyle(color: AppColors.primaryColor),),
                               Container(
                                 width: MediaQuery.of(context).size.width,
@@ -202,20 +286,48 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
                                     border: Border.all(color: AppColors.primaryColor)
                                 ),
                                 child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<StoresListItem>(
-                                        value: initialFromCityItem,
-                                        isExpanded: true,
-                                        items: fromCityCommonListModel.map((StoresListItem items) {
-                                          return DropdownMenuItem(
-                                            value: items,
-                                            child: Text(items.name!,overflow: TextOverflow.ellipsis,),
-                                          );
-                                        }).toList(),
-                                        onChanged: (value) {
-                                          setState((){
-                                            initialFromCityItem = value!;
-                                          });
-                                        })),
+                                    child: DropDownTextField(
+                                      textFieldDecoration:const InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: "Select City",
+                                        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 2),
+                                      ),
+                                      listPadding: ListPadding(top: 20),
+                                      enableSearch: true,
+                                      clearOption: false,
+                                      controller: _valueDropDownController,
+                                      dropDownList: fromCityCommonListModel.map<DropDownValueModel>((StoresListItem value) {
+                                        return DropDownValueModel(
+                                            value: value.id,
+                                            name: value.name!
+                                        );
+                                      }).toList(),
+                                      onChanged: (val) {
+                                        //print("Value Selected");
+                                        setState(() {
+                                          initialFromCityItem = StoresListItem(id: _valueDropDownController.dropDownValue!.value,name: _valueDropDownController.dropDownValue!.name);
+                                        });
+                                      },
+                                    )
+
+
+
+                                    // DropdownButton<StoresListItem>(
+                                    //     value: initialFromCityItem,
+                                    //     isExpanded: true,
+                                    //     hint: const Text("Select City"),
+                                    //     items: fromCityCommonListModel.map((StoresListItem items) {
+                                    //       return DropdownMenuItem(
+                                    //         value: items,
+                                    //         child: Text(items.name!,overflow: TextOverflow.ellipsis,),
+                                    //       );
+                                    //     }).toList(),
+                                    //     onChanged: (value) {
+                                    //       setState((){
+                                    //         initialFromCityItem = value!;
+                                    //       });
+                                    //     })
+                              ),
                               ),
                               // Container(
                               //   width: MediaQuery.of(context).size.width,
@@ -250,20 +362,50 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
                                     border: Border.all(color: AppColors.primaryColor)
                                 ),
                                 child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<StoresListItem>(
-                                        value: initialToCityItem,
-                                        isExpanded: true,
-                                        items: toCityCommonListModel.map((StoresListItem items) {
-                                          return DropdownMenuItem(
-                                            value: items,
-                                            child: Text(items.name!,overflow: TextOverflow.ellipsis,),
-                                          );
-                                        }).toList(),
-                                        onChanged: (value) {
-                                          setState((){
-                                            initialToCityItem = value!;
-                                          });
-                                        })),
+                                    child: DropDownTextField(
+                                      textFieldDecoration:const InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: "Select City",
+                                        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 2),
+                                      ),
+                                      listPadding: ListPadding(top: 20),
+                                      enableSearch: true,
+                                      clearOption: false,
+                                      controller: _toCityValueDropDownController,
+                                      dropDownList: toCityCommonListModel.map<DropDownValueModel>((StoresListItem value) {
+                                        return DropDownValueModel(
+                                            value: value.id,
+                                            name: value.name!
+                                        );
+                                      }).toList(),
+                                      onChanged: (val) {
+                                        //print("Value Selected");
+                                        setState(() {
+                                          initialToCityItem = StoresListItem(id: _toCityValueDropDownController.dropDownValue!.value,name: _toCityValueDropDownController.dropDownValue!.name);
+                                        });
+                                      },
+                                    )
+
+
+
+
+                                    // DropdownButton<StoresListItem>(
+                                    //     value: initialToCityItem,
+                                    //     isExpanded: true,
+                                    //     hint: const Text("Select City"),
+                                    //     items: toCityCommonListModel.map((StoresListItem items) {
+                                    //       return DropdownMenuItem(
+                                    //         value: items,
+                                    //         child: Text(items.name!,overflow: TextOverflow.ellipsis,),
+                                    //       );
+                                    //     }).toList(),
+                                    //     onChanged: (value) {
+                                    //       setState((){
+                                    //         initialToCityItem = value!;
+                                    //       });
+                                    //     })
+
+                                ),
                               ),
                               // Container(
                               //   width: MediaQuery.of(context).size.width,
@@ -408,6 +550,10 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
   }
   addBusinessTrip() {
     if(_formKey.currentState!.validate()) {
+      if(fromCityCommonListModel.isEmpty || toCityCommonListModel.isEmpty) {
+        showToastMessage(false, "City Field can't be empty");
+        return;
+      }
       if(files.isNotEmpty) {
         setState(() {
           isLoading = true;
@@ -448,6 +594,10 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
     setState(() {
       isLoading = true;
     });
+    if(fromCityCommonListModel.isEmpty || toCityCommonListModel.isEmpty) {
+      showToastMessage(false, "City Field can't be empty");
+      return;
+    }
     if(files.isEmpty) {
       HTTPManager().updateBusinessTripsWithOutFiles(
           UpdateBusinessTripsRequestModel(

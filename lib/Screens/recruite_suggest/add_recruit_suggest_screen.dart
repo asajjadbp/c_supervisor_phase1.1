@@ -7,10 +7,12 @@ import 'package:c_supervisor/Model/response_model/recruit_suggest_responses/recr
 import 'package:c_supervisor/Network/http_manager.dart';
 import 'package:c_supervisor/Screens/recruite_suggest/widgets/recruite_suggest_bottom_sheets.dart';
 import 'package:c_supervisor/Screens/widgets/toast_message_show.dart';
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Model/request_model/common_api_call_request.dart';
+import '../../Model/request_model/journey_plan_request.dart';
 import '../../Model/response_model/common_list/comon_list_response_model.dart';
 import '../../Model/response_model/my_team_responses/add_special_visit/store_list_model_response.dart';
 import '../utills/app_colors_new.dart';
@@ -33,8 +35,10 @@ class AddRecruitSuggestScreen extends StatefulWidget {
 class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
 
   late StoresListItem initialCityItem;
+  late StoresListItem initialRegionList;
 
   List<StoresListItem> cityCommonListModel = <StoresListItem>[];
+  late StoresListResponseModel regionList;
 
   final GlobalKey<FormState> _formKey = GlobalKey();
 
@@ -45,6 +49,8 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
   TextEditingController yearExpController = TextEditingController();
   TextEditingController cvController = TextEditingController();
   TextEditingController commentController = TextEditingController();
+
+  late SingleValueDropDownController _valueDropDownController;
 
   String userName = "";
   String userId = "";
@@ -61,6 +67,7 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
   @override
   void initState() {
     // TODO: implement initState
+    _valueDropDownController = SingleValueDropDownController();
     getUserData();
     if(widget.isEdit) {
       setState(() {
@@ -75,6 +82,13 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
     }
     super.initState();
 
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _valueDropDownController.dispose();
   }
 
   getUserData() async {
@@ -93,17 +107,51 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
     }
   }
 
+  // getRegionList(bool loader) {
+  //
+  //   setState(() {
+  //     isLoading2 = loader;
+  //   });
+  //
+  //   HTTPManager().regionsList(JourneyPlanRequestModel(elId: userId)).then((value) {
+  //     setState(() {
+  //
+  //       regionList = value;
+  //
+  //       initialRegionList = regionList.data![0];
+  //
+  //       if(widget.isEdit) {
+  //         getCityList(true, "city", "query", widget.recruitSuggest.cityName!);
+  //       } else {
+  //         getCityList(true, "city", "query", "");
+  //       }
+  //       isError = false;
+  //     });
+  //
+  //   }).catchError((e) {
+  //     setState(() {
+  //       isError = true;
+  //       errorText = e.toString();
+  //       isLoading2 = false;
+  //     });
+  //   });
+  // }
+
   getCityList(bool loader,String searchBy,String termType,String termTerm) {
 
     setState(() {
       isLoading2 = loader;
     });
 
-    HTTPManager().citiesList()
+    HTTPManager().citiesList(CityListRequestModel(elId: userId,regionId: ""))
         .then((value) {
       setState(() {
         cityCommonListModel = value.data!;
-        initialCityItem = cityCommonListModel[0];
+        if(cityCommonListModel.isEmpty) {
+         initialCityItem = StoresListItem(name: "",id: 0);
+        }else {
+          initialCityItem = cityCommonListModel[0];
+        }
         if(widget.isEdit) {
           for(int i=0;i<cityCommonListModel.length; i++) {
             if(widget.recruitSuggest.cityName!.trim() == cityCommonListModel[i].name!.trim()) {
@@ -111,6 +159,7 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
             }
           }
         }
+        _valueDropDownController.dropDownValue = DropDownValueModel(name: initialCityItem.name!, value: initialCityItem);
         print(initialCityItem.id);
         isLoading2 = false;
         isError = false;
@@ -149,6 +198,7 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
                     Form(
                       key: _formKey,
                       child: Container(
+                        decoration: const BoxDecoration(color: AppColors.white),
                         margin: const EdgeInsets.symmetric(horizontal: 5),
                         child: SingleChildScrollView(
                           scrollDirection: Axis.vertical,
@@ -156,6 +206,32 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               const SizedBox(height: 50,),
+                              // const Text("  Select Region",style: TextStyle(color: AppColors.primaryColor),),
+                              // Container(
+                              //   width: MediaQuery.of(context).size.width,
+                              //   padding: const EdgeInsets.symmetric(horizontal: 5),
+                              //   margin:const EdgeInsets.symmetric(vertical: 5,horizontal: 5),
+                              //   decoration: BoxDecoration(
+                              //       border: Border.all(color: AppColors.primaryColor)
+                              //   ),
+                              //   child: DropdownButtonHideUnderline(
+                              //       child: DropdownButton<StoresListItem>(
+                              //           value: initialRegionList,
+                              //           isExpanded: true,
+                              //           items: regionList.data!.map((StoresListItem items) {
+                              //             return DropdownMenuItem(
+                              //               value: items,
+                              //               child: Text(items.name!,overflow: TextOverflow.ellipsis,),
+                              //             );
+                              //           }).toList(),
+                              //           onChanged: (value) {
+                              //             setState((){
+                              //               initialRegionList = value!;
+                              //             });
+                              //             getCityList(
+                              //                 true, "city", "query", "");
+                              //           })),
+                              // ),
                               const Text("  Add Name",style: TextStyle(color: AppColors.primaryColor),),
                               Container(
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -201,20 +277,47 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
                                     border: Border.all(color: AppColors.primaryColor)
                                 ),
                                 child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<StoresListItem>(
-                                        value: initialCityItem,
-                                        isExpanded: true,
-                                        items: cityCommonListModel.map((StoresListItem items) {
-                                          return DropdownMenuItem(
-                                            value: items,
-                                            child: Text(items.name!,overflow: TextOverflow.ellipsis,),
-                                          );
-                                        }).toList(),
-                                        onChanged: (value) {
-                                          setState((){
-                                            initialCityItem = value!;
-                                          });
-                                        })),
+                                    child: DropDownTextField(
+                                      textFieldDecoration:const InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: "Select City",
+                                        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 2),
+                                      ),
+                                      listPadding: ListPadding(top: 20),
+                                      enableSearch: true,
+                                      clearOption: false,
+                                      controller: _valueDropDownController,
+                                      dropDownList: cityCommonListModel.map<DropDownValueModel>((StoresListItem value) {
+                                        return DropDownValueModel(
+                                            value: value.id,
+                                            name: value.name!
+                                        );
+                                      }).toList(),
+                                      onChanged: (val) {
+                                        //print("Value Selected");
+                                        setState(() {
+                                          initialCityItem = StoresListItem(id: _valueDropDownController.dropDownValue!.value,name: _valueDropDownController.dropDownValue!.name);
+                                        });
+                                      },
+                                    )
+
+
+                                    // DropdownButton<StoresListItem>(
+                                    //     value: initialCityItem,
+                                    //     isExpanded: true,
+                                    //     hint: const Text("Select City"),
+                                    //     items: cityCommonListModel.map((StoresListItem items) {
+                                    //       return DropdownMenuItem(
+                                    //         value: items,
+                                    //         child: Text(items.name!,overflow: TextOverflow.ellipsis,),
+                                    //       );
+                                    //     }).toList(),
+                                    //     onChanged: (value) {
+                                    //       setState((){
+                                    //         initialCityItem = value!;
+                                    //       });
+                                    //     })
+                              ),
                               ),
                               const SizedBox(height: 5,),
                               const Text("  Add Iqama No",style: TextStyle(color: AppColors.primaryColor),),

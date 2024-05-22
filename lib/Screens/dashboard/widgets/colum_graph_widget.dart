@@ -35,7 +35,7 @@ class ColumnGraphWidget extends StatelessWidget {
                 alignment: ChartAlignment.center
               ),
             animationDuration: 2500,
-              dataSource: firstChartData,
+              dataSource: firstChartData ,
               color: firstColor,
               borderColor: AppColors.white,
               borderWidth: 2,

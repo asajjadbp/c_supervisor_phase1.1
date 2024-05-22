@@ -51,6 +51,9 @@ class ApplicationURLs {
   //Chain LIST
   static const API_CHAIN_LIST = "getChains";
 
+  //Region LIST
+  static const API_REGION_LIST = "getRegions";
+
   //Stores LIST
   static const API_STORES_LIST = "elStores";
 

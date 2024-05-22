@@ -389,7 +389,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 10,),
                     const Align(
                         alignment: Alignment.center,
-                        child: Text("Version 1.19",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400),)),
+                        child: Text("Version 1.20",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400),)),
                   ],
                 ),
               ),
