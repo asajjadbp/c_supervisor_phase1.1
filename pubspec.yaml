@@ -7,7 +7,8 @@ description: A new Flutter project.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-version: 1.0.1+4
+version: 1.0.23+26
+# 1.0.7+10
 
 environment:
   sdk: '>=2.17.0 <3.0.0'
@@ -31,8 +32,24 @@ dependencies:
   geolocator: ^10.1.0
   geocoding: ^2.1.1
   cached_network_image: ^3.3.0
-  vpn_connection_detector: ^1.0.5
+  # vpn_connection_detector: ^1.0.5
   google_maps_flutter: ^2.5.0
+  pie_chart: ^5.4.0
+  # new_version: ^0.3.0
+  new_version_plus:
+  provider: ^6.1.1
+  device_info_plus: ^9.1.2
+  internet_file:
+  file_picker:
+  dropdown_search: ^5.0.6
+  percent_indicator: ^4.2.3
+  syncfusion_flutter_charts:
+  syncfusion_flutter_gauges:
+  pull_to_refresh: ^2.0.0
+  dropdown_textfield: ^1.0.8
+  googleapis: any
+  googleapis_auth: any
+  
 
   #injection
 #  get_it: ^7.2.0
@@ -78,6 +95,7 @@ dependencies:
   flutter_expandable_fab: ^2.0.0
 #  pull_down_button: ^0.9.3
   flutter_staggered_animations: ^1.1.1
+  group_radio_button: ^1.3.0
 #  syncfusion_flutter_charts: ^21.2.4
 #  crop_image: ^1.0.11
 
@@ -108,5 +126,8 @@ flutter:
     - assets/backgrounds/
     - assets/icons/
     - assets/dashboard/
+    - assets/myicons/
+    - assets/person.jpg
+    - assets/google_cloud_creds/
 
 
