@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../utills/app_colors_new.dart';
 
 class MyJpCardForDetail extends StatelessWidget {
-  const MyJpCardForDetail({Key? key,required this.storeName,required this.visitStatus,required this.tmrName,required this.workingDate,required this.tmrId,required this.buttonName,required this.onTap,required this.onMapTap}) : super(key: key);
+  const MyJpCardForDetail({Key? key,required this.storeName,required this.isLoadingButton,required this.visitStatus,required this.tmrName,required this.workingDate,required this.tmrId,required this.buttonName,required this.onTap,required this.onMapTap}) : super(key: key);
 
  final String storeName;
   final String visitStatus;
@@ -13,6 +13,7 @@ class MyJpCardForDetail extends StatelessWidget {
   final String buttonName;
   final Function onTap;
   final Function onMapTap;
+  final bool isLoadingButton;
 
   @override
   Widget build(BuildContext context) {
@@ -37,19 +38,24 @@ class MyJpCardForDetail extends StatelessWidget {
                 const SizedBox(width: 5,),
                 const Text("|",style: TextStyle(color: AppColors.greyColor),),
                 const SizedBox(width: 5,),
-                visitStatus == "0" ? const Row(
-                  children: [
-                    Icon(Icons.cancel,color: AppColors.redColor,size: 20,),
-                    SizedBox(width: 5,),
-                    Text("Pending",style: TextStyle(color: AppColors.redColor),)
-                  ],
-                ) : visitStatus == "2" ? const Row(
+               //  if(visitStatus == "0")
+               // const Row(
+               //    children: [
+               //      Icon(Icons.cancel,color: AppColors.redColor,size: 20,),
+               //      SizedBox(width: 5,),
+               //      Text("Pending",style: TextStyle(color: AppColors.redColor),)
+               //    ],
+               //  ),
+                if(visitStatus == "2")
+                 const Row(
                   children: [
                     Icon(Icons.check_circle,color: AppColors.green,size: 20,),
                     SizedBox(width: 5,),
                     Text("Finished",style: TextStyle(color: AppColors.green),)
                   ],
-                ) : const Row(
+                ),
+                if(visitStatus == "1")
+                const Row(
                   children: [
                     Icon(Icons.pending,color: AppColors.primaryColor,size: 20,),
                     SizedBox(width: 5,),
@@ -61,11 +67,11 @@ class MyJpCardForDetail extends StatelessWidget {
             const SizedBox(
               height: 5,
             ),
-            Text("TMR Name: $tmrName",overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.blue),),
+            Text("User Name: $tmrName",overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.blue),),
             const SizedBox(
               height: 5,
             ),
-            Text("TMR ID: $tmrId",overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.blue),),
+            Text("User ID: $tmrId",overflow: TextOverflow.ellipsis,style: const TextStyle(color: AppColors.blue),),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -81,15 +87,30 @@ class MyJpCardForDetail extends StatelessWidget {
                 ),
                 Visibility(
                   visible: visitStatus != "2",
-                  child: ElevatedButton(
-                    onPressed: (){
-                      onTap();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: IgnorePointer(
+                    ignoring: isLoadingButton,
+                    child: InkWell(
+                      onTap: (){
+                        onTap();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration:  BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          gradient: isLoadingButton ? const LinearGradient(
+                            colors: [
+                              AppColors.greyColor,
+                              AppColors.greyColor,
+                            ],
+                          ) : const LinearGradient(
+                            colors: [
+                              Color(0xFF0F408D),
+                              Color(0xFF6A82A9),
+                            ],
+                          )
+                        ),
+                          child: Text(buttonName,style: const TextStyle(color: AppColors.white),),),
                     ),
-                    child: Text(buttonName),
                   ),
                 ),
               ],

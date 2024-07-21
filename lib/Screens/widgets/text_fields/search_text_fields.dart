@@ -27,6 +27,7 @@ class SearchTextField extends StatelessWidget {
               color: AppColors.primaryColor,
             ),
           ),
+          prefixIcon: Icon(Icons.search, color: AppColors.primaryColor,),
           focusedBorder:  const OutlineInputBorder(
               borderRadius:  BorderRadius.all(Radius.circular(16.0)),
               borderSide:  BorderSide(

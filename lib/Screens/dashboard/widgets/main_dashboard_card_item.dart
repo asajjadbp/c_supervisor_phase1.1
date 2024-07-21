@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:c_supervisor/Screens/utills/app_colors_new.dart';
 import 'package:flutter/material.dart';
 
 class MainDashboardItemCard extends StatelessWidget {
@@ -20,6 +21,7 @@ class MainDashboardItemCard extends StatelessWidget {
         clipBehavior: Clip.antiAliasWithSaveLayer,
         shadowColor: Colors.black12,
         elevation: 10,
+        borderOnForeground: true,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
         ),
@@ -29,11 +31,13 @@ class MainDashboardItemCard extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(imageUrl,fit: BoxFit.contain,),
+                const SizedBox(height: 30,),
+                Image.asset(imageUrl,fit: BoxFit.contain,height: 50,width: 50,),
                 Padding(
-                  padding: const EdgeInsets.only(top: 15),
+                  padding: const EdgeInsets.only(top: 10),
                   child: Text(cardName),
                 ),
+                const SizedBox(height: 30,),
               ],
             ),
           ],

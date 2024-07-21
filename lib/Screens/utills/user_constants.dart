@@ -5,7 +5,7 @@ class UserConstants {
   late String userGeoFence = "userGeoFence" ;
   late String userEmail = "userEmail" ;
   late String userName = "userName" ;
-  late String userCompanyName = "companyName";
+  late String userTimeStamp = "timeStamp";
 
   late String checkInId = "checkInId" ;
 

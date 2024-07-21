@@ -1,8 +1,8 @@
-
-
-import 'package:vpn_connection_detector/vpn_connection_detector.dart';
+// import 'package:vpn_connection_detector/vpn_connection_detector.dart';
 
 Future<bool> vpnDetector() async {
-  bool isConnected = await VpnConnectionDetector.isVpnActive();
-  return isConnected;
+  // bool isConnected = await VpnConnectionDetector.isVpnActive();
+
+  // return isConnected;
+  return false;
 }

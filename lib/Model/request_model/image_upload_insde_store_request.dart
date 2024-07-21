@@ -2,17 +2,28 @@ class ImageUploadInStoreRequestModel {
   String? elId;
   String? workingId;
   String? storeId;
-  String? checkInGps;
+  String? photoName;
   String? comment;
+  String? isSelfie;
+  String? selfieType;
 
-  ImageUploadInStoreRequestModel({this.elId,this.workingId,this.storeId,this.checkInGps,this.comment});
+  ImageUploadInStoreRequestModel(
+      {this.elId,
+      this.workingId,
+      this.storeId,
+      this.comment,
+      this.isSelfie,
+      this.selfieType,
+      required this.photoName});
 
   ImageUploadInStoreRequestModel.fromJson(Map<String, String> json) {
     elId = json['el_id'];
     workingId = json['working_id'];
     storeId = json['store_id'];
-    checkInGps = json['check_in_gps'];
     comment = json['comment'];
+    isSelfie = json['is_selfie'];
+    selfieType = json['selfie_type'];
+    photoName = json['photo'];
   }
 
   Map<String, String> toJson() {
@@ -20,8 +31,10 @@ class ImageUploadInStoreRequestModel {
     data['el_id'] = elId!;
     data['working_id'] = workingId!;
     data['store_id'] = storeId!;
-    data['check_in_gps'] = checkInGps!;
     data['comment'] = comment!;
+    data['is_selfie'] = isSelfie!;
+    data['selfie_type'] = selfieType!;
+    data['photo'] = photoName!;
 
     return data;
   }
@@ -32,7 +45,7 @@ class UploadedImagesRequestModel {
   String? workingId;
   String? storeId;
 
-  UploadedImagesRequestModel({this.elId,this.workingId,this.storeId});
+  UploadedImagesRequestModel({this.elId, this.workingId, this.storeId});
 
   UploadedImagesRequestModel.fromJson(Map<String, String> json) {
     elId = json['el_id'];
@@ -56,7 +69,8 @@ class DeleteImageRequestModel {
   String? storeId;
   String? imageId;
 
-  DeleteImageRequestModel({this.elId,this.workingId,this.storeId,this.imageId});
+  DeleteImageRequestModel(
+      {this.elId, this.workingId, this.storeId, this.imageId});
 
   DeleteImageRequestModel.fromJson(Map<String, String> json) {
     elId = json['el_id'];

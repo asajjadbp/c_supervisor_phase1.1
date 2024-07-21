@@ -18,13 +18,16 @@ class CheckInStatusUpdateRequestModel {
   String? elId;
   String? checkInGps;
   String? comment;
+  String? photoName;
 
-  CheckInStatusUpdateRequestModel({this.elId,this.checkInGps,this.comment});
+  CheckInStatusUpdateRequestModel(
+      {this.elId, this.checkInGps, this.comment, required this.photoName});
 
   CheckInStatusUpdateRequestModel.fromJson(Map<String, String> json) {
     elId = json['el_id'];
     checkInGps = json['checkin_gps'];
     comment = json['comment'];
+    photoName = json['photo'];
   }
 
   Map<String, String> toJson() {
@@ -32,6 +35,7 @@ class CheckInStatusUpdateRequestModel {
     data['el_id'] = elId!;
     data['checkin_gps'] = checkInGps!;
     data['comment'] = comment!;
+    data['photo'] = photoName!;
     return data;
   }
 }
@@ -41,7 +45,7 @@ class CheckOutStatusUpdateRequestModel {
   String? checkOutGps;
   String? id;
 
-  CheckOutStatusUpdateRequestModel({this.elId,this.checkOutGps,this.id});
+  CheckOutStatusUpdateRequestModel({this.elId, this.checkOutGps, this.id});
 
   CheckOutStatusUpdateRequestModel.fromJson(Map<String, String> json) {
     elId = json['el_id'];

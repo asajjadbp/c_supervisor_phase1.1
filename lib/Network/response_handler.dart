@@ -36,9 +36,31 @@ class ResponseHandler {
       if(responseJson['status']!= true) throw FetchDataException(responseJson['msg'].toString());
       return responseJson;
     } on TimeoutException {
-      throw FetchDataException("Slow internet connection");
+      throw FetchDataException("There is something wrong with your internet connection");
     } on SocketException {
-      throw FetchDataException('No Internet connection');
+      throw FetchDataException('Please turn on your data or connect wifi network');
+    }
+  }
+
+  Future postWithBothString(
+      Uri url, Map<String, String> params,) async {
+    var head = <String, String>{};
+    head['content-type'] = 'application/x-www-form-urlencoded';
+    // ignore: prefer_typing_uninitialized_variables
+    var responseJson;
+    try {
+      bool isVpnConnected = await vpnDetector();
+      if(isVpnConnected) throw FetchDataException("Please Disable Your Vpn");
+      final response = await http.post(url, body: params, headers: head).timeout(const Duration(seconds: 45));
+      responseJson = json.decode(response.body.toString());
+      // ignore: avoid_print
+      print(responseJson);
+      if(responseJson['status']!= true) throw FetchDataException(responseJson['msg'].toString());
+      return responseJson;
+    } on TimeoutException {
+      throw FetchDataException("There is something wrong with your internet connection");
+    } on SocketException {
+      throw FetchDataException('Please turn on your data or connect wifi network');
     }
   }
 
@@ -59,9 +81,9 @@ class ResponseHandler {
       if(responseJson['status']!= true) throw FetchDataException(responseJson['msg'].toString());
       return responseJson;
     } on TimeoutException {
-      throw FetchDataException("Slow internet connection");
+      throw FetchDataException("There is something wrong with your internet connection");
     } on SocketException {
-      throw FetchDataException('No Internet connection');
+      throw FetchDataException('Please turn on your data or connect wifi network');
     }
   }
 
@@ -86,6 +108,79 @@ class ResponseHandler {
   //     throw FetchDataException('No Internet connection');
   //   }
   // }
+
+  ///Image handler For business
+
+  Future postImageForAddBusinessScreen(String url, Map<String, String> params,
+      List<File> files) async {
+    var head = <String, String>{};
+    head['content-type'] = 'application/x-www-form-urlencoded';
+    var res;
+    var jsonData;
+    try {
+      bool isVpnConnected = await vpnDetector();
+      if(isVpnConnected) throw FetchDataException("Please Disable Your Vpn");
+      final request = http.MultipartRequest('POST', Uri.parse(url));
+      if (files.isNotEmpty) {
+        for(int i = 0; i<files.length; i++) {
+          final file = await http.MultipartFile.fromPath(
+              'voucher[]',
+              files[i]
+                  .path); //,contentType: MediaType(mimeTypeData[0], mimeTypeData[1])
+          request.files.add(file);
+        }
+      }
+      request.fields.addAll(params);
+      await request.send().then((response) {
+        if (response.statusCode == 200) print("Uploaded!");
+        res = response.stream;
+      });
+      await for(List<int> chunk in res) {
+        final chunkString = utf8.decode(chunk);
+        jsonData = json.decode(chunkString);
+        print('Received JSON data: $jsonData');
+      }
+      // if(res['status']!= true) throw FetchDataException(res['msg'].toString());
+      return jsonData;
+    } on SocketException {
+      throw FetchDataException('Please turn on your data or connect wifi network');
+    }
+  }
+
+  ///Image handler For recruit suggest
+
+  Future postImageForAddRecruitSuggestScreen(Uri url, Map<String, String> params, File files) async {
+    var head = <String, String>{};
+    head['content-type'] = 'application/x-www-form-urlencoded';
+    var res;
+    var jsonData;
+    try {
+      bool isVpnConnected = await vpnDetector();
+      if(isVpnConnected) throw FetchDataException("Please Disable Your Vpn");
+      final request = http.MultipartRequest('POST', url);
+      if (files != null) {
+          final file = await http.MultipartFile.fromPath(
+              'cv',
+              files.path); //,contentType: MediaType(mimeTypeData[0], mimeTypeData[1])
+          request.files.add(file);
+
+      }
+      request.fields.addAll(params);
+      await request.send().then((response) {
+        if (response.statusCode == 200) print("Uploaded!");
+        res = response.stream;
+      });
+      await for(List<int> chunk in res) {
+        final chunkString = utf8.decode(chunk);
+        jsonData = json.decode(chunkString);
+        print('Received JSON data: $jsonData');
+      }
+      // if(res['status']!= true) throw FetchDataException(res['msg'].toString());
+      return jsonData;
+    } on SocketException {
+      throw FetchDataException('Please turn on your data or connect wifi network');
+    }
+  }
 
   Future postImage(String url, Map<String, String> params,
       XFile image) async {
@@ -117,7 +212,7 @@ class ResponseHandler {
       // if(res['status']!= true) throw FetchDataException(res['msg'].toString());
       return jsonData;
     } on SocketException {
-      throw FetchDataException('No Internet connection');
+      throw FetchDataException('Please turn on your data or connect wifi network');
     }
   }
 
@@ -136,9 +231,9 @@ class ResponseHandler {
       if(responseJson['status']!= true) throw FetchDataException(responseJson['msg'].toString());
       return responseJson;
     } on TimeoutException {
-      throw FetchDataException("Slow internet connection");
+      throw FetchDataException("There is something wrong with your internet connection");
     } on SocketException {
-      throw FetchDataException('No Internet connection');
+      throw FetchDataException('Please turn on your data or connect wifi network');
     }
   }
 

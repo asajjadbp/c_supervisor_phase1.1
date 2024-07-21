@@ -38,8 +38,8 @@ class CheckInStatusItem {
   CheckInStatusItem.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     elId = json['el_id'];
-    comment = json['comment'];
-    checkinGps = json['checkin_gps'];
+    comment = json['comment'].toString();
+    checkinGps = json['checkin_gps'].toString();
   }
 
   Map<String, dynamic> toJson() {
