@@ -130,7 +130,7 @@ class Teamkpi {
     totalUsers = json['total_users'] ?? 0;
     totalPresent = json['total_present'] ?? 0;
     totalJpc = json['total_jpc'] ?? 0;
-    totalProductivity = json['total_productivity'] ?? 0;
+    totalProductivity = json['total_productivity'] > 150 ? 150 :  json['total_productivity']??0;
     totalEffeciency = json['total_efficiency'] ?? 0;
   }
 
@@ -139,7 +139,7 @@ class Teamkpi {
     data['total_users'] = totalUsers;
     data['total_present'] = totalPresent;
     data['total_jpc'] = totalJpc;
-    data['total_productivity'] = totalProductivity;
+    data['total_productivity'] = totalProductivity ;
     data['total_efficiency'] = totalEffeciency;
     return data;
   }

@@ -19,6 +19,7 @@ feedbackDropdownBottomSheet (BuildContext context,FeedbackListItem initialFeedba
           builder: (BuildContext context, StateSetter menuState){
             return Container(
                 height: MediaQuery.of(context).size.height * 0.2,
+                width: MediaQuery.of(context).size.width,
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(

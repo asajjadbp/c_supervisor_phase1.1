@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:c_supervisor/Model/response_model/attendence_response/attendance_types.dart';
@@ -30,6 +31,7 @@ class _TeamAttendenceState extends State<TeamAttendence> {
   bool isError = false;
   String errorText = "";
   var userId = "";
+  var nameId = "";
 
   AttendenceSummary attendenceSummary = AttendenceSummary(
       total: 0, present: 0, absent: 0, sick: 0, late: 0, vacation: 0);
@@ -47,12 +49,16 @@ class _TeamAttendenceState extends State<TeamAttendence> {
 
     setState(() {
       userId = sharedPreferences.getString(UserConstants().userId)!;
+
+      nameId = sharedPreferences.getString(UserConstants().nameId)!;
     });
 
-    getAttendenceList(userId);
+    getAttendenceList(userId.toString());
+
   }
 
   getAttendenceList(String elId) async {
+
     setState(() {
       isLoading = true;
     });
@@ -62,13 +68,14 @@ class _TeamAttendenceState extends State<TeamAttendence> {
     await HTTPManager()
         .teamAttendence(GetAttendenceRequestModel(elId: elId))
         .then((value) {
+          print(jsonEncode(value));
       setState(() {
         attendenceList = value.data.data;
         attendenceSummary = value.data.summary;
         isLoading = false;
         isError = false;
       });
-      getAttendanceType();
+     getAttendanceType();
     }).catchError((e) {
       log(e.toString());
       setState(() {
@@ -81,12 +88,15 @@ class _TeamAttendenceState extends State<TeamAttendence> {
   }
 
   getAttendanceType() async {
+
     setState(() {
       isLoading = true;
     });
 
     await HTTPManager().getAttendanceType().then((value) {
+
       attendanceTypeData = value.attendanceData;
+
       setState(() {
         // attendenceList = value.data.data;
         // attendenceSummary = value.data.summary;
@@ -219,6 +229,7 @@ class _TeamAttendenceState extends State<TeamAttendence> {
                                   imageUrl: attendenceList[i].tmrPic,
                                   checkInTime: attendenceList[i].checkInTime,
                                   userId: userId,
+                                  nameId: nameId,
                                   userRecordId:
                                       attendenceList[i].userRecordId.toString(),
                                   employeeAttendance:

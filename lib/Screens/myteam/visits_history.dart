@@ -331,7 +331,12 @@ class _VisitHistoryState extends State<VisitHistory> {
                                                 children: [
                                                   const Icon(Icons.store,color: AppColors.primaryColor,size: 18,),
                                                   const SizedBox(width: 5,),
-                                                  Text(visitHistoryList[index].storeName!,style: const TextStyle(color: AppColors.primaryColor),),
+                                                  SizedBox(
+                                                    width: MediaQuery.of(context).size.width/1.3,
+                                                    child: Text(visitHistoryList[index].storeName!,
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: const TextStyle(color: AppColors.primaryColor),),
+                                                  ),
                                                 ],
                                               ),
                                               const SizedBox(height: 3,),

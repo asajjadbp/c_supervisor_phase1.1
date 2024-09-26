@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print, duplicate_ignore
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:c_supervisor/Model/request_model/business_trips.dart';
@@ -166,7 +167,7 @@ class HTTPManager {
     // var url = ApplicationURLs.API_LOGIN;
     var url = LicenseProvider.basepath + ApplicationURLs.API_LOGIN;
 
-    // print(url);
+     print(url);
 
     final response =
         await _handler.post(Uri.parse(url), loginRequestModel.toJson());
@@ -559,6 +560,7 @@ class HTTPManager {
 // This will get data of attendence of employee
   Future<GetAttendenceResponseModel> teamAttendence(
       GetAttendenceRequestModel getAttendenceRequestModel) async {
+    print(getAttendenceRequestModel.elId);
     // var url = ApplicationURLs.API_JP;
     var url = LicenseProvider.basepath + ApplicationURLs.API_TEAM_ATTENDENCE;
     // var url = "https://cstore.catalist-me.com/CSupervisorv2/getUserAttendance";
@@ -566,6 +568,7 @@ class HTTPManager {
 
     final response =
         await _handler.post(Uri.parse(url), getAttendenceRequestModel.toJson());
+    print(response);
     GetAttendenceResponseModel attendenceResponseModel =
         GetAttendenceResponseModel.fromJson(response);
 
@@ -589,6 +592,18 @@ class HTTPManager {
       UpdateAttendenceRequestModel updateAttendenceRequestModel) async {
     var url =
         LicenseProvider.basepath + ApplicationURLs.API_UPDATE_LEAVE_STATUS;
+    print("Url is : ");
+    print(url);
+    print("attendance value");
+    print(updateAttendenceRequestModel.attChanged);
+    print("el Id");
+    print(updateAttendenceRequestModel.elId);
+    print("user record id");
+    print(updateAttendenceRequestModel.userRecordId);
+    print("id");
+    print(updateAttendenceRequestModel.id);
+    // print("This is the id of ");
+    // print(updateAttendenceRequestModel.id);
 
     final response = await _handler.post(
         Uri.parse(url),

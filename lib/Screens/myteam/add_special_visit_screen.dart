@@ -227,6 +227,7 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
       chainId: initialChainList.id!.toString()
     ))
         .then((value) {
+          print(jsonEncode(value));
       setState(() {
 
         storesList = value;
@@ -736,11 +737,8 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
                                     );
 
                                     if(pickedTime != null ){
-
-                                      DateTime parsedTime = DateFormat.jm().parse(pickedTime.format(context).toString());
-
-                                      setState(() {
-                                        formattedTime = DateFormat('HH:mm:ss').format(parsedTime);
+                                       setState(() {
+                                        formattedTime = _formatTimeOfDay(pickedTime);
                                         timeController.text = formattedTime;
                                       });
 
@@ -826,6 +824,11 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
         ],
       ),
     );
+  }
+  String _formatTimeOfDay(TimeOfDay timeOfDay) {
+    final hour = timeOfDay.hour.toString().padLeft(2, '0');
+    final minute = timeOfDay.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
   }
   addSpecialVisit() {
     if (_formKey.currentState!.validate()) {

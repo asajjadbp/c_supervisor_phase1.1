@@ -123,8 +123,9 @@ class _KnowledgeCardState extends State<KnowledgeCard> {
                                           ),
                                         ),
                                         height: 200,
+                                        width: MediaQuery.of(context).size.width,
                                         margin: const EdgeInsets.only(
-                                            top: 15, left: 10),
+                                            top: 15, left: 10 ,right: 10),
                                         child: Text(widget.description)),
                           );
                         });

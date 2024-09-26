@@ -356,41 +356,35 @@ class _LoginScreenState extends State<LoginScreen> {
                             //     child: const Text('Forget Password ?',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: AppColors.white),),
                             //   ),
                             // ),
-                            const SizedBox(height: 12.0),
+                            const SizedBox(height: 16.0),
                             InkWell(
                               onTap: () {
                                 _validateLoginForm();
                               },
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                color: Colors.white,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      gradient: const LinearGradient(
-                                        colors: [
-                                          Color(0xFF0F408D),
-                                          Color(0xFF6A82A9),
-                                        ],
-                                      )),
-                                  height: 40,
-                                  width: MediaQuery.of(context).size.width,
-                                  child: Center(
-                                    child: isLoading
-                                        ? const SizedBox(
-                                            height: 20,
-                                            width: 20,
-                                            child: CircularProgressIndicator(
-                                              color: AppColors.white,
-                                            ))
-                                        : const Text(
-                                            "Login",
-                                            style: TextStyle(
-                                                color: AppColors.white),
-                                          ),
-                                  ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color(0xFF0F408D),
+                                        Color(0xFF6A82A9),
+                                      ],
+                                    )),
+                                height: 50,
+                                width: MediaQuery.of(context).size.width,
+                                child: Center(
+                                  child: isLoading
+                                      ? const SizedBox(
+                                          height: 20,
+                                          width: 20,
+                                          child: CircularProgressIndicator(
+                                            color: AppColors.white,
+                                          ))
+                                      : const Text(
+                                          "Login",
+                                          style: TextStyle(
+                                              color: AppColors.white),
+                                        ),
                                 ),
                               ),
                             )
@@ -455,15 +449,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
           final currentTime = DateTime.now().toIso8601String().substring(0, 10);
           print(currentTime);
-
+          print("+++++++++++++");
           print(logInResponseModel.data![0].id);
+          print(logInResponseModel.data![0].name);
+
           UserSessionState().setUserSession(
               true,
-              logInResponseModel.data![0].geoFence,
+              logInResponseModel.data![0].geoFence,//chnage into service
               logInResponseModel.data![0].id!.toString(),
               logInResponseModel.data![0].fullName!,
               logInResponseModel.data![0].email!,
-              currentTime);
+              currentTime,
+              logInResponseModel.data![0].name.toString());
           if (Platform.isAndroid) {
             _saveDeviceInfo(logInResponseModel.data![0].id!.toString());
           } else {

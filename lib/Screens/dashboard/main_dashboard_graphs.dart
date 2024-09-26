@@ -68,6 +68,7 @@ class DashboardGraphScreen extends StatefulWidget {
 class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
   String userName = "";
   String userId = "";
+   int backgroundService = 0;
   ImagePicker picker = ImagePicker();
   XFile? image;
   XFile? compressedImage;
@@ -203,12 +204,17 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
     setState(() {
       userName = sharedPreferences.getString(UserConstants().userName)!;
       userId = sharedPreferences.getString(UserConstants().userId)!;
+      backgroundService = sharedPreferences.getInt(UserConstants().userGeoFence)!;
+
     });
+
     getCheckInStatus();
     getDashboardData();
-    Timer.periodic(
-        const Duration(minutes: 15), (Timer t) => _getCurrentPosition(false));
-  }
+    if(backgroundService== 1 || backgroundService == 1.0)
+    {Timer.periodic(
+        const Duration(minutes: 15), (Timer t) => _getCurrentPosition(false));}
+    else
+      print("no background services");  }
 
   getDashboardData() {
     setState(() {
@@ -325,6 +331,7 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -349,7 +356,9 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                   children: [
                     Text(
                       "Welcome $userName",
+                     overflow:TextOverflow.ellipsis,
                       style: const TextStyle(
+
                           color: AppColors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w400),
@@ -357,15 +366,16 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                     Text(
                       DateFormat.yMMMd().format(DateTime.now()),
                       style: const TextStyle(
-                          fontSize: 12, fontWeight: FontWeight.w400),
+                          fontSize: 12, fontWeight: FontWeight.w400,
+                        color: AppColors.white,),
                     ),
                   ],
                 )
               ],
             ),
             const Text(
-              "Version:1.20",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+              "Version:1.26",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.white),
             )
           ],
         ),
@@ -853,6 +863,8 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                                         .totalJpc! /
                                                                     100)),
                                                         Expanded(
+                                                          // issue lies here
+                                                         // need to deside log
                                                             child: CircularPercentIndicatorWidget(
                                                                 title:
                                                                     "Productivity",
@@ -865,8 +877,8 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                                         .data![
                                                                             0]
                                                                         .teamkpi!
-                                                                        .totalProductivity! /
-                                                                    100)),
+                                                                        .totalProductivity!/
+                                                                    150)),
                                                       ],
                                                     ),
                                                     FullEfficiencyBar(

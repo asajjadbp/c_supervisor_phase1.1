@@ -88,7 +88,7 @@ class GetAttendenceList {
           firstName: json["first_name"].toString(),
           lastName: json["last_name"].toString(),
           id: json["id"],
-          tmrPic: json["tmr_pic"],
+          tmrPic: json["tmr_pic"].toString(),
           checkInTime: json["check_in_time"] ?? "",
           isPresent: json["is_present"],
           attendancePreviousValue: json["att"]

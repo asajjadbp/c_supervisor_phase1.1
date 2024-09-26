@@ -319,7 +319,7 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
       double distanceInKm = await calculateDistance(
           journeyResponseListItem.gcode!, _currentPosition);
       print(distanceInKm);
-      if (distanceInKm < 1.2) {
+      if (distanceInKm < 1.2 ) {
         pickedImage(journeyResponseListItem, _currentPosition, index);
       } else {
         showToastMessage(false,

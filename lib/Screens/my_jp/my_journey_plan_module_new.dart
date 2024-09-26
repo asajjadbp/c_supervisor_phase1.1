@@ -484,48 +484,6 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
     );
   }
 
-  Future<void> _getCurrentPosition1(
-      bool takeImage, String isSelfie, String selfieType) async {
-    setState(() {
-      isLoadingLocation = true;
-    });
-
-    final hasPermission = await handleLocationPermission();
-    if (!hasPermission) return;
-    await Geolocator.getCurrentPosition().then((Position position) async {
-      setState(() => _currentPosition = position);
-
-      print("Current Position");
-      print(_currentPosition);
-
-      double distanceInKm = await calculateDistance(
-          widget.journeyResponseListItem.gcode!, _currentPosition);
-      print(distanceInKm);
-
-      setState(() {
-        isLoadingLocation = false;
-      });
-
-      if (distanceInKm < 1.2) {
-        String currentPosition =
-            "${_currentPosition!.latitude},${_currentPosition!.longitude}";
-        if (takeImage) {
-          pickedImage(widget.journeyResponseListItem, isSelfie, selfieType);
-        } else {
-          endVisit(currentPosition);
-        }
-      } else {
-        showToastMessage(false,
-            "You are away from Store. please Go to store and end visit.($distanceInKm)km");
-      }
-    }).catchError((e) {
-      setState(() {
-        isLoadingLocation = false;
-      });
-      debugPrint(e);
-    });
-  }
-
   Future<void> pickedImage(
     JourneyResponseListItemDetails journeyResponseListItem,
     String isSelfie,
@@ -606,7 +564,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
       double distanceInKm = await calculateDistance(
           widget.journeyResponseListItem.gcode!, _currentPosition);
       print(distanceInKm);
-      if (distanceInKm < 1.2) {
+      if (distanceInKm < 1.2 ) {
         String currentPosition =
             "${_currentPosition!.latitude},${_currentPosition!.longitude}";
 

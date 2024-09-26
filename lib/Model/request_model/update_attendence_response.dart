@@ -15,24 +15,28 @@ class UpdateAttendenceRequestModel {
   final String userRecordId;
   // final String isPresent;
   final String attChanged;
+  final String id;
 
   UpdateAttendenceRequestModel(
       {required this.elId,
       required this.userRecordId,
       // required this.isPresent,
-      required this.attChanged});
+      required this.attChanged,
+      required this.id});
 
   factory UpdateAttendenceRequestModel.fromJson(Map<String, dynamic> json) =>
       UpdateAttendenceRequestModel(
           elId: json["el_id"],
           userRecordId: json["user_record_id"],
           // isPresent: json["is_present"],
-          attChanged: json["att_changed"]);
+          attChanged: json["att_changed"],
+          id: json["id"]);
 
   Map<String, dynamic> toJson() => {
         "el_id": elId,
         "user_record_id": userRecordId,
         // "is_leave": isPresent,
-        "att_changed": attChanged
+        "att_changed": attChanged,
+        "id": id
       };
 }

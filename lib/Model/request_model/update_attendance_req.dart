@@ -7,7 +7,8 @@ class UpdateAttendanceConverter {
       "el_id": updateAttendenceRequestModel.elId,
       "user_record_id": updateAttendenceRequestModel.userRecordId,
       // "is_present": updateAttendenceRequestModel.isPresent
-      "att_changed": updateAttendenceRequestModel.attChanged
+      "att_changed": updateAttendenceRequestModel.attChanged,
+      "id": updateAttendenceRequestModel.id
     };
     return myMap;
   }

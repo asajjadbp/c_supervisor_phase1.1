@@ -38,9 +38,10 @@ Future<double> calculateDistance(
     double distanceInKm = distanceInMeters / 1000.0;
 
     double distanceInKmRound = double.parse(distanceInKm.toStringAsFixed(2));
-
+    print("goefancing is on");
     return distanceInKmRound;
   } else {
+    print("goefancing is off");
     return 1;
   }
 }

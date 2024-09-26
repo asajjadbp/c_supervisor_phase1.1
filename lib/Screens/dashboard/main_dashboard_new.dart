@@ -54,6 +54,7 @@ class MainDashboardNew extends StatefulWidget {
 class _MainDashboardNewState extends State<MainDashboardNew> {
   String userName = "";
   String userId = "";
+   int backgroundService = 0 ;
   ImagePicker picker = ImagePicker();
   XFile? image;
   XFile? compressedImage;
@@ -280,10 +281,16 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
     setState(() {
       userName = sharedPreferences.getString(UserConstants().userName)!;
       userId = sharedPreferences.getString(UserConstants().userId)!;
+      backgroundService = sharedPreferences.getInt(UserConstants().userGeoFence)!;
+
     });
     getCheckInStatus();
-    Timer.periodic(
-        const Duration(minutes: 15), (Timer t) => _getCurrentPosition(false));
+    //  this is left for api change
+    if(backgroundService== 1 || backgroundService == 1.0)
+    {Timer.periodic(
+        const Duration(minutes: 15), (Timer t) => _getCurrentPosition(false));}
+    else
+      print("no background services");
   }
 
   saveUserCurrentLocation(String currentPosition) {

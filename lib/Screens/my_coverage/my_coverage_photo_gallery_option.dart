@@ -348,7 +348,7 @@ class _MyCoveragePhotoGalleryOptionsState
       });
 
       print(distanceInKm);
-      if (distanceInKm < 1.2) {
+      if (distanceInKm < 1.2 ) {
         String currentPosition =
             "${_currentPosition!.latitude},${_currentPosition!.longitude}";
         if (takeImage) {
@@ -371,6 +371,8 @@ class _MyCoveragePhotoGalleryOptionsState
       debugPrint(e);
     });
   }
+
+
 
   Future<void> pickedImage(
     JourneyResponseListItemDetails journeyResponseListItem,

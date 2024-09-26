@@ -126,85 +126,147 @@ selfieOptionForJpBottomSheet(BuildContext context,bool isLoadingLocation,bool is
 //   }
 // }
 
-
-tmrBottomSheetUserList (BuildContext context, TmrUserList tmrUserList, int selectedTmrUser, bool isLoadingLocation,Function(TmrUserItem value) selectedTmr, Function onTap) {
+void tmrBottomSheetUserList(
+    BuildContext context,
+    TmrUserList tmrUserList,
+    int selectedTmrUser,
+    bool isLoadingLocation,
+    Function(TmrUserItem value) selectedTmr,
+    Function onTap
+    ) {
+  TextEditingController _searchController = TextEditingController();
+  List<TmrUserItem> searchList = tmrUserList.data!;
+  selectedTmrUser = -1;
+  // pass -1 so that in inital no radio button is selected
   showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => StatefulBuilder(
-          builder: (BuildContext context, StateSetter menuState){
-            return Container(
-                height: MediaQuery.of(context).size.height * 0.65,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(25.0),
-                    topRight: Radius.circular(25.0),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 11,),
-                    Expanded(
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.vertical,
-                            itemCount: tmrUserList.data!.length,
-                            itemBuilder: (context, int index) {
-                              return InkWell(
-                                onTap: () {
-                                  menuState(() {
-                                    selectedTmrUser = index;
-                                    selectedTmr(tmrUserList.data![index]);
-                                  });
-                                },
-                                child: Card(
-                                  child: Row(
-                                    children: [
-                                      Expanded(child: SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          child: Text(tmrUserList.data![index].fullName!))),
-                                      Radio(
-                                          fillColor: MaterialStateProperty.resolveWith<Color>(
-                                                  (Set<MaterialState> states) {
-                                                return AppColors.primaryColor;
-                                              }),
-
-                                          value: index,
-                                          groupValue: selectedTmrUser,
-                                          onChanged: (int? value) {
-
-                                          })
-                                    ],
-                                  ),
-                                ),
-                              );
-                            })),
-                    IgnorePointer(
-                      ignoring: isLoadingLocation,
-                      child: InkWell(
-                        onTap: () {
-                          onTap();
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration:  BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xFF0F408D),
-                                  Color(0xFF6A82A9),
-                                ],
-                              )
-                          ),
-                          child: const Text("Continue",style: TextStyle(color: AppColors.white),),),
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) => StatefulBuilder(
+      builder: (BuildContext context, StateSetter menuState) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.65,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(25.0),
+              topRight: Radius.circular(25.0),
+            ),
+          ),
+          child: Column(
+            children: [
+              const SizedBox(height: 11),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: TextFormField(
+                  controller: _searchController,
+                  decoration: const InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: AppColors.primaryColor, // Replace with your primary color
                       ),
                     ),
-                    const SizedBox(height: 5,),
-                  ],
-                )
-            );
-          })
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: AppColors.primaryColor, // Replace with your primary color
+                      ),
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: AppColors.primaryColor, width: 1.0, // Replace with your primary color
+                      ),
+                    ),
+                    labelStyle: TextStyle(color: Colors.black), // Replace with your black color
+                    hintText: "Search with name",
+                    hintStyle: TextStyle(color: Colors.grey), // Replace with your grey color
+                    contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                  ),
+                  onChanged: (value) {
+                    menuState(() {
+                      if (value.isEmpty) {
+                        searchList = tmrUserList.data!;
+                      } else {
+                        searchList = tmrUserList.data!.where((user) {
+                          return user.fullName!.toLowerCase().contains(value.toLowerCase());
+                        }).toList();
+                      }
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(height: 5),
+              Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: searchList.length,
+                  itemBuilder: (context, int index) {
+                    return InkWell(
+                      onTap: () {
+                        menuState(() {
+                          selectedTmrUser = index;
+                          selectedTmr(tmrUserList.data![index]);
+                        });
+                      },
+                      child: Card(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Text(searchList[index].fullName!),
+                              ),
+                            ),
+                            Radio(
+                              fillColor: MaterialStateProperty.resolveWith<Color>(
+                                    (Set<MaterialState> states) {
+                                  return  AppColors.primaryColor; // Replace with your primary color
+                                },
+                              ),
+                              value: index,
+                              groupValue: selectedTmrUser,
+                              onChanged: (int? value) {
+                                menuState(() {
+                                  selectedTmrUser = value!;
+                                  selectedTmr(searchList[value]);
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              IgnorePointer(
+                ignoring: isLoadingLocation,
+                child: InkWell(
+                  onTap: () {
+                    onTap();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xFF0F408D),
+                          Color(0xFF6A82A9),
+                        ],
+                      ),
+                    ),
+                    child: const Text(
+                      "Continue",
+                      style: TextStyle(color: Colors.white), // Replace with your white color
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 5),
+            ],
+          ),
+        );
+      },
+    ),
   );
 }

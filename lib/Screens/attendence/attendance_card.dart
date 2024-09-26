@@ -19,6 +19,7 @@ class AttendanceCard extends StatefulWidget {
   final String imageUrl;
   final String checkInTime;
   final String userId;
+  final String nameId;
   final String userRecordId;
   final int employeeAttendance;
   // final String updateByEl;
@@ -36,6 +37,7 @@ class AttendanceCard extends StatefulWidget {
       required this.imageUrl,
       required this.checkInTime,
       required this.userId,
+      required this.nameId,
       required this.userRecordId,
       required this.employeeAttendance,
       // required this.updateByEl,
@@ -446,10 +448,11 @@ class _AttendanceCardState extends State<AttendanceCard> {
                                             onPressed: () {
                                               submitAttendenceForm(
                                                 UpdateAttendenceRequestModel(
-                                                    elId: widget.userId,
+                                                    elId: widget.nameId,
                                                     userRecordId:
                                                         widget.userRecordId,
-                                                    attChanged: _currentValue
+                                                    attChanged: _currentValue,
+                                                    id: widget.employeeId
                                                     // isPresent: _singleValue
                                                     //     .toString()
                                                     ),
