@@ -134,3 +134,4 @@ app.*.symbols
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/dev/ci/**/Gemfile.lock
 !.vscode/settings.json
+assets/google_cloud_creds/appimages-keycstoreapp-7c0f4-a6d4c3e5b590.json
