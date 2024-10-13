@@ -551,7 +551,7 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
   addBusinessTrip() {
     if(_formKey.currentState!.validate()) {
       if(fromCityCommonListModel.isEmpty || toCityCommonListModel.isEmpty) {
-        showToastMessage(false, "City Field can't be empty");
+        showToastMessageBottom(false, "City Field can't be empty");
         return;
       }
       if(files.isNotEmpty) {
@@ -569,20 +569,20 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
             .then((value) {
           print(value);
 
-          showToastMessage(true, "Business trip added successfully");
+          showToastMessageBottom(true, "Business trip added successfully");
           Navigator.of(context).pop();
           setState(() {
             isLoading = false;
           });
         }).catchError((e) {
           print(e.toString());
-          showToastMessage(false, e.toString());
+          showToastMessageBottom(false, e.toString());
           setState(() {
             isLoading = false;
           });
         });
       } else {
-        showToastMessage(false, "Please select any file");
+        showToastMessageBottom(false, "Please select any file");
       }
     }
   }
@@ -595,7 +595,7 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
       isLoading = true;
     });
     if(fromCityCommonListModel.isEmpty || toCityCommonListModel.isEmpty) {
-      showToastMessage(false, "City Field can't be empty");
+      showToastMessageBottom(false, "City Field can't be empty");
       return;
     }
     if(files.isEmpty) {
@@ -609,14 +609,14 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
           )).then((value) {
         print(value);
 
-        showToastMessage(true, "Business trip updated successfully");
+        showToastMessageBottom(true, "Business trip updated successfully");
         Navigator.of(context).pop();
         setState(() {
           isLoading = false;
         });
       }).catchError((e) {
         print(e.toString());
-        showToastMessage(false, e.toString());
+        showToastMessageBottom(false, e.toString());
         setState(() {
           isLoading = false;
         });
@@ -632,14 +632,14 @@ class _AddBusinessTripScreenState extends State<AddBusinessTripScreen> {
           ), files).then((value) {
         print(value);
 
-        showToastMessage(true, "Business trip updated successfully");
+        showToastMessageBottom(true, "Business trip updated successfully");
         Navigator.of(context).pop();
         setState(() {
           isLoading = false;
         });
       }).catchError((e) {
         print(e.toString());
-        showToastMessage(false, e.toString());
+        showToastMessageBottom(false, e.toString());
         setState(() {
           isLoading = false;
         });

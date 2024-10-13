@@ -130,7 +130,7 @@ class Teamkpi {
     totalUsers = json['total_users'] ?? 0;
     totalPresent = json['total_present'] ?? 0;
     totalJpc = json['total_jpc'] ?? 0;
-    totalProductivity = json['total_productivity'] > 150 ? 150 :  json['total_productivity']??0;
+    totalProductivity = json['total_productivity']??0;
     totalEffeciency = json['total_efficiency'] ?? 0;
   }
 

@@ -716,7 +716,7 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                           child: MainDashboardItemCard(
                                                               onTap: () {
                                                                 if (isCheckedIn) {
-                                                                  showToastMessage(
+                                                                  showToastMessageBottom(
                                                                       false,
                                                                       "Please check out first and try again");
                                                                 } else {
@@ -736,7 +736,7 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                           child: MainDashboardItemCard(
                                                               onTap: () {
                                                                 if (isCheckedIn) {
-                                                                  showToastMessage(
+                                                                  showToastMessageBottom(
                                                                       false,
                                                                       "Please check out first and try again");
                                                                 } else {
@@ -847,7 +847,8 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                                     ? 0.0
                                                                     : double.parse((dashboardResponseData.data![0].teamkpi!.totalPresent! /
                                                                             dashboardResponseData.data![0].teamkpi!.totalUsers!)
-                                                                        .toString()))),
+                                                                        .toString()),
+                                                              )),
                                                         Expanded(
                                                             child: CircularPercentIndicatorWidget(
                                                                 title: "JPC",
@@ -865,7 +866,7 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                         Expanded(
                                                           // issue lies here
                                                          // need to deside log
-                                                            child: CircularPercentIndicatorWidget(
+                                                            child: CircularProdectivityIndicatorWidget(
                                                                 title:
                                                                     "Productivity",
                                                                 imageStringIcon:
@@ -873,12 +874,10 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                                 percentColor:
                                                                     AppColors
                                                                         .graphPurple,
-                                                                percentText: dashboardResponseData
-                                                                        .data![
-                                                                            0]
-                                                                        .teamkpi!
-                                                                        .totalProductivity!/
-                                                                    150)),
+                                                                percentText: dashboardResponseData.data![0].teamkpi!.totalProductivity! >= 100?100/100 : dashboardResponseData.data![0].teamkpi!.totalProductivity!/ 100,
+                                                                centerText:  dashboardResponseData.data![0].teamkpi!.totalProductivity!,
+
+                                                              )),
                                                       ],
                                                     ),
                                                     FullEfficiencyBar(
@@ -895,7 +894,7 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                               MainDashboardItemCard(
                                                                   onTap: () {
                                                                     if (isCheckedIn) {
-                                                                      showToastMessage(
+                                                                      showToastMessageBottom(
                                                                           false,
                                                                           "Please check out first and try again");
                                                                     } else {
@@ -915,7 +914,7 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                           child: MainDashboardItemCard(
                                                               onTap: () {
                                                                 if (isCheckedIn) {
-                                                                  showToastMessage(
+                                                                  showToastMessageBottom(
                                                                       false,
                                                                       "Please check out first and try again");
                                                                 } else {
@@ -942,7 +941,7 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                           child: MainDashboardItemCard(
                                                               onTap: () {
                                                                 if (isCheckedIn) {
-                                                                  showToastMessage(
+                                                                  showToastMessageBottom(
                                                                       false,
                                                                       "Please check out first and try again");
                                                                 } else {
@@ -963,7 +962,7 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                           child: MainDashboardItemCard(
                                                               onTap: () {
                                                                 if (isCheckedIn) {
-                                                                  showToastMessage(
+                                                                  showToastMessageBottom(
                                                                       false,
                                                                       "Please check out first and try again");
                                                                 } else {
@@ -1032,7 +1031,7 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                         child: MainDashboardItemCard(
                                                             onTap: () {
                                                               if (isCheckedIn) {
-                                                                showToastMessage(
+                                                                showToastMessageBottom(
                                                                     false,
                                                                     "Please check out first and try again");
                                                               } else {
@@ -1054,7 +1053,7 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                         child: MainDashboardItemCard(
                                                             onTap: () {
                                                               if (isCheckedIn) {
-                                                                showToastMessage(
+                                                                showToastMessageBottom(
                                                                     false,
                                                                     "Please check out first and try again");
                                                               } else {
@@ -1083,7 +1082,7 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                         child: MainDashboardItemCard(
                                                             onTap: () {
                                                               if (isCheckedIn) {
-                                                                showToastMessage(
+                                                                showToastMessageBottom(
                                                                     false,
                                                                     "Please check out first and try again");
                                                               } else {
@@ -1105,7 +1104,7 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                         child: MainDashboardItemCard(
                                                             onTap: () {
                                                               if (isCheckedIn) {
-                                                                showToastMessage(
+                                                                showToastMessageBottom(
                                                                     false,
                                                                     "Please check out first and try again");
                                                               } else {
@@ -1134,7 +1133,7 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
                                                         child: MainDashboardItemCard(
                                                             onTap: () {
                                                               if (isCheckedIn) {
-                                                                showToastMessage(
+                                                                showToastMessageBottom(
                                                                     false,
                                                                     "Please check out first and try again");
                                                               } else {
@@ -1280,12 +1279,12 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
 
             isLoading2 = false;
           });
-          showToastMessage(true, "Checked In Successfully");
+          showToastMessageBottom(true, "Checked In Successfully");
           Navigator.of(context).pop();
         }).catchError((e) {
           setState(() {
             print(e.toString());
-            showToastMessage(false, e.toString());
+            showToastMessageBottom(false, e.toString());
             isLoading2 = false;
           });
         });
@@ -1315,12 +1314,12 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
         // sharedPreferences.setString(UserConstants().checkInId, checkListItem[0].id.toString());
         isLoading2 = false;
       });
-      showToastMessage(true, "Checked Out Successfully");
+      showToastMessageBottom(true, "Checked Out Successfully");
       // Navigator.of(context).pop();
     }).catchError((e) {
       setState(() {
         print(e.toString());
-        showToastMessage(false, e.toString());
+        showToastMessageBottom(false, e.toString());
         isLoading2 = false;
       });
     });

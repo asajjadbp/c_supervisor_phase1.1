@@ -467,14 +467,14 @@ class _LoginScreenState extends State<LoginScreen> {
             _saveIosDeviceInfo(logInResponseModel.data![0].id!.toString());
           }
         }).catchError((e) {
-          showToastMessage(false, e.toString());
+          showToastMessageTop(false, e.toString());
           setState(() {
             isLoading = false;
           });
         });
       }
     } else {
-      showToastMessage(false, "Please allow this to access you location");
+      showToastMessageTop(false, "Please allow this to access you location");
     }
   }
 
@@ -504,12 +504,12 @@ class _LoginScreenState extends State<LoginScreen> {
         isLoading = false;
       });
 
-      showToastMessage(true, "Logged in successfully");
+      showToastMessageBottom(true, "Logged in successfully");
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const DashboardGraphScreen()),
           (route) => false);
     }).catchError((e) {
-      showToastMessage(false, e.toString());
+      showToastMessageBottom(false, e.toString());
       setState(() {
         isLoading = false;
       });
@@ -543,12 +543,12 @@ class _LoginScreenState extends State<LoginScreen> {
         isLoading = false;
       });
 
-      showToastMessage(true, "Logged in successfully");
+      showToastMessageBottom(true, "Logged in successfully");
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const DashboardGraphScreen()),
           (route) => false);
     }).catchError((e) {
-      showToastMessage(false, e.toString());
+      showToastMessageBottom(false, e.toString());
       setState(() {
         isLoading = false;
       });

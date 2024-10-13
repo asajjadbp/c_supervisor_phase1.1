@@ -322,7 +322,7 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
       if (distanceInKm < 1.2 ) {
         pickedImage(journeyResponseListItem, _currentPosition, index);
       } else {
-        showToastMessage(false,
+        showToastMessageBottom(false,
             "You are away from Store. please Go to store and start visit.($distanceInKm)km");
       }
       // pickedImage(journeyResponseListItem,_currentPosition,index);
@@ -443,7 +443,7 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
             isLoading = false;
           });
 
-          showToastMessage(true, "Visit started successfully");
+          showToastMessageBottom(true, "Visit started successfully");
 
           setState(() {
             journeyList[index].visitStatus = 1;
@@ -464,7 +464,7 @@ class _MyCoveragePlanScreenNewState extends State<MyCoveragePlanScreenNew> {
             isLoading = false;
           });
         }).catchError((e) {
-          showToastMessage(false, e.toString());
+          showToastMessageBottom(false, e.toString());
           setState(() {
             isLoading = false;
           });

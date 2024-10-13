@@ -103,6 +103,7 @@ class Categories {
   int? categoryId;
   String? categoryName;
   String? noMinutes;
+  String? noSKU;
 
   Categories({this.categoryId, this.categoryName, this.noMinutes});
 
@@ -110,6 +111,7 @@ class Categories {
     categoryId = json['category_id'];
     categoryName = json['category_name'].toString();
     noMinutes = json['no_minutes'].toString() == "null" ? "" : json['no_minutes'].toString();
+    noSKU = json['no_skus'].toString() == "null" ? "" : json['no_skus'].toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -117,6 +119,7 @@ class Categories {
     data['category_id'] = categoryId;
     data['category_name'] = categoryName;
     data['no_minutes'] = noMinutes;
+    data['no_skus'] = noSKU;
     return data;
   }
 }

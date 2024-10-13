@@ -499,9 +499,9 @@ class _RecruitSuggestScreenState extends State<RecruitSuggestScreen> {
         isLoadingLocation = false;
       });
       Navigator.of(context).pop();
-      showToastMessage(true, "Recruit deleted Successfully");
+      showToastMessageBottom(true, "Recruit deleted Successfully");
     }).catchError((e) {
-      showToastMessage(false, e.toString());
+      showToastMessageBottom(false, e.toString());
       setState(() {
         isLoadingLocation = false;
       });

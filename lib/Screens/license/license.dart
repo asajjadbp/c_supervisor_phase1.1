@@ -36,19 +36,19 @@ class _MyLicenseState extends State<MyLicense> {
           isLoading = false;
         });
         if (value["status"]) {
-          showToastMessage(true, "License get successfully");
+          showToastMessageBottom(true, "License get successfully");
           Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => const LoginScreen()),
               (route) => false);
         } else {
-          showToastMessage(false, "License did not get");
+          showToastMessageBottom(false, "License did not get");
         }
       });
     } catch (error) {
       setState(() {
         isLoading = false;
       });
-      showToastMessage(false, error.toString());
+      showToastMessageBottom(false, error.toString());
     }
   }
 

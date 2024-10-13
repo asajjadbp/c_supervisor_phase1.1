@@ -306,12 +306,12 @@ class _MyCoverageGalleryState extends State<MyCoverageGallery> {
         isDeleteLoading = false;
       });
       Navigator.pop(context, false);
-      showToastMessage(true, "Image Deleted Successfully");
+      showToastMessageBottom(true, "Image Deleted Successfully");
     }).catchError((e) {
       setState(() {
         isDeleteLoading = false;
       });
-      showToastMessage(false, e.toString());
+      showToastMessageBottom(false, e.toString());
     });
   }
 }

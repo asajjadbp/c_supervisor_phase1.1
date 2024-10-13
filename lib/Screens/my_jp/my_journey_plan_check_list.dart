@@ -356,10 +356,10 @@ class _MyJourneyPlanCheckListState extends State<MyJourneyPlanCheckList> {
           .checkListPostImage(UploadCheckListRequestModel(
               id: selectedId, elId: elId, photoName: imageName))
           .then((value) {
-        showToastMessage(true, value.msg.toString());
+        showToastMessageBottom(true, value.msg.toString());
         Navigator.of(context).pop();
       }).catchError((e) {
-        showToastMessage(false, e.toString());
+        showToastMessageBottom(false, e.toString());
       });
     });
   }
@@ -376,13 +376,13 @@ class _MyJourneyPlanCheckListState extends State<MyJourneyPlanCheckList> {
         isLoading = false;
       });
       Navigator.of(context).pop();
-      showToastMessage(true, "Check List Updated successfully");
+      showToastMessageBottom(true, "Check List Updated successfully");
     }).catchError((e) {
       setState(() {
         isLoading = false;
       });
       print(e);
-      showToastMessage(false, e.toString());
+      showToastMessageBottom(false, e.toString());
     });
   }
 }

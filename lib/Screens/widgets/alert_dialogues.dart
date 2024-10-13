@@ -219,7 +219,7 @@ showPopUpForCheckListImageUpload(BuildContext context, XFile imageFile,
                                 photoName: imageName),
                           )
                               .then((value) {
-                            showToastMessage(
+                            showToastMessageBottom(
                                 true, "Image uploaded successfully");
                             setState(() {
                               isLoading = false;
@@ -229,7 +229,7 @@ showPopUpForCheckListImageUpload(BuildContext context, XFile imageFile,
                             setState(() {
                               isLoading = false;
                             });
-                            showToastMessage(false, e.toString());
+                            showToastMessageBottom(false, e.toString());
                           });
                           // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> MyJourneyModuleNew(journeyResponseListItem: journeyResponseListItem,)));
                         });

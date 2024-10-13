@@ -579,12 +579,12 @@ class _TeamKpiScreenState extends State<TeamKpiScreen> {
         isLoadingLocation = false;
       });
       getTeamKpiList(false);
-      showToastMessage(true, "Productivity Feedback added successfully");
+      showToastMessageBottom(true, "Productivity Feedback added successfully");
     }).catchError((e) {
       setState(() {
         isLoadingLocation = false;
       });
-      showToastMessage(false, e.toString());
+      showToastMessageBottom(false, e.toString());
     });
   }
 
@@ -602,12 +602,12 @@ class _TeamKpiScreenState extends State<TeamKpiScreen> {
           isLoadingLocation = false;
         });
         getTeamKpiList(false);
-        showToastMessage(true, "Feedback added successfully");
+        showToastMessageBottom(true, "Feedback added successfully");
       }).catchError((e) {
         setState(() {
           isLoadingLocation = false;
         });
-        showToastMessage(false, e.toString());
+        showToastMessageBottom(false, e.toString());
       });
   }
 }

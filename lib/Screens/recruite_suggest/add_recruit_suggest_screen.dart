@@ -545,7 +545,7 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
   addRecruitSuggest() {
    if(_formKey.currentState!.validate()) {
      if (cvController.text.isEmpty) {
-       showToastMessage(false, "Please add cv file");
+       showToastMessageBottom(false, "Please add cv file");
      } else {
        setState(() {
          isLoading = true;
@@ -561,14 +561,14 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
        ), file!).then((value) {
          print(value);
 
-         showToastMessage(true, "Recruit added successfully");
+         showToastMessageBottom(true, "Recruit added successfully");
          Navigator.of(context).pop();
          setState(() {
            isLoading = false;
          });
        }).catchError((e) {
          print(e.toString());
-         showToastMessage(false, e.toString());
+         showToastMessageBottom(false, e.toString());
          setState(() {
            isLoading = false;
          });
@@ -580,7 +580,7 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
   updateRecruitSuggest() {
     if(_formKey.currentState!.validate()){
       if (cvController.text.isEmpty) {
-        showToastMessage(false, "Please add cv file");
+        showToastMessageBottom(false, "Please add cv file");
       } else {
         setState(() {
           isLoading = true;
@@ -601,14 +601,14 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
               .then((value) {
             print(value);
 
-            showToastMessage(true, "Recruit updated successfully");
+            showToastMessageBottom(true, "Recruit updated successfully");
             Navigator.of(context).pop();
             setState(() {
               isLoading = false;
             });
           }).catchError((e) {
             print(e.toString());
-            showToastMessage(false, e.toString());
+            showToastMessageBottom(false, e.toString());
             setState(() {
               isLoading = false;
             });
@@ -628,14 +628,14 @@ class _AddRecruitSuggestScreenState extends State<AddRecruitSuggestScreen> {
               .then((value) {
             print(value);
 
-            showToastMessage(true, "Recruit updated successfully");
+            showToastMessageBottom(true, "Recruit updated successfully");
             Navigator.of(context).pop();
             setState(() {
               isLoading = false;
             });
           }).catchError((e) {
             print(e.toString());
-            showToastMessage(false, e.toString());
+            showToastMessageBottom(false, e.toString());
             setState(() {
               isLoading = false;
             });

@@ -77,14 +77,14 @@ class _AttendanceCardState extends State<AttendanceCard> {
       });
       if (value.status) {
         Navigator.of(context).pop();
-        showToastMessage(true, value.msg);
+        showToastMessageBottom(true, value.msg);
         widget.updateAttendanceView();
       }
     }).catchError((onError) {
       setState(() {
         isBottomSheetLoading = false;
       });
-      showToastMessage(false, onError.toString());
+      showToastMessageBottom(false, onError.toString());
     });
   }
 

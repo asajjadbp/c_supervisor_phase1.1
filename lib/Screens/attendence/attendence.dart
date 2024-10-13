@@ -83,7 +83,7 @@ class _TeamAttendenceState extends State<TeamAttendence> {
         errorText = e.toString();
         isLoading = false;
       });
-      showToastMessage(false, errorText);
+      showToastMessageBottom(false, errorText);
     });
   }
 
@@ -109,7 +109,7 @@ class _TeamAttendenceState extends State<TeamAttendence> {
         errorText = e.toString();
         isLoading = false;
       });
-      showToastMessage(false, errorText);
+      showToastMessageBottom(false, errorText);
     });
   }
 

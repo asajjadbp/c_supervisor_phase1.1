@@ -861,9 +861,9 @@ class _SpecialVisitScreenState extends State<SpecialVisitScreen> {
         isLoadingLocation = false;
       });
       Navigator.of(context).pop();
-      showToastMessage(true, "Visit deleted Successfully");
+      showToastMessageBottom(true, "Visit deleted Successfully");
     }).catchError((e) {
-      showToastMessage(false, e.toString());
+      showToastMessageBottom(false, e.toString());
       setState(() {
         isLoadingLocation = false;
       });

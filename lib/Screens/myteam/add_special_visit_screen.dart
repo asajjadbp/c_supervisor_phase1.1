@@ -833,7 +833,7 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
   addSpecialVisit() {
     if (_formKey.currentState!.validate()) {
       if(tmrUserList.isEmpty) {
-        showToastMessage(false, "Pleas Select Tmr");
+        showToastMessageBottom(false, "Pleas Select Tmr");
         return;
       }
       setState(() {
@@ -850,14 +850,14 @@ class _AddSpecialVisitScreenState extends State<AddSpecialVisitScreen> {
       )).then((value) {
         print(value);
 
-        showToastMessage(true, "Special visit added successfully");
+        showToastMessageBottom(true, "Special visit added successfully");
         Navigator.of(context).pop();
         setState(() {
           isLoading = false;
         });
       }).catchError((e) {
         print(e.toString());
-        showToastMessage(false, e.toString());
+        showToastMessageBottom(false, e.toString());
         setState(() {
           isLoading = false;
         });

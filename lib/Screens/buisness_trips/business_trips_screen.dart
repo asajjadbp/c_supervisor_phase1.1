@@ -338,9 +338,9 @@ class _BusinessTripsScreenState extends State<BusinessTripsScreen> {
         isLoadingLocation = false;
       });
       Navigator.of(context).pop();
-      showToastMessage(true, "Trip deleted Successfully");
+      showToastMessageBottom(true, "Trip deleted Successfully");
     }).catchError((e) {
-      showToastMessage(false, e.toString());
+      showToastMessageBottom(false, e.toString());
       setState(() {
         isLoadingLocation = false;
       });

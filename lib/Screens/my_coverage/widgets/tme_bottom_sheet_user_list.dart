@@ -136,7 +136,7 @@ void tmrBottomSheetUserList(
     ) {
   TextEditingController _searchController = TextEditingController();
   List<TmrUserItem> searchList = tmrUserList.data!;
-  selectedTmrUser = -1;
+  //  selectedTmrUser = -1;
   // pass -1 so that in inital no radio button is selected
   showModalBottomSheet(
     context: context,

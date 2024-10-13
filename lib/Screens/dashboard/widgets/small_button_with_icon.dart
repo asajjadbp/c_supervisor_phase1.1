@@ -15,7 +15,7 @@ class SmallButtonIconWidget extends StatelessWidget {
     return InkWell(
       onTap: () {
         if (isCheckedIn) {
-          showToastMessage(false,
+          showToastMessageBottom(false,
               "Please check out first and try again");
         } else {
           onTap();

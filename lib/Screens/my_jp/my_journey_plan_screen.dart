@@ -336,7 +336,7 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
       if (distanceInKm < 1.2) {
         pickedImage(journeyResponseListItem, _currentPosition, index);
       } else {
-        showToastMessage(false,
+        showToastMessageBottom(false,
             "You are away from Store. please Go to store and start visit.($distanceInKm)km");
       }
       // pickedImage(journeyResponseListItem,_currentPosition,index);
@@ -404,7 +404,7 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
               ),
               image!)
           .then((value) {
-        showToastMessage(true, "Visit started successfully");
+        showToastMessageBottom(true, "Visit started successfully");
 
         setState(() {
           journeyList[index].visitStatus = 1;
@@ -425,7 +425,7 @@ class _MyJourneyPlanScreenNewState extends State<MyJourneyPlanScreenNew> {
           isLoading = false;
         });
       }).catchError((e) {
-        showToastMessage(false, e.toString());
+        showToastMessageBottom(false, e.toString());
         setState(() {
           isLoading = false;
         });

@@ -52,7 +52,7 @@ class _MyCoveragePhotoGalleryOptionsState
   int checkListPendingCount = 0;
   int totalScore = 0;
   int filledQuestionScore = 0;
-  int selectedTmrUser = 0;
+  int selectedTmrUser = -1;
   late TmrUserItem tmrUserItem;
 
   bool isLoading = true;
@@ -152,9 +152,9 @@ class _MyCoveragePhotoGalleryOptionsState
         .then((value) {
       setState(() {
         tmrUserList = value;
-        if (tmrUserList.data!.isNotEmpty) {
+       /* if (tmrUserList.data!.isNotEmpty) {
           tmrUserItem = tmrUserList.data![0];
-        }
+        }*/
         isLoading = false;
         isError = false;
       });
@@ -219,21 +219,33 @@ class _MyCoveragePhotoGalleryOptionsState
                       MyJourneyPlanModuleCardItem(
                         onTap: () {
                           if (filledQuestionScore == 0) {
-                            selectedTmrUser = 0;
                             tmrBottomSheetUserList(context, tmrUserList,
-                                selectedTmrUser, isLoadingLocation, (value) {
+                                selectedTmrUser, isLoadingLocation,
+                                    (value) {
                               print(value.id);
                               print(value.fullName);
                               setState(() {
+                                selectedTmrUser =value.id!;
                                 tmrUserItem = value;
                               });
-                            }, () {
-                              updateTmrUserInCoverage(
-                                  userId,
-                                  widget
-                                      .journeyResponseListItemDetails.workingId
-                                      .toString(),
-                                  tmrUserItem.id.toString());
+                            },
+
+                                    () {
+                              print(selectedTmrUser);
+                              if(selectedTmrUser == -1)
+                                {
+                                  showToastMessageBottom(false,
+                                      "Please select TMR first to continue");
+                                }
+                              else{
+                                updateTmrUserInCoverage(
+                                    userId,
+                                    widget
+                                        .journeyResponseListItemDetails.workingId
+                                        .toString(),
+                                    tmrUserItem.id.toString());
+                              }
+
                             });
                           } else {
                             Navigator.of(context)
@@ -289,36 +301,44 @@ class _MyCoveragePhotoGalleryOptionsState
             LargeButtonInFooter(
               buttonTitle: "Finish Visit",
               onTap: () async {
-                await showDialog<bool>(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text(
-                          'Are you sure you want to finish this visit ?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context, false);
-                          },
-                          child: const Text(
-                            'No',
-                            style: TextStyle(color: AppColors.primaryColor),
+                if(selectedTmrUser == -1)
+                  {
+                    showToastMessageBottom(false,
+                        "Please select TMR first to finish this visit");
+                  }
+                else{
+                  await showDialog<bool>(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text(
+                            'Are you sure you want to finish this visit ?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context, false);
+                            },
+                            child: const Text(
+                              'No',
+                              style: TextStyle(color: AppColors.primaryColor),
+                            ),
                           ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            _getCurrentPosition(false);
-                          },
-                          child: const Text(
-                            'Yes',
-                            style: TextStyle(color: AppColors.primaryColor),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              _getCurrentPosition(false);
+                            },
+                            child: const Text(
+                              'Yes',
+                              style: TextStyle(color: AppColors.primaryColor),
+                            ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                );
+                        ],
+                      );
+                    },
+                  );
+                }
+
               },
             )
           ],
@@ -357,7 +377,7 @@ class _MyCoveragePhotoGalleryOptionsState
           endVisit(currentPosition);
         }
       } else {
-        showToastMessage(false,
+        showToastMessageBottom(false,
             "You are away from Store. please Go to store and end visit.($distanceInKm)km");
       }
 
@@ -420,9 +440,9 @@ class _MyCoveragePhotoGalleryOptionsState
         commentController.clear();
         Navigator.of(context).pop();
         setState(() {});
-        showToastMessage(true, "Image Uploaded successfully");
+        showToastMessageBottom(true, "Image Uploaded successfully");
       }).catchError((e) {
-        showToastMessage(false, e.toString());
+        showToastMessageBottom(false, e.toString());
       });
     });
   }
@@ -443,13 +463,13 @@ class _MyCoveragePhotoGalleryOptionsState
         isLoading = true;
       });
       Navigator.of(context).pop();
-      showToastMessage(true, "Visit Ended successfully");
+      showToastMessageBottom(true, "Visit Ended successfully");
     }).catchError((e) {
       setState(() {
         isLoading = false;
       });
       // print(e);
-      showToastMessage(false, e.toString());
+      showToastMessageBottom(false, e.toString());
     });
   }
 
@@ -465,7 +485,7 @@ class _MyCoveragePhotoGalleryOptionsState
       tmrId: tmrId,
     ))
         .then((value) {
-      showToastMessage(true, "User update successfully");
+      showToastMessageBottom(true, "User update successfully");
 
       Navigator.of(context)
           .push(MaterialPageRoute(
@@ -483,7 +503,7 @@ class _MyCoveragePhotoGalleryOptionsState
       });
     }).catchError((e) {
       setState(() {
-        showToastMessage(false, e.toString());
+        showToastMessageBottom(false, e.toString());
         isLoadingLocation = false;
       });
     });

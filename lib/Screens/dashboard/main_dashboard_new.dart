@@ -54,7 +54,7 @@ class MainDashboardNew extends StatefulWidget {
 class _MainDashboardNewState extends State<MainDashboardNew> {
   String userName = "";
   String userId = "";
-   int backgroundService = 0 ;
+  int backgroundService = 0 ;
   ImagePicker picker = ImagePicker();
   XFile? image;
   XFile? compressedImage;
@@ -90,7 +90,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
   void initState() {
     getUserData();
     updateAvailable();
-    // checkUpdate();
+   // checkUpdate();
     // getIpcLocations();
     checkVpnDetector();
 
@@ -183,8 +183,9 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
 
   updateAvailable() {
     // Instantiate NewVersion manager object (Using GCP Console app as example)
+   //com.catalist.csupervisor
     final newVersion = NewVersionPlus(
-      iOSId: 'com.catalist.cSupervisor',
+      iOSId: 'com.catalist.csupervisor',
       androidId: 'com.catalist.csupervisor',
       androidPlayStoreCountry: "es_ES",
       // androidHtmlReleaseNotes: true, //support country code
@@ -450,7 +451,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                                     MainDashboardItemCard(
                                         onTap: () {
                                           if (isCheckedIn) {
-                                            showToastMessage(false,
+                                            showToastMessageBottom(false,
                                                 "Please check out first and try again");
                                           } else {
                                             Navigator.of(context).push(
@@ -466,7 +467,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                                     MainDashboardItemCard(
                                         onTap: () {
                                           if (isCheckedIn) {
-                                            showToastMessage(false,
+                                            showToastMessageBottom(false,
                                                 "Please check out first and try again");
                                           } else {
                                             Navigator.of(context).push(
@@ -483,7 +484,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                                     MainDashboardItemCard(
                                         onTap: () {
                                           if (isCheckedIn) {
-                                            showToastMessage(false,
+                                            showToastMessageBottom(false,
                                                 "Please check out first and try again");
                                           } else {
                                             Navigator.of(context).push(
@@ -500,7 +501,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                                     MainDashboardItemCard(
                                         onTap: () {
                                           if (isCheckedIn) {
-                                            showToastMessage(false,
+                                            showToastMessageBottom(false,
                                                 "Please check out first and try again");
                                           } else {
                                             Navigator.of(context).push(
@@ -517,7 +518,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                                     MainDashboardItemCard(
                                         onTap: () {
                                           if (isCheckedIn) {
-                                            showToastMessage(false,
+                                            showToastMessageBottom(false,
                                                 "Please check out first and try again");
                                           } else {
                                             Navigator.of(context).push(
@@ -534,7 +535,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                                     MainDashboardItemCard(
                                         onTap: () {
                                           if (isCheckedIn) {
-                                            showToastMessage(false,
+                                            showToastMessageBottom(false,
                                                 "Please check out first and try again");
                                           } else {
                                             Navigator.of(context).push(
@@ -551,7 +552,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                                     MainDashboardItemCard(
                                         onTap: () {
                                           if (isCheckedIn) {
-                                            showToastMessage(false,
+                                            showToastMessageBottom(false,
                                                 "Please check out first and try again");
                                           } else {
                                             Navigator.of(context).push(
@@ -568,7 +569,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                                     MainDashboardItemCard(
                                         onTap: () {
                                           if (isCheckedIn) {
-                                            showToastMessage(false,
+                                            showToastMessageBottom(false,
                                                 "Please check out first and try again");
                                           } else {
                                             Navigator.of(context).push(
@@ -623,7 +624,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                                     if (!isCheckedIn) {
                                       _getCurrentPosition(true);
                                     } else {
-                                      showToastMessage(
+                                      showToastMessageBottom(
                                           false, "You need to Check out first");
                                     }
                                   },
@@ -689,7 +690,7 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
                                     if (isCheckedIn) {
                                       _getCurrentPosition(true);
                                     } else {
-                                      showToastMessage(
+                                      showToastMessageBottom(
                                           false, "You need to Check In first");
                                     }
                                   },
@@ -855,12 +856,12 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
 
           isLoading2 = false;
         });
-        showToastMessage(true, "Checked In Successfully");
+        showToastMessageBottom(true, "Checked In Successfully");
         Navigator.of(context).pop();
       }).catchError((e) {
         setState(() {
           print(e.toString());
-          showToastMessage(false, e.toString());
+          showToastMessageBottom(false, e.toString());
           isLoading2 = false;
         });
       });
@@ -889,12 +890,12 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
         // sharedPreferences.setString(UserConstants().checkInId, checkListItem[0].id.toString());
         isLoading2 = false;
       });
-      showToastMessage(true, "Checked Out Successfully");
+      showToastMessageBottom(true, "Checked Out Successfully");
       // Navigator.of(context).pop();
     }).catchError((e) {
       setState(() {
         print(e.toString());
-        showToastMessage(false, e.toString());
+        showToastMessageBottom(false, e.toString());
         isLoading2 = false;
       });
     });

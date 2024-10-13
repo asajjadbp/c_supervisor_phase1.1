@@ -21,7 +21,7 @@ class CheckInButton extends StatelessWidget {
         if (!isCheckedIn) {
           onTap();
         } else {
-          showToastMessage(false, "You need to Check out first");
+          showToastMessageBottom(false, "You need to Check out first");
         }
       },
       child: Card(
@@ -82,7 +82,7 @@ class CheckOutButton extends StatelessWidget {
         if (isCheckedIn) {
           onTap();
         } else {
-          showToastMessage(false, "You need to Check In first");
+          showToastMessageBottom(false, "You need to Check In first");
         }
       },
       child: Card(

@@ -223,6 +223,17 @@ class _TimeMotionScreenState extends State<TimeMotionScreen> {
                                                             });
                                                           })
                                                       ),
+                                                      Container(
+                                                        // height: 130,
+                                                          margin: const EdgeInsets
+                                                              .symmetric(vertical: 10),
+                                                          child:
+                                                          SKUTextField(initialValue: timeMotionListModel.data![index].categories![index1].noSKU.toString(), onChangeValue: (value) {
+                                                            setState(() {
+                                                              timeMotionListModel.data![index].categories![index1].noSKU = value;
+                                                            });
+                                                          })
+                                                      ),
                                                     ],
                                                   );
                                                 }),
@@ -263,12 +274,12 @@ class _TimeMotionScreenState extends State<TimeMotionScreen> {
         isLoadingLocation = false;
       });
 
-      showToastMessage(true, "Time motion updated successfully");
+      showToastMessageBottom(true, "Time motion updated successfully");
     }).catchError((e) {
       setState(() {
         isLoadingLocation = false;
       });
-      showToastMessage(false, e.toString());
+      showToastMessageBottom(false, e.toString());
     });
 
   }
@@ -283,9 +294,9 @@ class _TimeMotionScreenState extends State<TimeMotionScreen> {
         isLoadingLocation = false;
       });
       Navigator.of(context).pop();
-      showToastMessage(true, "Recruit deleted Successfully");
+      showToastMessageBottom(true, "Recruit deleted Successfully");
     }).catchError((e) {
-      showToastMessage(false, e.toString());
+      showToastMessageBottom(false, e.toString());
       setState(() {
         isLoadingLocation = false;
       });

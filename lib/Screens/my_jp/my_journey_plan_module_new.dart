@@ -292,7 +292,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
                                         getStoreImageList(false);
                                       });
                                     } else {
-                                      showToastMessage(
+                                      showToastMessageBottom(
                                           false, "Check list is empty");
                                     }
                                   },
@@ -540,9 +540,9 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
         Navigator.of(context).pop();
         getStoreImageList(false);
         setState(() {});
-        showToastMessage(true, "Image Uploaded successfully");
+        showToastMessageBottom(true, "Image Uploaded successfully");
       }).catchError((e) {
-        showToastMessage(false, e.toString());
+        showToastMessageBottom(false, e.toString());
         Navigator.of(context).pop();
       });
     });
@@ -570,7 +570,7 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
 
         endVisit(currentPosition);
       } else {
-        showToastMessage(false,
+        showToastMessageBottom(false,
             "You are away from Store. please Go to store and end visit.($distanceInKm)km");
       }
       setState(() {
@@ -599,13 +599,13 @@ class _MyJourneyModuleNewState extends State<MyJourneyModuleNew> {
         isLoading = false;
       });
       Navigator.of(context).pop();
-      showToastMessage(true, "Visit Ended successfully");
+      showToastMessageBottom(true, "Visit Ended successfully");
     }).catchError((e) {
       setState(() {
         isLoading = false;
       });
       // print(e);
-      showToastMessage(false, e.toString());
+      showToastMessageBottom(false, e.toString());
     });
   }
 }
