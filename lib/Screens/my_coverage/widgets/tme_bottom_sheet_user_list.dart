@@ -131,7 +131,7 @@ void tmrBottomSheetUserList(
     TmrUserList tmrUserList,
     int selectedTmrUser,
     bool isLoadingLocation,
-    Function(TmrUserItem value) selectedTmr,
+    Function(TmrUserItem value , int tmrIndex) selectedTmr,
     Function onTap
     ) {
   TextEditingController _searchController = TextEditingController();
@@ -140,6 +140,7 @@ void tmrBottomSheetUserList(
   // pass -1 so that in inital no radio button is selected
   showModalBottomSheet(
     context: context,
+    isDismissible: false,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) => StatefulBuilder(
@@ -177,7 +178,7 @@ void tmrBottomSheetUserList(
                       ),
                     ),
                     labelStyle: TextStyle(color: Colors.black), // Replace with your black color
-                    hintText: "Search with name",
+                    hintText: "Search with TMR Name/No ",
                     hintStyle: TextStyle(color: Colors.grey), // Replace with your grey color
                     contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                   ),
@@ -204,7 +205,7 @@ void tmrBottomSheetUserList(
                       onTap: () {
                         menuState(() {
                           selectedTmrUser = index;
-                          selectedTmr(tmrUserList.data![index]);
+                          selectedTmr(tmrUserList.data![index],selectedTmrUser );
                         });
                       },
                       child: Card(
@@ -227,7 +228,7 @@ void tmrBottomSheetUserList(
                               onChanged: (int? value) {
                                 menuState(() {
                                   selectedTmrUser = value!;
-                                  selectedTmr(searchList[value]);
+                                  selectedTmr(searchList[value],selectedTmrUser);
                                 });
                               },
                             ),

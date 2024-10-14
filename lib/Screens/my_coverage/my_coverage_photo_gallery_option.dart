@@ -221,11 +221,11 @@ class _MyCoveragePhotoGalleryOptionsState
                           if (filledQuestionScore == 0) {
                             tmrBottomSheetUserList(context, tmrUserList,
                                 selectedTmrUser, isLoadingLocation,
-                                    (value) {
+                                    (value ,tmrIndex) {
                               print(value.id);
                               print(value.fullName);
                               setState(() {
-                                selectedTmrUser =value.id!;
+                               selectedTmrUser =tmrIndex;
                                 tmrUserItem = value;
                               });
                             },
@@ -301,7 +301,7 @@ class _MyCoveragePhotoGalleryOptionsState
             LargeButtonInFooter(
               buttonTitle: "Finish Visit",
               onTap: () async {
-                if(selectedTmrUser == -1)
+                if(selectedTmrUser == -1 && filledQuestionScore == 0)
                   {
                     showToastMessageBottom(false,
                         "Please select TMR first to finish this visit");

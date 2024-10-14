@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
               primaryColor: AppColors.primaryColor,
               appBarTheme: const AppBarTheme(color: AppColors.primaryColor),
               indicatorColor: AppColors.primaryColor,
+              cardColor: Colors.white
             ),
             debugShowCheckedModeBanner: false,
             home: auth.isLicenseGet
