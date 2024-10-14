@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>C-Supervisor</string>
+	<string>EE Leaders</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -26,14 +26,6 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
-		<key>NSMicrophoneUsageDescription</key>
-    	<string>CSupervisor  Business use this capability in case there video need to be attached with attendance picking</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera permission is required so supervisor can take Selfi picture for hom at the beginning of the day.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
@@ -44,20 +36,28 @@
 	<string>Location Needed to validate that supervisor should attend in specific area </string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>TLocation Needed to validate that upervisor should attend in specific area.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>CSupervisor  Business use this capability in case there video need to be attached with attendance picking</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>CSupervisor  Business use this capability to enable user upload images for products  </string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen.storyboard</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
