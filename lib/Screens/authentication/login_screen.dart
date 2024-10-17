@@ -396,7 +396,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const Align(
                         alignment: Alignment.center,
                         child: Text(
-                          "Version 1.20",
+    "Version 1.0.27",
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w400),
                         )),

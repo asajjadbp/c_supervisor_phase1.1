@@ -142,7 +142,7 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
   updateAvailable() {
     // Instantiate NewVersion manager object (Using GCP Console app as example)
     final newVersion = NewVersionPlus(
-      iOSId: 'com.catalist.cSupervisor',
+      iOSId: 'com.catalist.EE-leaders',
       androidId: 'com.catalist.csupervisor',
       androidPlayStoreCountry: "es_ES",
       // androidHtmlReleaseNotes: true, //support country code
@@ -374,7 +374,7 @@ class _DashboardGraphScreenState extends State<DashboardGraphScreen> {
               ],
             ),
             const Text(
-              "Version:1.26",
+              "Version:1.0.27",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400,color: Colors.white),
             )
           ],

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../Model/response_model/tmr_responses/tmr_list_response.dart';
 import '../../utills/app_colors_new.dart';
+import '../../widgets/toast_message_show.dart';
 
 selfieOptionForJpBottomSheet(BuildContext context,bool isLoadingLocation,bool isSelfieWithTmr,bool isSelfieWithTmrWorking,bool isSelfieWithTmrCompleted,Function(String value) selectedOption) {
   showModalBottomSheet(
@@ -136,11 +137,24 @@ void tmrBottomSheetUserList(
     ) {
   TextEditingController _searchController = TextEditingController();
   List<TmrUserItem> searchList = tmrUserList.data!;
-  //  selectedTmrUser = -1;
+  void updateTMRLocaly(value)
+  {
+    if(_searchController.text.isNotEmpty) {
+      print(" search click");
+      selectedTmrUser = value!;
+      selectedTmr(searchList[value], selectedTmrUser);
+
+    }
+    if(_searchController.text.isEmpty) {
+      print(" non search click");
+      selectedTmrUser = value;
+      selectedTmr(tmrUserList.data![value], selectedTmrUser);
+    }  }
+  selectedTmrUser = -1;
   // pass -1 so that in inital no radio button is selected
   showModalBottomSheet(
     context: context,
-    isDismissible: false,
+   // isDismissible: false,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) => StatefulBuilder(
@@ -183,6 +197,7 @@ void tmrBottomSheetUserList(
                     contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                   ),
                   onChanged: (value) {
+                    selectedTmrUser = -1;
                     menuState(() {
                       if (value.isEmpty) {
                         searchList = tmrUserList.data!;
@@ -204,8 +219,8 @@ void tmrBottomSheetUserList(
                     return InkWell(
                       onTap: () {
                         menuState(() {
-                          selectedTmrUser = index;
-                          selectedTmr(tmrUserList.data![index],selectedTmrUser );
+
+                          updateTMRLocaly(index);
                         });
                       },
                       child: Card(
@@ -226,10 +241,18 @@ void tmrBottomSheetUserList(
                               value: index,
                               groupValue: selectedTmrUser,
                               onChanged: (int? value) {
-                                menuState(() {
-                                  selectedTmrUser = value!;
-                                  selectedTmr(searchList[value],selectedTmrUser);
-                                });
+
+
+                                  menuState(() {
+                                    updateTMRLocaly(value);
+                    /*if(_searchController.text.isNotEmpty) {
+                         print(" search click");
+                                    selectedTmrUser = value!;
+                                    selectedTmr(searchList[value], selectedTmrUser);
+
+                    }*/
+                                  });
+
                               },
                             ),
                           ],
@@ -243,7 +266,12 @@ void tmrBottomSheetUserList(
                 ignoring: isLoadingLocation,
                 child: InkWell(
                   onTap: () {
-                    onTap();
+                    if(selectedTmrUser == -1)
+                      {
+                        showToastMessageBottom(false,
+                            "Please select TMR first to Continue this visit");
+                      }
+                    else   onTap();
                   },
                   child: Container(
                     padding: const EdgeInsets.all(10),
@@ -263,11 +291,15 @@ void tmrBottomSheetUserList(
                   ),
                 ),
               ),
-              const SizedBox(height: 5),
+              const SizedBox(height: 15),
             ],
           ),
         );
       },
     ),
   );
+
+
+
 }
+

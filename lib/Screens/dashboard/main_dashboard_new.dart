@@ -183,11 +183,11 @@ class _MainDashboardNewState extends State<MainDashboardNew> {
 
   updateAvailable() {
     // Instantiate NewVersion manager object (Using GCP Console app as example)
-   //com.catalist.csupervisor
     final newVersion = NewVersionPlus(
-      iOSId: 'com.catalist.csupervisor',
+      iOSId: 'com.catalist.EE-leaders',
       androidId: 'com.catalist.csupervisor',
       androidPlayStoreCountry: "es_ES",
+      iOSAppStoreCountry: "es_ES",
       // androidHtmlReleaseNotes: true, //support country code
     );
 

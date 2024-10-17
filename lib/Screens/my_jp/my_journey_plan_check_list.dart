@@ -71,8 +71,9 @@ class _MyJourneyPlanCheckListState extends State<MyJourneyPlanCheckList> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.white),
           centerTitle: true,
-          title: Text("${widget.pageHeader} Check List"),
+          title: Text("${widget.pageHeader} Check List",style: TextStyle(color: Colors.white),),
         ),
         body: Stack(
           children: [

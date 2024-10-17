@@ -224,6 +224,7 @@ class _MyCoveragePhotoGalleryOptionsState
                                     (value ,tmrIndex) {
                               print(value.id);
                               print(value.fullName);
+                              print("selected TMR");
                               setState(() {
                                selectedTmrUser =tmrIndex;
                                 tmrUserItem = value;
@@ -238,6 +239,9 @@ class _MyCoveragePhotoGalleryOptionsState
                                       "Please select TMR first to continue");
                                 }
                               else{
+
+                                print(tmrUserItem.id.toString());
+                                print("tmr on screen");
                                 updateTmrUserInCoverage(
                                     userId,
                                     widget
@@ -301,12 +305,7 @@ class _MyCoveragePhotoGalleryOptionsState
             LargeButtonInFooter(
               buttonTitle: "Finish Visit",
               onTap: () async {
-                if(selectedTmrUser == -1 && filledQuestionScore == 0)
-                  {
-                    showToastMessageBottom(false,
-                        "Please select TMR first to finish this visit");
-                  }
-                else{
+                {
                   await showDialog<bool>(
                     context: context,
                     builder: (context) {
@@ -474,6 +473,7 @@ class _MyCoveragePhotoGalleryOptionsState
   }
 
   updateTmrUserInCoverage(String elId, String workingId, String tmrId) {
+    print("Updated TMR ID $tmrId");
     setState(() {
       isLoadingLocation = true;
     });
